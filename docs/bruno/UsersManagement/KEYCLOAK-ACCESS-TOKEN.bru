@@ -1,0 +1,32 @@
+meta {
+  name: KEYCLOAK-ACCESS-TOKEN
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{keycloakHttpScheme}}://{{keycloakHost}}/realms/{{keycloakRealm}}/protocol/openid-connect/token
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  username: {{keycloakUser}}
+  password: {{keycloakPassword}}
+  grant_type: password
+  client_id: {{keycloakClient}}
+  scope: openid
+}
+
+assert {
+  resp.status: eq 200
+  resp.body.access_token: isDefined
+  resp.body.refresh_token: isDefined
+  resp.body.id_token: isDefined
+}
+
+script:post-response {
+  bru.setEnvVar("accessToken",res.body.access_token);
+  bru.setEnvVar("refreshToken",res.body.refresh_token);
+  
+}

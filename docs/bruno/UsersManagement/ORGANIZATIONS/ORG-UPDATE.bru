@@ -1,0 +1,37 @@
+meta {
+  name: ORG-UPDATE
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/899ee3cc-28aa-403b-8062-ef4f2c28201e
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {  
+    "commons": {
+      "code": "cher-008",
+      "label": "Cherbourg 009",
+      "kind": 1,
+      "country": "de",
+      "status": 1
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

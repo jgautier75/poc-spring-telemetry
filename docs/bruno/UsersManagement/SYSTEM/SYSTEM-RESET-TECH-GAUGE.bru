@@ -1,0 +1,16 @@
+meta {
+  name: SYSTEM-RESET-TECH-GAUGE
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/techGaugeReset
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

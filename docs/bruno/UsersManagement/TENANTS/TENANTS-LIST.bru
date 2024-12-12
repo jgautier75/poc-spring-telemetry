@@ -1,0 +1,25 @@
+meta {
+  name: TENANTS-LIST
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants
+  body: none
+  auth: bearer
+}
+
+headers {
+  X-APP-DEBUG: 1
+  X-CORRELATION-KEY: {{uuid}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+  
+}

@@ -1,0 +1,31 @@
+meta {
+  name: USERS-LIST
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/bc353698-7c69-494a-8597-1118733cf72f/organizations/dcb697fc-b77b-4824-bdb2-72db14351748/users?size=100&index=1
+  body: none
+  auth: bearer
+}
+
+params:query {
+  size: 100
+  index: 1
+  ~orderBy: %2BlastName
+  ~filter: firstName eq 'Nicolas' and middleName eq 'L'
+}
+
+headers {
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

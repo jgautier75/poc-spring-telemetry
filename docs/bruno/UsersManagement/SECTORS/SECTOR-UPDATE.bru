@@ -1,0 +1,35 @@
+meta {
+  name: SECTOR-UPDATE
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/dbe4c225-1027-4dbd-8d94-db6cbe79812e/sectors/c8682f39-7bab-4430-827c-88b1e75bb20e
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "code": "rennes-south-west-8",
+    "label": "Rennes SOUTH WEST 8",
+    "root": false,
+    "parentUid": "1fae6c67-6c9c-4efd-ab80-1c3d18de144e"
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+  
+}

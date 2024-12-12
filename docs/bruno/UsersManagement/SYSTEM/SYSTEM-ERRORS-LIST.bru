@@ -1,0 +1,20 @@
+meta {
+  name: SYSTEM-ERRORS-LIST
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/errors
+  body: none
+  auth: basic
+}
+
+headers {
+  X-CORRELATION-KEY: {{uuid}}
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

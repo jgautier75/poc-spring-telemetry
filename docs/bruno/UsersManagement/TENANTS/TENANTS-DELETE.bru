@@ -1,0 +1,24 @@
+meta {
+  name: TENANTS-DELETE
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/7afea885-bfad-44a5-bb40-e8dad55c4c8f
+  body: none
+  auth: bearer
+}
+
+headers {
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

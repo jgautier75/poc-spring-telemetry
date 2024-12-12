@@ -1,0 +1,16 @@
+meta {
+  name: ACTUATOR-PROMETHEUS
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator/prometheus
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

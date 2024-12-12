@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet id="user-data" author="jga" context="all">
+        <createSequence sequenceName="seq_tenants" />
+        <createTable tableName="tenants">
+            <column name="id" type="bigint" defaultValueSequenceNext="seq_tenants">
+                <constraints primaryKey="true" primaryKeyName="pk_tenant" />
+            </column>
+            <column name="uid" type="varchar(40)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_tenants_uid" />
+            </column>
+            <column name="code" type="varchar(50)">
+                <constraints nullable="false" notNullConstraintName="nn_tenant_code" unique="true"
+                    uniqueConstraintName="un_tenant_code" />
+            </column>
+            <column name="label" type="varchar(80)">
+                <constraints nullable="false" notNullConstraintName="nn_tenant_label" unique="true"
+                    uniqueConstraintName="un_tenant_label" />
+            </column>
+        </createTable>
+        <createSequence sequenceName="seq_organizations" />
+        <createTable tableName="organizations">
+            <column name="id" type="bigint" defaultValueSequenceNext="seq_organizations">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_organizations" />
+            </column>
+            <column name="uid" type="varchar(40)">
+                <constraints nullable="false" unique="true"
+                    uniqueConstraintName="un_organizations_uid" />
+            </column>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false" referencedTableName="tenants"
+                    referencedColumnNames="id" foreignKeyName="fk_organizations_tenant_id" />
+            </column>
+            <column name="label" type="varchar(80)">
+                <constraints nullable="false" unique="true"
+                    uniqueConstraintName="un_organizations_label" />
+            </column>
+            <column name="code" type="varchar(50)">
+                <constraints nullable="false" unique="true"
+                    uniqueConstraintName="un_organizations_code" />
+            </column>
+            <column name="kind" type="smallint">
+                <constraints nullable="false" notNullConstraintName="nn_organizations_kind" />
+            </column>
+            <column name="country" type="varchar(2)">
+                <constraints nullable="false" notNullConstraintName="un_organizations_country" />
+            </column>
+            <column name="status" type="smallint">
+                <constraints nullable="false" notNullConstraintName="un_organizations_stats" />
+            </column>
+        </createTable>
+        <createSequence sequenceName="seq_users" />
+        <createTable tableName="users">
+            <column name="id" type="bigint" defaultValueSequenceNext="seq_users">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_users" />
+            </column>
+            <column name="uid" type="varchar(40)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_users_uid" />
+            </column>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false" referencedTableName="tenants"
+                    referencedColumnNames="id" foreignKeyName="fk_users_tenant_id" />
+            </column>
+            <column name="org_id" type="bigint">
+                <constraints nullable="false" referencedTableName="organizations"
+                    referencedColumnNames="id" foreignKeyName="fk_users_organization_id" />
+            </column>
+            <column name="login" type="varchar(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_users_login" />
+            </column>
+            <column name="first_name" type="varchar(50)">
+                <constraints nullable="false" notNullConstraintName="nn_users_first_name" />
+            </column>
+            <column name="last_name" type="varchar(50)">
+                <constraints nullable="false" notNullConstraintName="nn_users_last_name" />
+            </column>
+            <column name="middle_name" type="varchar(5)" />
+            <column name="email" type="varchar(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_users_email" />
+            </column>
+            <column name="status" type="smallint">
+                <constraints nullable="false" notNullConstraintName="nn_users_status" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="events" author="jga" context="all">
+        <createSequence sequenceName="seq_events" />
+        <createTable tableName="events">
+            <column name="uid" type="varchar(40)" defaultValueSequenceNext="seq_events">
+                <constraints primaryKey="true" primaryKeyName="pk_events" nullable="false" />
+            </column>
+            <column name="created_at" type="timestamptz">
+                <constraints nullable="false" notNullConstraintName="nn_events_created_at" />
+            </column>
+            <column name="last_updated_at" type="timestamptz" />
+            <column name="target" type="smallint">
+                <constraints nullable="false" notNullConstraintName="nn_events_scope" />
+            </column>
+            <column name="object_uid" type="varchar(40)">
+                <constraints nullable="false" notNullConstraintName="nn_events_object_uid" />
+            </column>
+            <column name="action" type="varchar(20)">
+                <constraints nullable="false" notNullConstraintName="nn_events_action" />
+            </column>
+            <column name="status" type="smallint">
+                <constraints nullable="false" notNullConstraintName="nn_events_status" />
+            </column>
+            <column name="payload" type="jsonb">
+                <constraints nullable="false" notNullConstraintName="nn_events_payload" />
+            </column>
+        </createTable>
+        <createIndex tableName="events" indexName="idx_events_uid">
+            <column name="uid" />
+        </createIndex>
+        <createIndex tableName="events" indexName="idx_events_created_at_status">
+            <column name="created_at" />
+            <column name="status" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="sectors" author="jga" context="all">
+        <createSequence sequenceName="seq_sectors" />
+        <createTable tableName="sectors">
+            <column name="id" type="bigint" defaultValueSequenceNext="seq_sectors">
+                <constraints primaryKey="true" primaryKeyName="pk_sectors" />
+            </column>
+            <column name="uid" type="varchar(40)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_sectors_uid" />
+            </column>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false" referencedTableName="tenants"
+                    referencedColumnNames="id" foreignKeyName="fk_users_tenant_id" />
+            </column>
+            <column name="org_id" type="bigint">
+                <constraints nullable="false" referencedTableName="organizations"
+                    referencedColumnNames="id" foreignKeyName="fk_sectors_organization_id" />
+            </column>
+            <column name="label" type="varchar(80)">
+                <constraints nullable="false" unique="true"
+                    uniqueConstraintName="un_sectors_label" />
+            </column>
+            <column name="code" type="varchar(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="un_sectors_code" />
+            </column>
+            <column name="parent_id" type="bigint">
+                <constraints referencedTableName="sectors" referencedColumnNames="id"
+                    foreignKeyName="fk_sectors_id" />
+            </column>
+            <column name="root" type="boolean" defaultValue="false">
+                <constraints nullable="false" notNullConstraintName="nn_sectors_root" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="label_unique_constraints" author="jga" context="all">
+        <dropUniqueConstraint tableName="organizations" constraintName="un_organizations_label" />
+        <dropUniqueConstraint tableName="tenants" constraintName="un_tenant_label" />
+        <dropUniqueConstraint tableName="sectors" constraintName="un_sectors_label" />
+    </changeSet>
+    <changeSet id="grants" author="jga" runAlways="true" runOrder="last" failOnError="false"
+        context="grants">
+        <sqlFile path="grants.sql" relativeToChangelogFile="true" encoding="UTF-8"/>
+    </changeSet>
+    <changeSet id="user_notif" author="jga" context="all">
+        <addColumn tableName="users">
+            <column name="notif_email" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="user_pass" author="jga">
+        <addColumn tableName="users">
+            <column name="secrets" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

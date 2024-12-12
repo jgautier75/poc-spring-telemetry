@@ -1,0 +1,32 @@
+meta {
+  name: TENANTS-UPDATE
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "code": "north-west-2",
+    "label": "north West 2 Tenant"
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

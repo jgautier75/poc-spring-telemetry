@@ -1,0 +1,1571 @@
+{
+  "name": "UsersManagement",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "KEYCLOAK-ACCESS-TOKEN",
+      "seq": 1,
+      "request": {
+        "url": "{{keycloakHttpScheme}}://{{keycloakHost}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "formUrlEncoded",
+          "formUrlEncoded": [
+            {
+              "name": "username",
+              "value": "{{keycloakUser}}",
+              "enabled": true
+            },
+            {
+              "name": "password",
+              "value": "{{keycloakPassword}}",
+              "enabled": true
+            },
+            {
+              "name": "grant_type",
+              "value": "password",
+              "enabled": true
+            },
+            {
+              "name": "client_id",
+              "value": "{{keycloakClient}}",
+              "enabled": true
+            },
+            {
+              "name": "scope",
+              "value": "openid",
+              "enabled": true
+            }
+          ],
+          "multipartForm": []
+        },
+        "script": {
+          "res": "bru.setEnvVar(\"accessToken\",res.body.access_token);\nbru.setEnvVar(\"refreshToken\",res.body.refresh_token);\n"
+        },
+        "vars": {},
+        "assertions": [
+          {
+            "name": "resp.status",
+            "value": "eq 200",
+            "enabled": true,
+            "uid": "5mw74seYApWDQeMXOf9r4"
+          },
+          {
+            "name": "resp.body.access_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "txTCCjaGp9HirH9wKe5Aw"
+          },
+          {
+            "name": "resp.body.refresh_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "OvDsgmyWci8ti2tcybl2w"
+          },
+          {
+            "name": "resp.body.id_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "4qXkkUG5PdfPTFZePprKn"
+          }
+        ],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "KEYCLOAK-REFRESH-TOKEN",
+      "seq": 3,
+      "request": {
+        "url": "{{keycloakHttpScheme}}://{{keycloakHost}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "formUrlEncoded",
+          "formUrlEncoded": [
+            {
+              "name": "client_id",
+              "value": "{{keycloakClient}}",
+              "enabled": true
+            },
+            {
+              "name": "grant_type",
+              "value": "refresh_token",
+              "enabled": true
+            },
+            {
+              "name": "refresh_token",
+              "value": "{{refreshToken}}",
+              "enabled": true
+            }
+          ],
+          "multipartForm": []
+        },
+        "script": {
+          "res": "bru.setEnvVar(\"accessToken\",res.body.access_token);\nbru.setEnvVar(\"refreshToken\",res.body.refresh_token);"
+        },
+        "vars": {},
+        "assertions": [
+          {
+            "name": "resp.status",
+            "value": "eq 200",
+            "enabled": true,
+            "uid": "fr5I7DeveMfK8ahxaRdS4"
+          },
+          {
+            "name": "resp.body.access_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "XsLfsuAX8CmfLHvGqF9ij"
+          },
+          {
+            "name": "resp.body.refresh_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "FsVqSYtzElcjorXcpRGJx"
+          },
+          {
+            "name": "resp.body.id_token",
+            "value": "isDefined",
+            "enabled": true,
+            "uid": "WufXjzzFxjR9jTsfwEGti"
+          }
+        ],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "folder",
+      "name": "ORGANIZATIONS",
+      "items": [
+        {
+          "type": "http",
+          "name": "ORG-BY-UID",
+          "seq": 8,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/899ee3cc-28aa-403b-8062-ef4f2c28201e",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{  \n  \"commons\": {\n    \"code\": \"RENNES-1\",\n    \"label\": \"Rennes Zone 1\",\n    \"kind\": 1,\n    \"country\": \"fr\",\n    \"status\": 1\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ORG-CREATE",
+          "seq": 7,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{  \n  \"commons\": {\n    \"code\": \"rennes-01\",\n    \"label\": \"Rennes\",\n    \"kind\": 1,\n    \"country\": \"fr\",\n    \"status\": 1\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ORG-DELETE",
+          "seq": 10,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations/5bcaf9fb-796f-479c-8163-7909649ed13c",
+            "method": "DELETE",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ORG-LIST",
+          "seq": 6,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations?size=10&index=1&orderBy=label",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              }
+            ],
+            "params": [
+              {
+                "name": "size",
+                "value": "10",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "index",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "orderBy",
+                "value": "label",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "filter",
+                "value": "(code eq 'ces-01') and (kind eq 'BU')",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ORG-UPDATE",
+          "seq": 9,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/899ee3cc-28aa-403b-8062-ef4f2c28201e",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{  \n  \"commons\": {\n    \"code\": \"cher-008\",\n    \"label\": \"Cherbourg 009\",\n    \"kind\": 1,\n    \"country\": \"de\",\n    \"status\": 1\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "OTHERS",
+      "items": [
+        {
+          "type": "http",
+          "name": "ACTUATOR-HEALTH",
+          "seq": 3,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator/health",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ACTUATOR-PROMETHEUS",
+          "seq": 4,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator/prometheus",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "ACTUATOR",
+          "seq": 1,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SCHEMAS-REGISTRY-GET",
+          "seq": 2,
+          "request": {
+            "url": "{{httpScheme}}://{{schemaRegistryPort}}/schemas",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "User-Agent",
+                "value": "insomnia/2023.5.8",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "SECTORS",
+      "items": [
+        {
+          "type": "http",
+          "name": "SECTOR-CREATE",
+          "seq": 6,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations/1c8672b0-768c-412a-8e2a-8a9d2c31e38c/sectors",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"cesaaa\",\n  \"label\": \"Cesson Aaa\",\n  \"root\": false,\n  \"parentUid\": \"25122c68-b39d-41a6-b20c-b9469222d129\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SECTOR-DELETE",
+          "seq": 8,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/a78d543f-ed21-4082-b032-75e7f01735bd/sectors/9a62e9e6-547a-47ae-96ae-3c793705f4bd",
+            "method": "DELETE",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"rennes-south-west-8\",\n  \"label\": \"Rennes SOUTH WEST 8\",\n  \"root\": false,\n  \"parentUid\": \"1fae6c67-6c9c-4efd-ab80-1c3d18de144e\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SECTOR-LIST",
+          "seq": 5,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations/1c8672b0-768c-412a-8e2a-8a9d2c31e38c/sectors",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SECTOR-UPDATE",
+          "seq": 7,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/dbe4c225-1027-4dbd-8d94-db6cbe79812e/sectors/c8682f39-7bab-4430-827c-88b1e75bb20e",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"rennes-south-west-8\",\n  \"label\": \"Rennes SOUTH WEST 8\",\n  \"root\": false,\n  \"parentUid\": \"1fae6c67-6c9c-4efd-ab80-1c3d18de144e\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());\n"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "TENANTS",
+      "items": [
+        {
+          "type": "http",
+          "name": "TENANTS-BY-UID",
+          "seq": 9,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "TENANTS-CRASH",
+          "seq": 12,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"crash\",\n  \"label\": \"Crash test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "TENANTS-CREATE",
+          "seq": 8,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"bzh\",\n  \"label\": \"Bretagne\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "TENANTS-DELETE",
+          "seq": 11,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/7afea885-bfad-44a5-bb40-e8dad55c4c8f",
+            "method": "DELETE",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "TENANTS-LIST",
+          "seq": 7,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());\n"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "TENANTS-UPDATE",
+          "seq": 10,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"code\": \"north-west-2\",\n  \"label\": \"north West 2 Tenant\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "USERS",
+      "items": [
+        {
+          "type": "http",
+          "name": "USERS-BY-UID",
+          "seq": 9,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/a78d543f-ed21-4082-b032-75e7f01735bd/users/0c84c442-d687-4d88-8b25-1b2a02307491",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "USERS-CREATE",
+          "seq": 7,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/a78d543f-ed21-4082-b032-75e7f01735bd/users",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"status\": 1,\n  \"credentials\": {\n    \"email\": \"nicolas.flamel@test.fr\",\n    \"login\": \"nflamel\"\n  },\n  \"commons\": {\n    \"firstName\": \"Nicolas\",\n    \"lastName\": \"FLAMEL\"\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());\n"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "USERS-DELETE",
+          "seq": 10,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/a78d543f-ed21-4082-b032-75e7f01735bd/users/0c84c442-d687-4d88-8b25-1b2a02307491",
+            "method": "DELETE",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "USERS-LIST",
+          "seq": 6,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/a78d543f-ed21-4082-b032-75e7f01735bd/users?orderBy=%2BlastName&size=100&index=1&filter=firstName eq 'Nicolas' and middleName eq 'L'",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [
+              {
+                "name": "orderBy",
+                "value": "%2BlastName",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "size",
+                "value": "100",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "index",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "filter",
+                "value": "firstName eq 'Nicolas' and middleName eq 'L'",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "USERS-UPDATE",
+          "seq": 8,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/e2e1e622-d05a-42f1-a4d9-5addef76f3be/organizations/6ce6dbd5-9195-49a9-9e5e-9ed3f36fe67f/users/04d85f1c-fc02-4f12-8006-c06df9ff0d81",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              },
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              },
+              {
+                "name": "X-APP-DEBUG",
+                "value": "1",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"status\": 1,\n  \"credentials\": {\n    \"email\": \"alovelace@test.fr\",\n    \"login\": \"alovelace\"\n  },\n  \"commons\": {\n    \"firstName\": \"Ada\",\n    \"lastName\": \"Lovelace\",\n    \"middleName\": \"m\"\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {
+              "req": "bru.setVar('uuid', require(\"uuid\").v4());"
+            },
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "{{accessToken}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "SYSTEM",
+      "items": [
+        {
+          "type": "http",
+          "name": "SYSTEM-ERRORS-GET",
+          "seq": 6,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/errors/2024-11-22-17-26-40-916_poc-st_b0053f10-b99f-4469-bfbf-0cce4aa24e30.log",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-ERRORS-LIST",
+          "seq": 5,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/errors",
+            "method": "GET",
+            "headers": [
+              {
+                "name": "X-CORRELATION-KEY",
+                "value": "{{uuid}}",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-KAFKA-WAKEUP",
+          "seq": 7,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/wakeup",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-RESET-TECH-GAUGE",
+          "seq": 8,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/techGaugeReset",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-SECRET-LIST-VAULT",
+          "seq": 3,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/vault/list",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"key\": \"my_secret\",\n  \"value\": \"my_super_secret_value\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-SECRET-READ-VAULT",
+          "seq": 3,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/vault?secretName=mySecret_1",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "secretName",
+                "value": "mySecret_1",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"key\": \"my_secret\",\n  \"value\": \"my_super_secret_value\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-SECRET-STORE-VAULT",
+          "seq": 2,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/vault",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"key\": \"mySecret_22\",\n  \"value\": \"mysupersecretvalue22\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-VERSIONS",
+          "seq": 4,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/versions",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "SYSTEM-DEPENDENCIES",
+          "seq": 9,
+          "request": {
+            "url": "{{httpScheme}}://{{httpHost}}/{{baseUri}}/system/dependencies",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "basic",
+              "basic": {
+                "username": "{{basicAuthUser}}",
+                "password": "{{basicAuthPassword}}"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "activeEnvironmentUid": "yZW4HO6u9ZYlyOuLgz77L",
+  "environments": [
+    {
+      "variables": [
+        {
+          "name": "httpScheme",
+          "value": "http",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "httpHost",
+          "value": "localhost:8080",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "baseUri",
+          "value": "poc-st/api/v1",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakHttpScheme",
+          "value": "http",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakHost",
+          "value": "localhost:7080",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakRealm",
+          "value": "myrealm",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakUser",
+          "value": "myuser",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakPassword",
+          "value": "mypass",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "keycloakClient",
+          "value": "myclient",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "accessToken",
+          "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJra0I1ZHR1dzh6VWtfNF9scTBOVzB0WmJmcjR5Z09TOEVRQVFfNWFxaV9rIn0.eyJleHAiOjE3MzMwNjg3ODksImlhdCI6MTczMzA2ODQ4OSwianRpIjoiODlmZGFmNzgtZjJhOS00YWY1LWEzZGMtNTk3ZjIzOWExODg1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MDgwL3JlYWxtcy9teXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjlmYjM4ODBiLWU2NjItNDFlYy1hMzQ4LWIzZGQxNWJiYTVkZSIsInR5cCI6IkJlYXJlciIsImF6cCI6Im15Y2xpZW50Iiwic2lkIjoiNTk5N2M3N2YtMjdiYS00YzQ3LWIyZWUtYmJjNDVkMTIzZjFjIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLW15cmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Ik15VXNlciBNeVBhc3MiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJteXVzZXIiLCJnaXZlbl9uYW1lIjoiTXlVc2VyIiwiZmFtaWx5X25hbWUiOiJNeVBhc3MiLCJlbWFpbCI6Im15cGFzc0B0ZXN0LmZyIn0.ThknEzV9S6GjYFOvGOEq1ardZDDqcIa4O0A44ZpesPeJ5cnm8lTLY89ImEZRcEl9_LzpBKkG12SjAqMYDBe7ylIrikjQUTCXQg3X7jFWJsyBiLTICLHYNOduOnCZLJKQfhh4lFtbgh6mC-8I8W1tn7FeK6GGhqtqel8YNiZNq77OnMGgbmb8hu9nCwONFw73-wjOfADXFFkfDAa8la_RKcimhof0vpX7o6lOGj0RPG0OHdPKky-gJBcgY_pFapqeskpRF8AVRx3iTrsuXJDy_vkzg5_5-4Vk4DOjJSKMgzj5AyKYEIlJp9L_zoPHOnOmvh_d6qRi6MGE4UMO_QzAQQ",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "basicAuthUser",
+          "value": "admin",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "basicAuthPassword",
+          "value": "admin",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "baseContext",
+          "value": "poc-st",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "schemaRegistryPort",
+          "value": "8085",
+          "enabled": true,
+          "secret": false,
+          "type": "text"
+        },
+        {
+          "name": "refreshToken",
+          "value": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2ODI5MGEzMS0zMTQyLTRkODYtOWQxMC1jY2NiYWJjNDBkZDMifQ.eyJleHAiOjE3MzMwNzAyODksImlhdCI6MTczMzA2ODQ4OSwianRpIjoiZjAyZmRkMWQtZmE2Yi00ZjE2LWI3ODQtYmU5OTg1MjJlNTI1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo3MDgwL3JlYWxtcy9teXJlYWxtIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo3MDgwL3JlYWxtcy9teXJlYWxtIiwic3ViIjoiOWZiMzg4MGItZTY2Mi00MWVjLWEzNDgtYjNkZDE1YmJhNWRlIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6Im15Y2xpZW50Iiwic2lkIjoiNTk5N2M3N2YtMjdiYS00YzQ3LWIyZWUtYmJjNDVkMTIzZjFjIiwic2NvcGUiOiJvcGVuaWQgcm9sZXMgZW1haWwgYWNyIHByb2ZpbGUgd2ViLW9yaWdpbnMgYmFzaWMifQ.tVE8hcVn9kamPR7flCzTxojkyNCH5aOwq6aVxB8ErikpTlLvcorAlO5auT77vlEjA80-c4yrv0O0zsZZca-1zw",
+          "secret": false,
+          "enabled": true,
+          "type": "text"
+        }
+      ],
+      "name": "LOCALHOST"
+    }
+  ],
+  "brunoConfig": {
+    "version": "1",
+    "name": "UsersManagement",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}

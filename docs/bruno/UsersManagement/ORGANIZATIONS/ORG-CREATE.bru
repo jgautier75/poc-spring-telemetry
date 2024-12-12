@@ -1,0 +1,37 @@
+meta {
+  name: ORG-CREATE
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/bc353698-7c69-494a-8597-1118733cf72f/organizations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {  
+    "commons": {
+      "code": "myorg-01",
+      "label": "MyOrg",
+      "kind": 1,
+      "country": "fr",
+      "status": 1
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

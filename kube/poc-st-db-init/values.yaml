@@ -1,0 +1,23 @@
+# Default values for poc-st-db-init.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: db-migration
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.2.2"
+
+nameOverride: ""
+fullnameOverride: ""
+
+db:
+  host: 192.168.1.15
+  port: 5432
+  pguser: postgres
+  pgpass: posgres
+  name: poc_st
+  dbauser: tec_poc_st_dba
+  dbapass: tec_poc_st_dba
+  appuser: tec_poc_st_app
+  apppass: tec_poc_st_app

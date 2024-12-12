@@ -1,0 +1,16 @@
+meta {
+  name: ACTUATOR
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

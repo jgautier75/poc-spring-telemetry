@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  labels:
+    {{- include "poc-st-webapi.labels" . | nindent 4 }}
+  name: {{ include "poc-st-webapi.fullname" . }}
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      {{- include "poc-st-webapi.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "poc-st-webapi.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.containerPort }}
+          name: {{ include "poc-st-webapi.name" . }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: spring_datasource_url
+              value: {{ .Values.application.datasource | quote }}
+            - name: spring_datasource_username
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: username
+            - name: spring_datasource_password
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: password
+            - name: app_kafka_producer_bootstrap-servers
+              value: {{ .Values.application.kafka.brokers | quote }}
+            - name: app_kafka_schema-registry
+              value: {{ .Values.application.kafka.schema_registry | quote }}
+            - name: app_debugging_forceDebugMode
+              value: {{ .Values.application.force_debug_mode | quote  }}
+            - name: log_path
+              value: "/var/log"
+          livenessProbe:
+            httpGet:
+              path: /poc-st/actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 3
+            failureThreshold: 2
+          readinessProbe:
+            httpGet:
+              path: /poc-st/actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 3
+            failureThreshold: 2
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

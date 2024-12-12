@@ -1,0 +1,32 @@
+meta {
+  name: TENANTS-CREATE
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "code": "myrealm",
+    "label": "myrealm"
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

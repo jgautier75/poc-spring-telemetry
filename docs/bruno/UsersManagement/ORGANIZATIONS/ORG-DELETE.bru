@@ -1,0 +1,24 @@
+meta {
+  name: ORG-DELETE
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations/5bcaf9fb-796f-479c-8163-7909649ed13c
+  body: none
+  auth: bearer
+}
+
+headers {
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

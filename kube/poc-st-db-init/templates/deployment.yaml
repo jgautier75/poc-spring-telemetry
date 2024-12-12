@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "poc-st-db-init.fullname" . }}
+  labels:
+    {{- include "poc-st-db-init.labels" . | nindent 4 }}
+spec:
+  containers:
+    - name: {{ .Chart.Name }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      env:
+        - name: P_PGHOST
+          value: {{ .Values.db.host | quote }}
+        - name: P_PGPORT
+          value: {{ .Values.db.port | quote }}
+        - name: P_PGUSER
+          value: {{ .Values.db.pguser | quote }}
+        - name: P_PGPASS
+          value: {{ .Values.db.pgpass | quote }}
+        - name: P_DBNAME
+          value: {{ .Values.db.name | quote }}
+        - name: P_DBAUSER
+          value: {{ .Values.db.dbauser | quote }}
+        - name: P_DBAPASS
+          value: {{ .Values.db.dbapass | quote }}
+        - name: P_APPUSER
+          value: {{ .Values.db.appuser | quote }}
+        - name: P_APPPASS
+          value: {{ .Values.db.apppass | quote }}    

@@ -1,0 +1,16 @@
+meta {
+  name: ACTUATOR-HEALTH
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseContext}}/actuator/health
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

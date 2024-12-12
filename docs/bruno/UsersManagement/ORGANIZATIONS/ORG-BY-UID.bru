@@ -1,0 +1,37 @@
+meta {
+  name: ORG-BY-UID
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/369eb127-e653-4733-99a6-e3e7bae68971/organizations/899ee3cc-28aa-403b-8062-ef4f2c28201e
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {  
+    "commons": {
+      "code": "RENNES-1",
+      "label": "Rennes Zone 1",
+      "kind": 1,
+      "country": "fr",
+      "status": 1
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

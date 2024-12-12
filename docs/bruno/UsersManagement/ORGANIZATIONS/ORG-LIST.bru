@@ -1,0 +1,31 @@
+meta {
+  name: ORG-LIST
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations?size=10&index=1&orderBy=label
+  body: none
+  auth: bearer
+}
+
+params:query {
+  size: 10
+  index: 1
+  orderBy: label
+  ~filter: (code eq 'ces-01') and (kind eq 'BU')
+}
+
+headers {
+  X-APP-DEBUG: 1
+  X-CORRELATION-KEY: {{uuid}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

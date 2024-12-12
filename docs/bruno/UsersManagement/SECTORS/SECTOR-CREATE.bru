@@ -1,0 +1,34 @@
+meta {
+  name: SECTOR-CREATE
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/25cdae29-7406-4433-8d91-ab882cd00b40/organizations/1c8672b0-768c-412a-8e2a-8a9d2c31e38c/sectors
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "code": "cesaaa",
+    "label": "Cesson Aaa",
+    "root": false,
+    "parentUid": "25122c68-b39d-41a6-b20c-b9469222d129"
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

@@ -1,0 +1,16 @@
+meta {
+  name: SYSTEM-DEPENDENCIES
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/dependencies
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

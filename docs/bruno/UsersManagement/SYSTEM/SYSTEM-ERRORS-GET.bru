@@ -1,0 +1,16 @@
+meta {
+  name: SYSTEM-ERRORS-GET
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/errors/2024-11-22-17-26-40-916_poc-st_b0053f10-b99f-4469-bfbf-0cce4aa24e30.log
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

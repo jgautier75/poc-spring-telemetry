@@ -1,0 +1,40 @@
+meta {
+  name: USERS-UPDATE
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/bc353698-7c69-494a-8597-1118733cf72f/organizations/dcb697fc-b77b-4824-bdb2-72db14351748/users/8eaa211f-7a68-46ea-9526-5c54faffb7a7
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  X-CORRELATION-KEY: {{uuid}}
+  X-APP-DEBUG: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": 1,
+    "credentials": {
+      "email": "alovelace@test.fr",
+      "login": "alovelace"
+    },
+    "commons": {
+      "firstName": "Ada",
+      "lastName": "LOVELACE-PARALLELOGRAM",
+      "middleName": "m"
+    }
+  }
+}
+
+script:pre-request {
+  bru.setVar('uuid', require("uuid").v4());
+}

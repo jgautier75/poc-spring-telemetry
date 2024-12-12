@@ -1,0 +1,16 @@
+meta {
+  name: SYSTEM-VERSIONS
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/versions
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

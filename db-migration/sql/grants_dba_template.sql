@@ -1,0 +1,1 @@
+grant all privileges on schema LSCHEMA to DBAUSER;

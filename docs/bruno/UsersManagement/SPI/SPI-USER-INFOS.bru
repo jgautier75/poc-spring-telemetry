@@ -1,0 +1,21 @@
+meta {
+  name: SPI-USER-INFOS
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/spi/user?field=login&value=nflamel
+  body: none
+  auth: basic
+}
+
+params:query {
+  field: login
+  value: nflamel
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

@@ -1,0 +1,16 @@
+meta {
+  name: SYSTEM-KAFKA-WAKEUP
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/system/wakeup
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{basicAuthUser}}
+  password: {{basicAuthPassword}}
+}

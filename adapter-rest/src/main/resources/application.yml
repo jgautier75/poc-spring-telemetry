@@ -1,0 +1,114 @@
+spring:
+  application:
+    name: poc-st
+  config:
+    import: vault://
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      connection-timeout: 5000
+      read-timeout: 15000
+      token: dev-root-token
+      scheme: http
+      kv:
+        enabled: true
+        backend: secret
+        default-context: poc-spring-telemetry
+  threads:
+    virtual:
+      enabled: false
+  main:
+    banner-mode: console
+  liquibase:
+    enabled: false
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+    use-code-as-default-message: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuerUri: http://localhost:7080/realms/myrealm
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/poc_st
+    username: tec_poc_st_app
+    password: tec_poc_st_app
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      # maximum number of milliseconds that a client (that's you) will wait for a connection : default 30000; not less than 250 ms
+      connectionTimeout: 1000
+      # maximum amount of time that a connection is allowed to sit idle in the pool : default 600000 (10mn)
+      idleTimeout: 600000
+      #  maximum lifetime of a connection in the pool : Default: 1800000 (30 minutes), set to 5mn
+      maxLifetime: 300000
+      # maximum size that the pool is allowed to reach, including both idle and in-use connections.  Default: 10
+      maximumPoolSize: 10
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,metrics,prometheus'
+  endpoint:
+    health:
+      enabled: true
+      probes:
+        enabled: true
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+    defaults:
+      enabled: true
+  tracing:
+    sampling:
+      # Trace 100% of requests
+      probability: 1.0
+
+server:
+  servlet:
+    context-path: /poc-st/
+  port: 8080
+
+logging:
+  file:
+    path: .
+
+app:
+  config:
+    moduleName: poc-st
+    errorPath: "./errors"
+    otlp-endpoint: http://192.168.1.15:4317
+    otlp-push-frequency: 5
+  debugging:
+    forceDebugMode: "false"
+    headerName: "X-APP-DEBUG"
+    debugValue: "1"
+  security:
+    userName: admin
+    pass: admin
+  kafka:
+    consumer:
+      auditEventsGroupId: "kproto-grp"
+    producer:
+      bootstrap-servers:
+        - 192.168.1.15:9092
+      schema-registry: "http://192.168.1.15:8085"
+      acks: all
+      client-id: "poc-st"
+      retries: 100
+      topicNameAuditEvents: "audit_events"
