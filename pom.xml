@@ -250,5 +250,5 @@
         <module>crypto</module>
 		<module>spi-kafka</module>
 		<module>adapter-kafka</module>
-	</modules>
+    </modules>
 </project>

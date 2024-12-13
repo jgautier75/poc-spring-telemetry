@@ -17,7 +17,7 @@ db:
   pguser: postgres
   pgpass: posgres
   name: poc_st
-  dbauser: tec_poc_st_dba
-  dbapass: tec_poc_st_dba
-  appuser: tec_poc_st_app
-  apppass: tec_poc_st_app
+  dbauser: poc_st_dba
+  dbapass: poc_st_dba
+  appuser: poc_st_app
+  apppass: poc_st_app

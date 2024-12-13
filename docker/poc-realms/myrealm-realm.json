@@ -1290,8 +1290,8 @@
     "org.keycloak.storage.UserStorageProvider": [
       {
         "id": "5dc920ea-8dbf-431b-b553-1302dd66336c",
-        "name": "poc-st-spi",
-        "providerId": "poc-st-spi",
+        "name": "federation-spi",
+        "providerId": "federation-spi",
         "subComponents": {},
         "config": {
           "cachePolicy": [

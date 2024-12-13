@@ -39,8 +39,8 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://localhost:5432/poc_st
-    username: tec_poc_st_app
-    password: tec_poc_st_app
+    username: poc_st_app
+    password: poc_st_app
     hikari:
       poolName: Hikari
       auto-commit: false

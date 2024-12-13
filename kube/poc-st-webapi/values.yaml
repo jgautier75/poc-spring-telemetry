@@ -99,8 +99,8 @@ affinity: {}
 
 application:
   datasource: jdbc:postgresql://192.168.1.15:5432/poc_st
-  db_user: tec_poc_st_app
-  db_pass: tec_poc_st_app
+  db_user: poc_st_app
+  db_pass: poc_st_app
   force_debug_mode: "false"
   kafka:
     brokers: 192.168.1.15:9092

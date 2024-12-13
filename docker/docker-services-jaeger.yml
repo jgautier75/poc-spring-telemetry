@@ -1,25 +1,25 @@
 version: "3.1"
 services:
-  jaeger:
+  poc-st-jaeger:
     image: jaegertracing/all-in-one:1.62.0
     ports:
       - "16686:16686" # the jaeger UI 
       - "14250:14250" # the OpenTelemetry collector grpc 
     environment:
       - COLLECTOR_OTLP_ENABLED=true
-  prometheus:
+  poc-st-prometheus:
     container_name: prometheus
     image: prom/prometheus:v2.54.1
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-  grafana:
+  poc-st-grafana:
     container_name: grafana
     image: grafana/grafana:11.2.2
     ports:
       - "3000:3000"
-  otel-collector:
+  poc-st-otel-collector:
     image: otel/opentelemetry-collector-contrib:0.106.1
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
@@ -33,5 +33,5 @@ services:
       - "4318:4318"
       - "55679:55679" # zpages extension
     depends_on:
-      - jaeger
-      - prometheus
+      - poc-st-jaeger
+      - poc-st-prometheus

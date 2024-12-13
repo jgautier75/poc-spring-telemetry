@@ -1,28 +1,28 @@
 version: "3.1"
 services:
-  openbao:
+  poc-st-openbao:
     image: quay.io/openbao/openbao:2.0.3
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       BAO_SKIP_VERIFY: "true"
     volumes:
-      - "openbao:/openbao/config"
+      - "poc-st-openbao:/openbao/config"
     ports:
       - 8200:8200
-  db:
+  poc-st-app-storage:
     image: postgres:17.1
     volumes:
-      - "pgdata:/var/lib/postgresql/data/pgdata"
+      - "poc-st-app-pg-data:/var/lib/postgresql/data/pgdata"
     restart: always
     environment:
       POSTGRES_PASSWORD: posgres
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
-  keycloak-storage:
+  poc-st-keycloak-storage:
     image: postgres:17.1
     volumes:
-      - "postgres_data:/var/lib/postgresql/data"
+      - "poc-st-keycloak-pg-data:/var/lib/postgresql/data"
     environment:
       POSTGRES_DB: keycloak_db
       POSTGRES_USER: keycloak
@@ -30,10 +30,10 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5433:5433
-  keycloak:
+  poc-st-keycloak:
     image: quay.io/keycloak/keycloak:26.0
     depends_on:
-      - keycloak-storage
+      - poc-st-keycloak-storage
     environment:
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
@@ -43,7 +43,7 @@ services:
       KC_HEALTH_ENABLED: "false"
       KC_LOG_LEVEL: info
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak-storage/keycloak_db
+      KC_DB_URL: jdbc:postgresql://poc-st-keycloak-storage/keycloak_db
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
       KC_METRICS_ENABLED: "true"
@@ -53,13 +53,13 @@ services:
       federation_user: admin
       federation_pass: admin
       kafka_consumer_topic: audit_events
-      kafka_consumer_bootstrap_servers: "kafka:19092"
+      kafka_consumer_bootstrap_servers: "poc-st-kafka:19092"
       kafka_consumer_group_id: keycloak-kafka-consumer
-      kafka_consumer_schema_registry_url: "http://schema-registry:8085"
+      kafka_consumer_schema_registry_url: "http://poc-st-schema-registry:8085"
     volumes:
-      - ./realms:/opt/keycloak/data/import
-      - ./providers:/opt/keycloak/providers
-    #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=INFO"]
+      - ./poc-realms:/opt/keycloak/data/import
+      - ./poc-providers:/opt/keycloak/providers
+    #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG"]
     command: ["start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
     ports:
       - "7080:7080"
@@ -71,7 +71,7 @@ services:
       #interval: 15s
       #timeout: 2s
       #retries: 15
-  akhq:
+  poc-st-akhq:
     image: tchiotludo/akhq:0.25.1
     restart: unless-stopped
     environment:
@@ -80,18 +80,18 @@ services:
           connections:
             docker-kafka-server:
               properties:
-                bootstrap.servers: "kafka:19092"
+                bootstrap.servers: "poc-st-kafka:19092"
               schema-registry:
-                url: "http://schema-registry:8085"
+                url: "http://poc-st-schema-registry:8085"
               connect:
                 - name: "connect"
                   url: "http://connect:8083"
     ports:
       - 8086:8080
     links:
-      - kafka
-      - schema-registry
-  zookeeper:
+      - poc-st-kafka
+      - poc-st-schema-registry
+  poc-st-zookeeper:
     image: confluentinc/cp-zookeeper:7.7.1
     restart: unless-stopped
     ports:
@@ -100,14 +100,14 @@ services:
       - "3888:3888"
       - "8087:8080"
     volumes:
-      - zookeeper-data:/var/lib/zookeeper/data:Z
-      - zookeeper-log:/var/lib/zookeeper/log:Z
+      - poc-zookeeper-data:/var/lib/zookeeper/data:Z
+      - poc-zookeeper-log:/var/lib/zookeeper/log:Z
     environment:
       ZOOKEEPER_CLIENT_PORT: "2181"
       ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
       ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_SERVERS: zookeeper:2888:3888
-  kafka:
+      ZOOKEEPER_SERVERS: poc-st-zookeeper:2888:3888
+  poc-st-kafka:
     image: confluentinc/cp-kafka:7.7.1
     restart: unless-stopped
     ports:
@@ -115,12 +115,12 @@ services:
       - "29092:29092"
       - "9999:9999"
     volumes:
-      - kafka-data:/var/lib/kafka/data:Z
+      - poc-st-kafka-data:/var/lib/kafka/data:Z
     environment:
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://poc-st-kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ZOOKEEPER_CONNECT: "poc-st-zookeeper:2181"
       KAFKA_BROKER_ID: 0
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -130,32 +130,53 @@ services:
       KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server=localhost:9092", "--list" ]
+      interval: 10s
+      retries: 20
     links:
-      - zookeeper
-  schema-registry:
+      - poc-st-zookeeper
+  poc-st-init-kafka:
+    image: confluentinc/cp-kafka:7.7.1
+    depends_on:
+      - poc-st-kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server poc-st-kafka:19092 --list
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server poc-st-kafka:19092 --create --if-not-exists --topic audit_events --replication-factor 1 --partitions 2
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server poc-st-kafka:19092 --list
+      "
+  poc-st-schema-registry:
     image: confluentinc/cp-schema-registry:7.7.1
     restart: unless-stopped
     ports:
       - "8085:8085"
     depends_on:
-      - kafka
+      - poc-st-kafka
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:19092"
-      SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://poc-st-kafka:19092"
+      SCHEMA_REGISTRY_HOST_NAME: "poc-st-schema-registry"
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
 volumes:
-  postgres_data:
+  poc-st-app-pg-data:
     driver: local
-  pgdata:
+  poc-st-keycloak-pg-data:
     driver: local
-  zookeeper-data:
+  poc-zookeeper-data:
     driver: local
-  zookeeper-log:
+  poc-zookeeper-log:
     driver: local
-  kafka-data:
+  poc-st-kafka-data:
     driver: local
-  openbao:
+  poc-st-openbao:
     driver: local
-  realms:
+  poc-realms:
+    driver: local
+  poc-providers:
     driver: local
