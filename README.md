@@ -514,9 +514,11 @@ Default credentials:
 * Administrator: admin/admin
 * User: myuser/mypass
 
-Activity diagram for authentication with Keycloak uwsing a SPI API.
+Activity diagram for authentication with Keycloak using a SPI federation API.
 
 ![](docs/images/UserAuth.png)
+
+### User provider SPI (spi-user-storage)
 
 SPI API on Keycloak side is a jar with a class implementing at least:
 
@@ -524,6 +526,29 @@ SPI API on Keycloak side is a jar with a class implementing at least:
 - org.keycloak.storage.user.UserLookupProvider;
 
 In this jar, declare a file in /src/main/resources/META-INF/services/org.keycloak.storage.UserStorageProviderFactory containing implementation class.
+
+### Kafka consumer SPI (spi-kafka)
+
+This module deploys a kafka consumer listening to audit_events topic in order to update users firstName, lastName & email
+
+### Docker image (optimized)
+
+For production use, first build an optimized version of keycloak with Dockerfile located in docker/keycloak-image:
+
+```bash
+docker build . -t keycloak-with-spi:1.0.0 --build-arg="SPI_FEDERATION_FILE=spi-user-storage.jar" --build-arg="SPI_KAFKA_FILE=spi-kafka.jar"
+```
+
+Then to run keycloak with the following variables:
+
+
+* KC_SPI_TRUSTSTORE_FILE_FILE: truststore file 
+* KC_SPI_TRUSTSTORE_FILE_PASSWORD: truststore password 
+* KC_PROXY = edge
+
+```bash
+/opt/keycloak/bin/kc.sh start --optimized
+```
 
 ## Minikube:
 
