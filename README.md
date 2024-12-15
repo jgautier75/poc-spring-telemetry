@@ -1,6 +1,4 @@
-# orm-usm
-
-Organizations &amp; Users Management
+# Users Management
 
 [Multi-tenant](https://en.wikipedia.org/wiki/Multitenancy) designed spring-boot application for users management.
 
@@ -125,8 +123,8 @@ Database schema management relies on liquibase, to setup:
 
 - Creates database
 - Creates accounts:
-    - tec_orm_usm_dba: database account with DDL authorizations (Data Definition Language)
-    - tec_orm_usm_app: database account with only DML authorizations (Data Modeling Language). This account is used by spring boot application since applicative accounts must not have the rights to alter database schema
+    - poc_st_dba: database account with DDL authorizations (Data Definition Language)
+    - poc_st_spp: database account with only DML authorizations (Data Modeling Language). This account is used by spring boot application since applicative accounts must not have the rights to alter database schema
 
 2. Package project
 
@@ -139,7 +137,7 @@ mvn clean package install -DskipTests
 4. Perform Liquibase update manually:
 
 ```java
-java -jar db-migration.jar --classpath=db-migration.jar --driver=org.postgresql.Driver --url="jdbc:postgresql://localhost:5432/orm_usm" --changeLogFile="postgresql/changelogs.xml" --username=tec_orm_usm_dba --password=tec_orm_usm_dba --logLevel=info --contexts="all,grants" update
+java -jar db-migration.jar --classpath=db-migration.jar --driver=org.postgresql.Driver --url="jdbc:postgresql://localhost:5432/poc_st" --changeLogFile="postgresql/changelogs.xml" --username=poc_st_dba --password=poc_st_dba --logLevel=info --contexts="all,grants" update
 ```
 
 #### Docker image
@@ -214,7 +212,7 @@ docker run -it --env P_PGHOST=192.168.1.15 --env P_PGPORT=5432 --env P_PGUSER=po
 
 ## OpenAPI
 
-REST endpoints OpenApi specifications: docs/orm_usm_openapi.yml
+REST endpoints OpenApi specifications: docs/poc_st_openapi.yml
 
 Transform OpenAPI spec to html
 
@@ -225,7 +223,7 @@ npm install @redocly/cli -g
 
 Transform to HTML:
 ```bash
-redocly build-docs ../orm_usm_openapi.yml
+redocly build-docs ../poc_st_openapi.yml
 ```
 
 ## Audit events
@@ -420,7 +418,7 @@ Update webapi/Dockerfile accordingly in jlinks section
 Building Docker image:
 
 ```sh
-docker build . -t orm-usm-webapi:1.0.0 --build-arg="JAR_FILE=target/webapi-1.0.0-SNAPSHOT.jar"
+docker build . -t poc-st-webapi:1.0.0 --build-arg="JAR_FILE=target/webapi-1.0.0-SNAPSHOT.jar"
 ```
 
 ## Native image with GraalVM
@@ -561,13 +559,13 @@ minikube image ls --format table
 
 Please refer to Docker > Database setup to build image.
 
-In kube/orm-usm-bd-init/values.yaml, ensure parameters are the right ones.
+In kube/poc-st-db-init/values.yaml, ensure parameters are the right ones.
 
 Note: db-migration scripts are idempotent, so if database and/or accounts already exist, they are not re-created.
 
 When image db-migration:x.y.z is ready, run the folling helm command in kube directory:
 ```sh
-helm template orm-usm-bd-init orm-usm-bd-init | kubectl apply -f -
+helm template pos-st-db-init poc-st-db-init | kubectl apply -f -
 ```
 
 Command above will deploy a pod in kubernetes, this pod performs liquibase update.
@@ -577,26 +575,26 @@ Command above will deploy a pod in kubernetes, this pod performs liquibase updat
 Either save image and load in minikube:
 
 ```sh
-docker save 4ed63bb1fddb --output orm-usm-webapi.tar
-minikube image load orm-usm-webapi.tar
+docker save 4ed63bb1fddb --output poc-st-webapi.tar
+minikube image load poc-st-webapi.tar
 ```
 
 Or build image in minikube:
 
 ```sh
-minikube image build . -t orm-usm-webapi:1.0.0 --build-env="JAR_FILE=target/webapi-1.0.0-SNAPSHOT.jar"
+minikube image build . -t poc-st-webapi:1.0.0 --build-env="JAR_FILE=target/webapi-1.0.0-SNAPSHOT.jar"
 ```
 
 Templating with helm and deploying:
 
 ```sh
-helm template orm-usm-webapi orm-usm-webapi | kubectl apply -f -
+helm template poc-st-webapi poc-st-webapi | kubectl apply -f -
 ```
 
 Opening service endpoint
 
 ```sh
-minikube service orm-usm-webapi
+minikube service poc-st-webapi
 ```
 
 ## OpenTelemetry
@@ -658,7 +656,7 @@ No additional dependency required in maven project.
 Launch application with the following arguments:
 
 ```sh
-java -javaagent:/home/jgautier/git-data/opentelemetry-javaagent.jar -Dotel.service.name=orm-usm-webapi -Dotel.traces.exporter=jaeger -Dotel.exporter.otlp.protocol=http/protobuf -Dotel.javaagent.debug=true -Dotel.metrics.exporter=otlp -Dotel.logs.exporter=none -jar webapi-1.0.0-SNAPSHOT.jar
+java -javaagent:/home/jgautier/git-data/opentelemetry-javaagent.jar -Dotel.service.name=poc-st-webapi -Dotel.traces.exporter=jaeger -Dotel.exporter.otlp.protocol=http/protobuf -Dotel.javaagent.debug=true -Dotel.metrics.exporter=otlp -Dotel.logs.exporter=none -jar webapi-1.0.0-SNAPSHOT.jar
 ```
 
 Update -Dotel.javaagent.debug=true argument to disable opentelementry java agent debug mode.
@@ -668,15 +666,15 @@ NB: If you wanna launch application with java agent instrumentation, ensure to c
 OpenTelemetry spans logs:
 
 ```sh
-otel.javaagent 2024-01-17 22:36:06:457 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT orm_usm.tenants' : 62dd1652c7fe3942a5c33403e84f0f44 00c752df75943a17 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=tenants, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select id,uid,code,label from tenants where (uid=?), server.port=5432}, capacity=128, totalAddedValues=11}
-[otel.javaagent 2024-01-17 22:36:06:460 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT orm_usm.organizations' : 62dd1652c7fe3942a5c33403e84f0f44 edb8737ec0cc3856 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=organizations, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select id from organizations where code=?, server.port=5432}, capacity=128, totalAddedValues=11}
-[otel.javaagent 2024-01-17 22:36:06:463 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT orm_usm.organizations' : 62dd1652c7fe3942a5c33403e84f0f44 ca323db9cd220da5 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=organizations, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into organizations(tenant_id,uid,code,label,kind,country,status) values (?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
-[otel.javaagent 2024-01-17 22:36:06:469 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT orm_usm.events' : 62dd1652c7fe3942a5c33403e84f0f44 fb12855a3d92f909 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=events, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into events(uid,created_at,last_updated_at,target,object_uid,action,status,payload) values(?,?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
-[otel.javaagent 2024-01-17 22:36:06:470 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT orm_usm.sectors' : 62dd1652c7fe3942a5c33403e84f0f44 8021aa0286c870ad CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=sectors, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into sectors(uid,tenant_id,org_id,label,code,root,parent_id) values(?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
+otel.javaagent 2024-01-17 22:36:06:457 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT poc_st.tenants' : 62dd1652c7fe3942a5c33403e84f0f44 00c752df75943a17 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=tenants, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select id,uid,code,label from tenants where (uid=?), server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:460 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT poc_st.organizations' : 62dd1652c7fe3942a5c33403e84f0f44 edb8737ec0cc3856 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=organizations, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select id from organizations where code=?, server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:463 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT poc_st.organizations' : 62dd1652c7fe3942a5c33403e84f0f44 ca323db9cd220da5 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=organizations, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into organizations(tenant_id,uid,code,label,kind,country,status) values (?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:469 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT poc_st.events' : 62dd1652c7fe3942a5c33403e84f0f44 fb12855a3d92f909 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=events, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into events(uid,created_at,last_updated_at,target,object_uid,action,status,payload) values(?,?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:470 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT poc_st.sectors' : 62dd1652c7fe3942a5c33403e84f0f44 8021aa0286c870ad CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=sectors, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into sectors(uid,tenant_id,org_id,label,code,root,parent_id) values(?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
 2024-01-17 22:36:06,471 INFO  [http-nio-8080-exec-1] - com.acme.users.mgt.infra.services.impl.sectors.SectorsInfraServicecreateSector: Created sector with uid [8939cdfb-7543-46bb-8626-a03d3cf345f2] on tenant [1] and organization [5]
-[otel.javaagent 2024-01-17 22:36:06:472 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT orm_usm.events' : 62dd1652c7fe3942a5c33403e84f0f44 f50362fdb0ee9610 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=events, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into events(uid,created_at,last_updated_at,target,object_uid,action,status,payload) values(?,?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:472 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'INSERT poc_st.events' : 62dd1652c7fe3942a5c33403e84f0f44 f50362fdb0ee9610 CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=INSERT, db.sql.table=events, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=insert into events(uid,created_at,last_updated_at,target,object_uid,action,status,payload) values(?,?,?,?,?,?,?,?), server.port=5432}, capacity=128, totalAddedValues=11}
 2024-01-17 22:36:06,483 DEBUG [http-nio-8080-exec-1] - com.acme.users.mgt.events.kafka.handlers.EventBusHandler: Handling wakeup message
-[otel.javaagent 2024-01-17 22:36:06:485 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT orm_usm.events' : 62dd1652c7fe3942a5c33403e84f0f44 7d3459dbd94ab94c CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=events, db.name=orm_usm, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=tec_orm_usm_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select uid,created_at,last_updated_at,target,object_uid,action,status,payload from events where (status=?) order by created_at ASC, server.port=5432}, capacity=128, totalAddedValues=11}
+[otel.javaagent 2024-01-17 22:36:06:485 +0100] [http-nio-8080-exec-1] INFO io.opentelemetry.exporter.logging.LoggingSpanExporter - 'SELECT poc_st.events' : 62dd1652c7fe3942a5c33403e84f0f44 7d3459dbd94ab94c CLIENT [tracer: io.opentelemetry.jdbc:2.0.0-alpha] AttributesMap{data={db.operation=SELECT, db.sql.table=events, db.name=poc_st, thread.name=http-nio-8080-exec-1, thread.id=49, db.user=poc_st_app, db.connection_string=postgresql://localhost:5432, server.address=localhost, db.system=postgresql, db.statement=select uid,created_at,last_updated_at,target,object_uid,action,status,payload from events where (status=?) order by created_at ASC, server.port=5432}, capacity=128, totalAddedValues=11}
 ```
 
 

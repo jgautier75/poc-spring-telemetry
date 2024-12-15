@@ -153,7 +153,7 @@ class AppLoadingTest {
     private Callable<Boolean> actuatorHttpStatus200() throws UnknownHostException {
         final AtomicInteger httpStatus = new AtomicInteger();
         String hostName = InetAddress.getLocalHost().getHostName();
-        String actuatorUrl = "http://" + hostName + ":" + randomServerPort + "/orm-usm/actuator";
+        String actuatorUrl = "http://" + hostName + ":" + randomServerPort + "/poc-st/actuator";
         HttpHost targetHost = new HttpHost("http", hostName, randomServerPort);
         AuthScope authScope = new AuthScope(targetHost);
         basicAuthProvider.setCredentials(authScope, new UsernamePasswordCredentials(securityProperties.getUserName(), securityProperties.getPass().toCharArray()));
