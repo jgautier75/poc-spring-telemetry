@@ -148,3 +148,4 @@ replay_pid*
 /search-filter/target/classes/Filter.tokens
 /search-filter/target/classes/FilterLexer.tokens
 /adapter-kafka.iml
+/domain-services/target/classes/dependencies.properties
