@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <appender name="Console"
+        class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="Console" />
+    </root>
+    <logger name="org.springframework" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.springframework.test.context.transaction" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.testcontainers" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="liquibase" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="com.lacroix" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="springfox" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.jboss" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.hibernate" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.apache" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="com.zaxxer.hikari" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="ch.qos" level="off" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+</configuration>

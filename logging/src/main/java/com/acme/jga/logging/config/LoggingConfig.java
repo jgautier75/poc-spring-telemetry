@@ -1,5 +1,7 @@
 package com.acme.jga.logging.config;
 
+import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.impl.LogService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -13,4 +15,10 @@ public class LoggingConfig {
         messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;
     }
+
+    @Bean
+    public ILogService loggingService(ResourceBundleMessageSource messageSource){
+        return new LogService(messageSource);
+    }
+
 }

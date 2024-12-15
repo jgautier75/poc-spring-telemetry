@@ -66,11 +66,11 @@ services:
       - "7443:7443"
       - "9000:9000"
       #- "8787:8787"
-    #healthcheck:
-      #test: [ "CMD", "curl", "-f", "http://localhost:7080/health/ready" ]
-      #interval: 15s
-      #timeout: 2s
-      #retries: 15
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7080/health/ready" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
   poc-st-akhq:
     image: tchiotludo/akhq:0.25.1
     restart: unless-stopped
@@ -179,4 +179,6 @@ volumes:
   poc-realms:
     driver: local
   poc-providers:
+    driver: local
+  poc-keycloak-scripts:
     driver: local

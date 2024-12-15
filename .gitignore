@@ -132,3 +132,9 @@ replay_pid*
 /validation/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
 /validation/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
 /spi-user-storage/dependency-reduced-pom.xml
+/adapter-rest/target/test-classes/application-test.yml
+/adapter-rest/target/test-classes/keycloak_certs.json
+/adapter-rest/target/test-classes/keycloak_oidc_config.json
+/adapter-rest/target/test-classes/logback-test.xml
+/infrastructure/target/test-classes/application-test.yml
+/infrastructure/target/test-classes/logback-test.xml

@@ -1287,22 +1287,6 @@
         "allow-default-scopes" : [ "true" ]
       }
     } ],
-    "org.keycloak.storage.UserStorageProvider": [
-      {
-        "id": "5dc920ea-8dbf-431b-b553-1302dd66336c",
-        "name": "federation-spi",
-        "providerId": "federation-spi",
-        "subComponents": {},
-        "config": {
-          "cachePolicy": [
-            "NO_CACHE"
-          ],
-          "enabled": [
-            "true"
-          ]
-        }
-      }
-    ],
     "org.keycloak.keys.KeyProvider" : [ {
       "id" : "a2c14cc0-f023-40eb-adab-2370b00a744d",
       "name" : "aes-generated",
