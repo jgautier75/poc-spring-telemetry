@@ -3,7 +3,7 @@ servers:
   - url: "http://localhost:8080/poc-st"
     description: "Dev server"
 info:
-  title: Organizations & Users Management
+  title: Users Management
   version: '1.0'
 components:
   securitySchemes:
