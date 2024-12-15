@@ -1,6 +1,7 @@
 package com.acme.jga.infra.events;
 
 import com.acme.jga.domain.model.events.protobuf.Event;
+import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.events.v1.AuditEvent;
 import com.acme.jga.domain.model.events.v1.EventStatus;
 import com.acme.jga.infra.config.KafkaProducerConfig;
@@ -98,13 +99,25 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
             auditEventMessageBuilder.setAuthor(Event.AuditAuthor.newBuilder().setName(auditEvent.getAuthor().getName()).setUid(auditEvent.getAuthor().getUid()).build());
         }
         convertScope(auditEvent, auditEventMessageBuilder);
-        ofNullableList(auditEvent.getChanges()).forEach(auditChange -> auditEventMessageBuilder.addChanges(
-                Event.AuditChange.newBuilder()
-                        .setFrom(auditChange.getFrom())
-                        .setObject(auditChange.getObject())
-                        .setTo(auditChange.getTo())
-                        .setOperation(auditChange.getOperation().name()).build()));
+        ofNullableList(auditEvent.getChanges()).forEach(EventBusHandler::convertAuditChange);
         return auditEventMessageBuilder.build();
+    }
+
+    private static Event.AuditChange convertAuditChange(AuditChange auditChange) {
+        Event.AuditChange.Builder builder = Event.AuditChange.newBuilder();
+        if (auditChange.getFrom() != null) {
+            builder.setFrom(auditChange.getFrom());
+        }
+        if (auditChange.getTo() != null) {
+            builder.setTo(auditChange.getTo());
+        }
+        if (auditChange.getObject() != null) {
+            builder.setObject(auditChange.getObject());
+        }
+        if (auditChange.getOperation() != null) {
+            builder.setOperation(auditChange.getOperation().name());
+        }
+        return builder.build();
     }
 
     private static void convertScope(AuditEvent auditEvent, Event.AuditEventMessage.Builder auditEventMessageBuilder) {

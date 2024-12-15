@@ -2,15 +2,15 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: otel-collector:4317
+        endpoint: poc-st-otel-collector:4317
   otlp/2:
     protocols:
       grpc:
-        endpoint: otel-collector:55679
+        endpoint: poc-st-otel-collector:55679
 
 exporters:
   otlp/jaeger: # Jaeger supports OTLP directly. The default port for OTLP/gRPC is 4317
-    endpoint: http://jaeger:4317
+    endpoint: http://poc-st-jaeger:4317
     tls:
       insecure: true
   logging:
