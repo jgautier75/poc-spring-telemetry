@@ -138,3 +138,13 @@ replay_pid*
 /adapter-rest/target/test-classes/logback-test.xml
 /infrastructure/target/test-classes/application-test.yml
 /infrastructure/target/test-classes/logback-test.xml
+/infrastructure/target/classes/db/sql/events.properties
+/infrastructure/target/classes/db/sql/organizations.properties
+/infrastructure/target/classes/db/sql/sectors.properties
+/infrastructure/target/classes/db/sql/tenants.properties
+/infrastructure/target/classes/db/sql/users.properties
+/search-filter/target/classes/com/acme/jga/search/filtering/Filter.interp
+/search-filter/target/classes/com/acme/jga/search/filtering/FilterLexer.interp
+/search-filter/target/classes/Filter.tokens
+/search-filter/target/classes/FilterLexer.tokens
+/adapter-kafka.iml
