@@ -4,7 +4,7 @@ services:
     image: quay.io/openbao/openbao:2.0.3
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
-      BAO_SKIP_VERIFY: "true"
+      OPENBAO_SKIP_VERIFY: "true"
     volumes:
       - "poc-st-openbao:/openbao/config"
     ports:

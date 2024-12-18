@@ -42,6 +42,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      */
     public void startKafkaConsumer() {
         // Start kafka consumer in a separate thread
+        // Consumer and polling must be defined in the same thread
         new Thread(() -> {
             LOGGER.debug("Start kafka consumer, lookup JpaConnectionProvider");
             this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());

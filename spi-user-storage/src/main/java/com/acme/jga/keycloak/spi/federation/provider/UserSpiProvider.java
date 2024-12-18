@@ -96,7 +96,7 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
                 initCredentials(realmModel, userInfosDto.get(), userLocal);
             }
         }
-        if (userLocal != null) {
+        if (userLocal != null && userInfosDto.isPresent()) {
             return new UserAdapter(this.keycloakSession, realmModel, storageProviderModel, userInfosDto.get(), userLocal, this.storageProviderModel.getId());
         } else {
             return null;
@@ -142,7 +142,6 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      */
     private Optional<UserInfosDto> fetchUser(FederationConstants.SearchFilterField searchField, String searchValue) {
         try (HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(5)).build();) {
-            UserInfosDto userInfosDto;
             HttpRequest byUserIdReq = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(buildSearchFilterURI(searchField, searchValue)))
@@ -151,6 +150,7 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
             HttpResponse<String> response = httpClient.send(byUserIdReq, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
             String responseBody = response.body();
+            UserInfosDto userInfosDto;
             if (statusCode == HttpURLConnection.HTTP_OK) {
                 userInfosDto = this.objectMapper.readValue(responseBody, UserInfosDto.class);
             } else if (statusCode == HttpURLConnection.HTTP_NO_CONTENT) {

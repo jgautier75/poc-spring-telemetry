@@ -53,6 +53,13 @@ By default OpenBao is started id dev mode, "dev-root-token" is used in configura
 
 Use Bruno collection to add/list secrets.
 
+```bash
+export VAULT_ADDR='http://127.0.0.1:8200'
+vault login
+vault kv get -mount=secret poc-st
+vault kv put -mount=secret poc-st foo=bar
+```
+
 ## OpenTelemetry
 
 Quote from OpenTelemetry website: "OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces)"
