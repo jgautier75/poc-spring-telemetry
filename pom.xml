@@ -9,15 +9,17 @@
 	<properties>
 		<java.version>21</java.version>
 		<lombok-version>1.18.36</lombok-version>
-		<spring-cloud-vault-version>4.1.4</spring-cloud-vault-version>
+		<spring-cloud-vault-version>4.2.0</spring-cloud-vault-version>
 		<spring-value-version>3.1.2</spring-value-version>
 		<keycloak-version>26.0.6</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
+		<protobuf-version>3.25.5</protobuf-version>
+		<kafka-main-version>7.7.1</kafka-main-version>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.6</version>
+		<version>3.4.1</version>
 		<relativePath />
 	</parent>
 
@@ -83,14 +85,14 @@
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-bom</artifactId>
-				<version>1.44.1</version>
+				<version>1.45.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.11.3</version>
+				<version>5.11.4</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -122,7 +124,7 @@
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-sdk</artifactId>
-				<version>1.44.1</version>
+				<version>1.45.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -195,17 +197,17 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.25.5</version>
+			<version>${protobuf-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
 			<artifactId>kafka-protobuf-serializer</artifactId>
-			<version>7.7.1</version>
+			<version>${kafka-main-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
 			<artifactId>kafka-schema-serializer</artifactId>
-			<version>7.7.1</version>
+			<version>7.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
