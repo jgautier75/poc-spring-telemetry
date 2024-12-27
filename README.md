@@ -21,20 +21,19 @@ Other modules:
 - kube            : Helm chart dor datrabase init and web api deployment
 - logging         : Transverse logging service
 - opentelemetry   : OpenTelemetry wrapper
-- search-filter   : ANTLR4 for filtering
+- search-filter   : ANTLR4 for search filtering
 - shared-utils    : Request correlation id (ThreadLocal), Streams util
 - spi-kafka       : Keycloak Spi, a kafka consumer for audit events in order to update user's basic infos)
 - spi-user-storage: Keycloak Spi, a keycloak user provider coupled with users management's REST api
 - spring-native   : Reflect configuration file required for application compilation in native format
 - validation      : Abstract validation engine (payload validation)
--
 
 ## Technical stack
 
 Standard REST application relying on:
 
 - Java 21 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
-- Sprint boot (3.3.x)
+- Sprint boot (3.4.x)
 - PostgreSQL (17.x) for persistence
 - Liquibase for rdbms schema versions management
 - Spring JDBC for persistence (No f****** ORM)
@@ -410,22 +409,22 @@ Once project bas been compiled, run scripts/get-spring-boot-modules.sh:
 Parameters:
 
 - 1: Full path to spring-boot fat jar
-- 2: Jdk version (17)
+- 2: Jdk version (21)
 - 3: Temp directory for spring-boot app extraction
 - 4: Automatic modules: list of automatic modules, typically legacy libraries (multiple values separator is the comma)
 
 ```sh
-./get-springboot-modules.sh webapi/target/webapi.jar 17 webapi/target/tmp "snakeyaml-1.28.jar,jakarta.annotation-api-1.3.5.jar,slf4j-api-1.7.32.jar"
+./get-springboot-modules.sh adapter-rest/target/adapter-rest-1.0.0-SNAPSHOT.jar 21 adapter-rest/target/tmp ""
 ```
 
-Update webapi/Dockerfile accordingly in jlinks section
+Update adapter-rest/Dockerfile accordingly in jlinks section
 
 `RUN jlink --compress=2 --no-header-files --no-man-pages --add-modules java.base,java.desktop,java.instrument,java.net.http,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql.rowset,jdk.compiler,jdk.jfr,jdk.management,jdk.unsupported,jdk.crypto.ec  --output /app/customjre`
 
 Building Docker image:
 
 ```sh
-docker build . -t poc-st-webapi:1.0.0 --build-arg="JAR_FILE=target/webapi-1.0.0-SNAPSHOT.jar"
+docker build . -t adapter-rest:1.0.0 --build-arg="JAR_FILE=target/adapter-rest-1.0.0-SNAPSHOT.jar"
 ```
 
 ## Native image with GraalVM
@@ -444,7 +443,7 @@ To build a native image run the following command with "native" profile:
 mvn clean package -DskipTests -Pnative
 ```
 
-On a computer with an i7 and 16 Db of RAM, building takes around 6 minutes
+On a computer with an i7 and 16 Gb of RAM, building takes around 6 minutes
 
 Command above relies on https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
 
@@ -809,7 +808,3 @@ Response:
 ```
 
 You can use website https://jwt.io/ to decode accessToken
-
-# Global TIPS
-
-Spring Transaction Support -> TransactionInterceptor 
