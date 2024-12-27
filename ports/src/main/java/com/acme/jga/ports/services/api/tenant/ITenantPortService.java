@@ -1,9 +1,9 @@
 package com.acme.jga.ports.services.api.tenant;
 
-import com.acme.jga.ports.port.shared.UidDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDisplayDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDto;
-import com.acme.jga.ports.port.tenants.v1.TenantListDisplayDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDisplayDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantListDisplayDto;
 
 public interface ITenantPortService {
 

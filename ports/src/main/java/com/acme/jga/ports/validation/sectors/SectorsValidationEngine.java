@@ -1,6 +1,6 @@
 package com.acme.jga.ports.validation.sectors;
 
-import com.acme.jga.ports.port.sectors.v1.SectorDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDto;
 import com.acme.jga.validation.ValidationEngine;
 import com.acme.jga.validation.ValidationResult;
 import com.acme.jga.validation.ValidationUtils;

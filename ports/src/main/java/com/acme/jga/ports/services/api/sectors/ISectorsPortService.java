@@ -1,9 +1,9 @@
 package com.acme.jga.ports.services.api.sectors;
 
 import com.acme.jga.domain.model.exceptions.FunctionalException;
-import com.acme.jga.ports.port.sectors.v1.SectorDisplayDto;
-import com.acme.jga.ports.port.sectors.v1.SectorDto;
-import com.acme.jga.ports.port.shared.UidDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDisplayDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
 
 public interface ISectorsPortService {
 

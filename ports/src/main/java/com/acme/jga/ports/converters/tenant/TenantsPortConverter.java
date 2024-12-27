@@ -1,8 +1,8 @@
 package com.acme.jga.ports.converters.tenant;
 
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.ports.port.tenants.v1.TenantDisplayDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDisplayDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

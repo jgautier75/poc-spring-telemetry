@@ -3,10 +3,10 @@ package com.acme.jga.ports.converters.user;
 import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.domain.model.v1.UserCommons;
 import com.acme.jga.domain.model.v1.UserCredentials;
-import com.acme.jga.ports.port.organizations.v1.OrganizationLightDto;
-import com.acme.jga.ports.port.spi.v1.UserInfosDto;
-import com.acme.jga.ports.port.users.v1.UserDisplayDto;
-import com.acme.jga.ports.port.users.v1.UserDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
+import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
+import com.acme.jga.ports.dtos.users.v1.UserDisplayDto;
+import com.acme.jga.ports.dtos.users.v1.UserDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

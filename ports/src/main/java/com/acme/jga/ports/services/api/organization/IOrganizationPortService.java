@@ -1,10 +1,10 @@
 package com.acme.jga.ports.services.api.organization;
 
 import com.acme.jga.domain.model.exceptions.FunctionalException;
-import com.acme.jga.ports.port.organizations.v1.OrganizationDto;
-import com.acme.jga.ports.port.organizations.v1.OrganizationListLightDto;
-import com.acme.jga.ports.port.search.v1.SearchFilterDto;
-import com.acme.jga.ports.port.shared.UidDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationListLightDto;
+import com.acme.jga.ports.dtos.search.v1.SearchFilterDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
 
 public interface IOrganizationPortService {
 

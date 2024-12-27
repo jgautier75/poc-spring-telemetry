@@ -1,6 +1,6 @@
 package com.acme.jga.ports.validation.organizations;
 
-import com.acme.jga.ports.port.organizations.v1.OrganizationDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.validation.ValidationEngine;
 import com.acme.jga.validation.ValidationResult;
 import com.acme.jga.validation.ValidationUtils;

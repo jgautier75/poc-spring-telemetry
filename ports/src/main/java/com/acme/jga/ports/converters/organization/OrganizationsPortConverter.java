@@ -3,10 +3,10 @@ package com.acme.jga.ports.converters.organization;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.OrganizationCommons;
 import com.acme.jga.ports.converters.sectors.SectorsPortConverter;
-import com.acme.jga.ports.port.organizations.v1.OrganizationCommonsDto;
-import com.acme.jga.ports.port.organizations.v1.OrganizationDto;
-import com.acme.jga.ports.port.organizations.v1.OrganizationLightDto;
-import com.acme.jga.ports.port.sectors.v1.SectorDisplayDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationCommonsDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
+import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDisplayDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

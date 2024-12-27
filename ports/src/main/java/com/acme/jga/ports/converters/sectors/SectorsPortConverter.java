@@ -1,8 +1,8 @@
 package com.acme.jga.ports.converters.sectors;
 
 import com.acme.jga.domain.model.v1.Sector;
-import com.acme.jga.ports.port.sectors.v1.SectorDisplayDto;
-import com.acme.jga.ports.port.sectors.v1.SectorDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDisplayDto;
+import com.acme.jga.ports.dtos.sectors.v1.SectorDto;
 import com.acme.jga.utils.lambdas.StreamUtil;
 import org.springframework.stereotype.Component;
 

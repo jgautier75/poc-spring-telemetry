@@ -2,9 +2,9 @@ package com.acme.jga.ports.converters.system;
 
 import com.acme.jga.domain.model.v1.SystemErrorFile;
 import com.acme.jga.domain.model.v1.SystemErrorTemporal;
-import com.acme.jga.ports.port.system.v1.SystemErrorFileDto;
-import com.acme.jga.ports.port.system.v1.SystemErrorTemporalDto;
-import com.acme.jga.ports.port.system.v1.SystemSecretDto;
+import com.acme.jga.ports.dtos.system.v1.SystemErrorFileDto;
+import com.acme.jga.ports.dtos.system.v1.SystemErrorTemporalDto;
+import com.acme.jga.ports.dtos.system.v1.SystemSecretDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.acme.jga.ports.validation.users;
 
-import com.acme.jga.ports.port.users.v1.UserCommonsDto;
-import com.acme.jga.ports.port.users.v1.UserDto;
+import com.acme.jga.ports.dtos.users.v1.UserCommonsDto;
+import com.acme.jga.ports.dtos.users.v1.UserDto;
 import com.acme.jga.validation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

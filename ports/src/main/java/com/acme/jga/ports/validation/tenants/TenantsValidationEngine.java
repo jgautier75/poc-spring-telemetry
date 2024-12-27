@@ -1,6 +1,6 @@
 package com.acme.jga.ports.validation.tenants;
 
-import com.acme.jga.ports.port.tenants.v1.TenantDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.validation.ValidationEngine;
 import com.acme.jga.validation.ValidationResult;
 import com.acme.jga.validation.ValidationUtils;

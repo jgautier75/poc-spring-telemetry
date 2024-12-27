@@ -1,10 +1,10 @@
 package com.acme.jga.ports.services.api.system;
 
-import com.acme.jga.ports.port.dependencies.v1.DependencyListDto;
-import com.acme.jga.ports.port.system.v1.SystemErrorFileDto;
-import com.acme.jga.ports.port.system.v1.SystemErrorList;
-import com.acme.jga.ports.port.system.v1.SystemSecretDto;
-import com.acme.jga.ports.port.system.v1.SystemSecretListDto;
+import com.acme.jga.ports.dtos.dependencies.v1.DependencyListDto;
+import com.acme.jga.ports.dtos.system.v1.SystemErrorFileDto;
+import com.acme.jga.ports.dtos.system.v1.SystemErrorList;
+import com.acme.jga.ports.dtos.system.v1.SystemSecretDto;
+import com.acme.jga.ports.dtos.system.v1.SystemSecretListDto;
 
 public interface ISystemPortService {
     SystemErrorList listErrorFiles(String errorPath);

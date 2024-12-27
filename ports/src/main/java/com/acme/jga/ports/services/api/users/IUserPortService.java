@@ -1,11 +1,11 @@
 package com.acme.jga.ports.services.api.users;
 
 import com.acme.jga.domain.model.exceptions.FunctionalException;
-import com.acme.jga.ports.port.search.v1.SearchFilterDto;
-import com.acme.jga.ports.port.shared.UidDto;
-import com.acme.jga.ports.port.users.v1.UserDisplayDto;
-import com.acme.jga.ports.port.users.v1.UserDto;
-import com.acme.jga.ports.port.users.v1.UsersDisplayListDto;
+import com.acme.jga.ports.dtos.search.v1.SearchFilterDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
+import com.acme.jga.ports.dtos.users.v1.UserDisplayDto;
+import com.acme.jga.ports.dtos.users.v1.UserDto;
+import com.acme.jga.ports.dtos.users.v1.UsersDisplayListDto;
 
 public interface IUserPortService {
 
