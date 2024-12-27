@@ -1,6 +1,6 @@
 package com.acme.jga.rest.controllers;
 
-import com.acme.jga.ports.port.spi.v1.UserInfosDto;
+import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
 import com.acme.jga.ports.services.api.spi.ISpiService;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import lombok.RequiredArgsConstructor;

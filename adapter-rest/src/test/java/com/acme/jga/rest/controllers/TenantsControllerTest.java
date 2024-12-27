@@ -1,8 +1,8 @@
 package com.acme.jga.rest.controllers;
 
 import com.acme.jga.logging.services.api.ILogService;
-import com.acme.jga.ports.port.shared.UidDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.ports.services.api.tenant.ITenantPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;

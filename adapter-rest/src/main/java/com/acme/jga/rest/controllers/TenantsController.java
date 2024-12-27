@@ -2,10 +2,10 @@ package com.acme.jga.rest.controllers;
 
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import com.acme.jga.ports.port.shared.UidDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDisplayDto;
-import com.acme.jga.ports.port.tenants.v1.TenantDto;
-import com.acme.jga.ports.port.tenants.v1.TenantListDisplayDto;
+import com.acme.jga.ports.dtos.shared.UidDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDisplayDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
+import com.acme.jga.ports.dtos.tenants.v1.TenantListDisplayDto;
 import com.acme.jga.ports.services.api.tenant.ITenantPortService;
 import com.acme.jga.rest.annotations.MetricPoint;
 import com.acme.jga.rest.versioning.WebApiVersions;
