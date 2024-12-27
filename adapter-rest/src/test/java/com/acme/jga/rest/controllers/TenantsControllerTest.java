@@ -1,6 +1,5 @@
 package com.acme.jga.rest.controllers;
 
-import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.ports.port.shared.UidDto;
 import com.acme.jga.ports.port.tenants.v1.TenantDto;
@@ -8,14 +7,15 @@ import com.acme.jga.ports.services.api.tenant.ITenantPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
+import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,15 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = TenantsController.class)
 @Import(value = {OpenTelemetryTestConfig.class})
 class TenantsControllerTest {
-    @MockBean
+    @MockitoBean
     private ITenantPortService tenantPortService;
-    @MockBean
+    @MockitoBean
     private ILogService logService;
-    @MockBean
+    @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
-    @MockBean
+    @MockitoBean
     private AppGenericConfig appGenericConfig;
-    @MockBean
+    @MockitoBean
     private AppDebuggingConfig appDebuggingConfig;
     @Autowired
     private MockMvc mockMvc;

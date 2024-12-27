@@ -38,7 +38,7 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-plugin-version}</version>
                     <configuration>
-                        <mainClass>com.acme.jga.rest.PocApplication</mainClass>
+                        <mainClass>com.acme.jga.PocApplication</mainClass>
                     </configuration>
                     <executions>
                         <execution>

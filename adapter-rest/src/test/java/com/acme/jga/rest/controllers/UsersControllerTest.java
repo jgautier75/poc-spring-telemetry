@@ -1,6 +1,5 @@
 package com.acme.jga.rest.controllers;
 
-import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.acme.jga.domain.model.v1.OrganizationKind;
 import com.acme.jga.domain.model.v1.OrganizationStatus;
 import com.acme.jga.logging.services.api.ILogService;
@@ -11,14 +10,15 @@ import com.acme.jga.ports.services.api.users.IUserPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
+import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,15 +37,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UsersControllerTest {
     private static final String TENANT_UID = UUID.randomUUID().toString();
     private static final String ORG_UID = UUID.randomUUID().toString();
-    @MockBean
+    @MockitoBean
     private IUserPortService userPortService;
-    @MockBean
+    @MockitoBean
     private ILogService logService;
-    @MockBean
+    @MockitoBean
     private AppGenericConfig appGenericConfig;
-    @MockBean
+    @MockitoBean
     private AppDebuggingConfig appDebuggingConfig;
-    @MockBean
+    @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
     @Autowired
     private MockMvc mockMvc;

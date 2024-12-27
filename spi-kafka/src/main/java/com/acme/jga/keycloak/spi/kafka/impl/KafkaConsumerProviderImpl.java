@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
     private static final Logger LOGGER = Logger.getLogger(KafkaConsumerProviderImpl.class);
+    private static final Long POLL_DURATION = 5_000L;
     private KeycloakSessionFactory keycloakSessionFactory;
     private KafkaConsumer<String, DynamicMessage> kafkaConsumer;
 
@@ -43,12 +44,13 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
     public void startKafkaConsumer() {
         // Start kafka consumer in a separate thread
         // Consumer and polling must be defined in the same thread
+        // Check if a virtual thread can be useful or not (Thread.startVirtualThread())
         new Thread(() -> {
             LOGGER.debug("Start kafka consumer, lookup JpaConnectionProvider");
             this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
             kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
             while (true) {
-                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(5000));
+                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(POLL_DURATION));
                 processRecords(consumerRecords);
             }
         }).start();
