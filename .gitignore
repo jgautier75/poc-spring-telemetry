@@ -47,3 +47,8 @@ replay_pid*
 /spi-user-storage/dependency-reduced-pom.xml
 /adapter-kafka.iml
 
+/adapter-rest/target/classes/META-INF/spring/logback-model
+/adapter-rest/target/classes/META-INF/spring/logback-pattern-rules
+/adapter-rest/target/spring-aot/main/resources/META-INF/spring/logback-model
+/adapter-rest/target/spring-aot/main/resources/META-INF/spring/logback-pattern-rules
+/adapter-rest/target/adapter-rest

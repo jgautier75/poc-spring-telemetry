@@ -55,22 +55,39 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
                 if (CollectionUtils.isEmpty(auditEvents)) {
                     logService.warnS(callerName, "No pending event to send", null);
                 }
-                auditEvents.forEach(auditEvent -> {
-                    try {
-                        Event.AuditEventMessage auditEventMessage = protobufConversion(auditEvent.getPayload());
-                        ProducerRecord<String, Event.AuditEventMessage> producerRecord = new ProducerRecord<>(kafkaProducerConfig.getTopicNameAuditEvents(), auditEvent.getObjectUid(), auditEventMessage);
-                        kakaTemplateAudit.send(producerRecord);
-                    } catch (JsonProcessingException e) {
-                        logService.error(callerName, e);
-                    }
-                });
-                List<String> uids = auditEvents.stream().map(AuditEvent::getUid).distinct().collect(Collectors.toList());
-                if (!CollectionUtils.isEmpty(uids)) {
-                    eventsInfraService.updateEventsStatus(uids, EventStatus.PROCESSED);
-                }
+                auditEvents.forEach(auditEvent -> convertAndSend(auditEvent, callerName));
+                markEventsAsProcessed(auditEvents);
             } finally {
                 isRunning.set(false);
             }
+        }
+    }
+
+    /**
+     * Mark events as processed in RDBMS.
+     *
+     * @param auditEvents Audit Events
+     */
+    private void markEventsAsProcessed(List<AuditEvent> auditEvents) {
+        List<String> uids = auditEvents.stream().map(AuditEvent::getUid).distinct().collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(uids)) {
+            eventsInfraService.updateEventsStatus(uids, EventStatus.PROCESSED);
+        }
+    }
+
+    /**
+     * Convert event to protobuf format and publish in kefka topic.
+     *
+     * @param auditEvent Audit event
+     * @param callerName Caller name
+     */
+    private void convertAndSend(AuditEvent auditEvent, String callerName) {
+        try {
+            Event.AuditEventMessage auditEventMessage = protobufConversion(auditEvent.getPayload());
+            ProducerRecord<String, Event.AuditEventMessage> producerRecord = new ProducerRecord<>(kafkaProducerConfig.getTopicNameAuditEvents(), auditEvent.getObjectUid(), auditEventMessage);
+            kakaTemplateAudit.send(producerRecord);
+        } catch (JsonProcessingException e) {
+            logService.error(callerName, e);
         }
     }
 

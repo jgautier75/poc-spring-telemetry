@@ -26,7 +26,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = {DatabaseTestConfig.class, DaoTestConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -80,26 +80,24 @@ class OrganizationsDaoTest {
                 .tenantId(tenantCompositeId.getId())
                 .build();
         CompositeId compositeId = organizationDao.createOrganization(organizationDb);
-        assertNotNull("Organization composite id not null", compositeId);
-        assertNotNull("Organization id not null", compositeId.getId());
-        assertNotNull("Organization uid not null", compositeId.getUid());
+        assertNotNull(compositeId, "Organization composite id not null");
+        assertNotNull(compositeId.getId(), "Organization id not null");
+        assertNotNull(compositeId.getUid(), "Organization uid not null");
 
         // Find by id
-        OrganizationDb organizationRdbms = organizationDao.findOrganizationByTenantAndId(
-                tenantCompositeId.getId(),
-                compositeId.getId());
-        assertNotNull("Organization by id: not null", organizationRdbms);
-        assertEquals("Code match", organizationDb.getCode(), organizationRdbms.getCode());
-        assertEquals("Country match", organizationDb.getCountry(), organizationRdbms.getCountry());
-        assertEquals("Kind match", organizationDb.getKind(), organizationRdbms.getKind());
-        assertEquals("Label match", organizationDb.getLabel(), organizationRdbms.getLabel());
-        assertEquals("Status match", organizationDb.getStatus(), organizationRdbms.getStatus());
+        OrganizationDb organizationRdbms = organizationDao.findOrganizationByTenantAndId(tenantCompositeId.getId(), compositeId.getId());
+        assertNotNull(organizationRdbms, "Organization by id: not null");
+        assertEquals(organizationDb.getCode(), organizationRdbms.getCode(), "Code match");
+        assertEquals(organizationDb.getCountry(), organizationRdbms.getCountry(), "Country match");
+        assertEquals(organizationDb.getKind(), organizationRdbms.getKind(), "Kind match");
+        assertEquals(organizationDb.getLabel(), organizationRdbms.getLabel(), "Label match");
+        assertEquals(organizationDb.getStatus(), organizationRdbms.getStatus(), "Status match");
 
         // Find by uid
         OrganizationDb organizationByUid = organizationDao.findOrganizationByTenantAndUid(
                 tenantCompositeId.getId(),
                 compositeId.getUid());
-        assertNotNull("Organization by uid not null", organizationByUid);
+        assertNotNull(organizationByUid, "Organization by uid not null");
 
         // Update organization
         organizationDb.setCountry("de");
@@ -110,21 +108,20 @@ class OrganizationsDaoTest {
                 compositeId.getId(),
                 organizationDb.getCode(),
                 organizationDb.getLabel(), organizationDb.getCountry(), organizationDb.getStatus());
-        assertEquals("1 row updated", (Integer) 1, nbRowsUpdated);
+        assertEquals((Integer) 1, nbRowsUpdated, "1 row updated");
 
         organizationRdbms = organizationDao.findOrganizationByTenantAndId(tenantCompositeId.getId(),
                 compositeId.getId());
-        assertEquals("Country match", organizationDb.getCountry(), organizationDb.getCountry());
-        assertEquals("Code match", organizationDb.getCode(), organizationDb.getCode());
-        assertEquals("Label match", organizationDb.getLabel(), organizationDb.getLabel());
-        assertEquals("Status match", organizationDb.getStatus(), organizationDb.getStatus());
+        assertEquals(organizationDb.getCountry(), organizationRdbms.getCountry(), "Country match");
+        assertEquals(organizationDb.getCode(), organizationRdbms.getCode(), "Code match");
+        assertEquals(organizationDb.getLabel(), organizationRdbms.getLabel(), "Label match");
+        assertEquals(organizationDb.getStatus(), organizationRdbms.getStatus(), "Status match");
 
         // Delete organization
         Integer nbDeleted = organizationDao.deleteOrganization(tenantCompositeId.getId(), compositeId.getId());
-        assertEquals("1 row deleted", (Integer) 1, nbDeleted);
-        organizationRdbms = organizationDao.findOrganizationByTenantAndId(tenantCompositeId.getId(),
-                compositeId.getId());
-        assertNull("Organization not found", organizationRdbms);
+        assertEquals((Integer) 1, nbDeleted, "1 row deleted");
+        organizationRdbms = organizationDao.findOrganizationByTenantAndId(tenantCompositeId.getId(), compositeId.getId());
+        assertNull(organizationRdbms, "Organization not found");
 
     }
 

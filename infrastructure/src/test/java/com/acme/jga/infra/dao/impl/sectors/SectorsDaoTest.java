@@ -31,8 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = {DatabaseTestConfig.class, DaoTestConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -97,32 +96,28 @@ class SectorsDaoTest {
         CompositeId sectorCompositeId = sectorsDao.createSector(tenantCompositeId.getId(),
                 orgCompositeId.getId(),
                 sectorDb);
-        assertAll(() -> assertNotNull("CompositeId not null", sectorCompositeId),
-                () -> assertNotNull("Id not null", sectorCompositeId.getId()),
-                () -> assertNotNull("Uid not null", sectorCompositeId.getUid()));
+        assertAll(() -> assertNotNull(sectorCompositeId, "CompositeId not null"),
+                () -> assertNotNull(sectorCompositeId.getId(), "Id not null"),
+                () -> assertNotNull(sectorCompositeId.getUid(), "Uid not null"));
 
         // Exists by code
         Optional<Long> optSectorId = sectorsDao.existsByCode(sectorDb.getCode());
-        assertAll("Exists by code",
-                () -> assertTrue("Sector exists", optSectorId.isPresent()));
+        assertAll("Exists by code", () -> assertTrue(optSectorId.isPresent(), "Sector exists"));
 
-        Optional<SectorDb> rdbmsSector = sectorsDao.findByUid(tenantCompositeId.getId(), orgCompositeId.getId(),
-                sectorCompositeId.getUid());
+        Optional<SectorDb> rdbmsSector = sectorsDao.findByUid(tenantCompositeId.getId(), orgCompositeId.getId(), sectorCompositeId.getUid());
         assertAll("Sector by uid",
-                () -> assertNotNull("RDBMS sector not null", sectorDb),
-                () -> assertEquals("Code match", sectorDb.getCode(), rdbmsSector.get().getCode()),
-                () -> assertEquals("Label match", sectorDb.getLabel(), rdbmsSector.get().getLabel()),
-                () -> assertEquals("Root flag match", sectorDb.isRoot(), rdbmsSector.get().isRoot()),
-                () -> assertEquals("Tenant id match", tenantCompositeId.getId(), rdbmsSector.get().getId()));
+                () -> assertNotNull(sectorDb, "RDBMS sector not null"),
+                () -> assertEquals(sectorDb.getCode(), rdbmsSector.get().getCode(), "Code match"),
+                () -> assertEquals(sectorDb.getLabel(), rdbmsSector.get().getLabel(), "Label match"),
+                () -> assertEquals(sectorDb.isRoot(), rdbmsSector.get().isRoot(), "Root flag match"),
+                () -> assertEquals(tenantCompositeId.getId(), rdbmsSector.get().getId(), "Tenant id match"));
 
         // Find sectors list
-        List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantCompositeId.getId(),
-                orgCompositeId.getId());
+        List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantCompositeId.getId(), orgCompositeId.getId());
         assertAll("Sectors",
-                () -> assertNotNull("Sectors list", sectors),
-                () -> assertEquals("1 sector in list", 1, sectors.size()),
-                () -> assertEquals("Sector id match", sectorCompositeId.getId(),
-                        sectors.getFirst().getId()));
+                () -> assertNotNull(sectors, "Sectors list"),
+                () -> assertEquals(1, sectors.size(), "1 sector in list"),
+                () -> assertEquals(sectorCompositeId.getId(), sectors.getFirst().getId(), "Sector id match"));
     }
 
 }

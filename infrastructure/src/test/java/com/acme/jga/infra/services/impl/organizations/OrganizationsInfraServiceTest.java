@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrganizationsInfraServiceTest {
@@ -62,7 +62,7 @@ public class OrganizationsInfraServiceTest {
 
         // THEN
         CompositeId id = organizationsInfraService.createOrganization(org, null);
-        assertNotNull("CompositeId not null", id);
+        assertNotNull(id, "CompositeId not null");
     }
 
     @Test
@@ -80,7 +80,7 @@ public class OrganizationsInfraServiceTest {
 
         // THEN
         PaginatedResults<Organization> orgs = organizationsInfraService.filterOrganizations(TENANT_ID, Span.current(), Collections.emptyMap());
-        assertNotNull("Organizations list", orgs);
+        assertNotNull(orgs, "Organizations list");
     }
 
     /**

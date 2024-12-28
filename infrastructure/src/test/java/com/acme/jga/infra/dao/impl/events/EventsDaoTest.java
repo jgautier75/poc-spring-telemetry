@@ -29,92 +29,88 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = { DatabaseTestConfig.class, DaoTestConfig.class })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = {DatabaseTestConfig.class, DaoTestConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 @Transactional
 @ContextConfiguration(initializers = EventsDaoTest.DataSourceInitializer.class)
 class EventsDaoTest {
 
-        public static class DataSourceInitializer
-                        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-                @Override
-                public void initialize(ConfigurableApplicationContext applicationContext) {
-                        TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                                        applicationContext,
-                                        "spring.test.database.replace=none",
-                                        "spring.datasource.url=" + database.getJdbcUrl(),
-                                        "spring.datasource.username=" + database.getUsername(),
-                                        "spring.datasource.password=" + database.getPassword());
-                }
+    public static class DataSourceInitializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(ConfigurableApplicationContext applicationContext) {
+            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
+                    applicationContext,
+                    "spring.test.database.replace=none",
+                    "spring.datasource.url=" + database.getJdbcUrl(),
+                    "spring.datasource.username=" + database.getUsername(),
+                    "spring.datasource.password=" + database.getPassword());
         }
+    }
 
-        @Autowired
-        IEventsDao eventsDao;
+    @Autowired
+    IEventsDao eventsDao;
 
-        @Autowired
-        AuditEventsInfraConverter auditEventsInfraConverter;
+    @Autowired
+    AuditEventsInfraConverter auditEventsInfraConverter;
 
-        @Autowired
-        ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
-        @Container
-        private static final PostgreSQLContainer<?> database = new PostgreSQLContainer<>(TestUtils.POSTGRESQL_VERSION)
-                        .waitingFor(Wait.defaultWaitStrategy());
+    @Container
+    private static final PostgreSQLContainer<?> database = new PostgreSQLContainer<>(TestUtils.POSTGRESQL_VERSION)
+            .waitingFor(Wait.defaultWaitStrategy());
 
-        @BeforeEach
-        void initDb() throws Exception {
-                DaoTestUtils.performLiquibaseUpdate(database.getJdbcUrl(), database.getUsername(),
-                                database.getPassword());
-        }
+    @BeforeEach
+    void initDb() throws Exception {
+        DaoTestUtils.performLiquibaseUpdate(database.getJdbcUrl(), database.getUsername(),
+                database.getPassword());
+    }
 
-        @Test
-        void createEvent() throws Exception {
-                AuditAuthor author = AuditAuthor.builder()
-                                .name("Jerome GAUTIER")
-                                .uid(UUID.randomUUID().toString())
-                                .build();
-                AuditScope auditScope = AuditScope.builder()
-                                .organizationName("RENNES")
-                                .organizationUid(UUID.randomUUID().toString())
-                                .tenantName("SI")
-                                .tenantName(UUID.randomUUID().toString())
-                                .build();
-                AuditChange auditChange = AuditChange.builder().from("a").object("test").to("b").build();
+    @Test
+    void createEvent() throws Exception {
+        AuditAuthor author = AuditAuthor.builder()
+                .name("Jerome GAUTIER")
+                .uid(UUID.randomUUID().toString())
+                .build();
+        AuditScope auditScope = AuditScope.builder()
+                .organizationName("RENNES")
+                .organizationUid(UUID.randomUUID().toString())
+                .tenantName("SI")
+                .tenantName(UUID.randomUUID().toString())
+                .build();
+        AuditChange auditChange = AuditChange.builder().from("a").object("test").to("b").build();
 
-                AuditEvent auditEvent = AuditEvent.builder()
-                                .action(AuditAction.CREATE)
-                                .author(author)
-                                .changes(List.of(auditChange))
-                                .createdAt(DateTimeUtils.nowIso())
-                                .lastUpdatedAt(DateTimeUtils.nowIso())
-                                .objectUid(UUID.randomUUID().toString())
-                                .scope(auditScope)
-                                .status(EventStatus.PENDING)
-                                .target(EventTarget.SECTOR)
-                                .build();
-                objectMapper.writeValueAsString(auditEvent);
+        AuditEvent auditEvent = AuditEvent.builder()
+                .action(AuditAction.CREATE)
+                .author(author)
+                .changes(List.of(auditChange))
+                .createdAt(DateTimeUtils.nowIso())
+                .lastUpdatedAt(DateTimeUtils.nowIso())
+                .objectUid(UUID.randomUUID().toString())
+                .scope(auditScope)
+                .status(EventStatus.PENDING)
+                .target(EventTarget.SECTOR)
+                .build();
+        objectMapper.writeValueAsString(auditEvent);
 
-                AuditEventDb auditEventDb = auditEventsInfraConverter.convertAuditEventToDb(auditEvent, objectMapper);
-                String uid = eventsDao.insertEvent(auditEventDb);
-                assertNotNull("Generated uid not null", uid);
+        AuditEventDb auditEventDb = auditEventsInfraConverter.convertAuditEventToDb(auditEvent, objectMapper);
+        String uid = eventsDao.insertEvent(auditEventDb);
+        assertNotNull("Generated uid not null", uid);
 
-                AuditEventDb rdbmsAudit = eventsDao.findByUid(uid);
-                assertAll("Find by uid",
-                                () -> assertNotNull("Audit event not null", rdbmsAudit),
-                                () -> assertNotNull("Payload not null", rdbmsAudit.getPayload()),
-                                () -> assertEquals("Action match", auditEvent.getAction(), rdbmsAudit.getAction()),
-                                () -> assertNotNull("Created at", rdbmsAudit.getCreatedAt()),
-                                () -> assertNotNull("Last updated at", rdbmsAudit.getLastUpdatedAt()),
-                                () -> assertEquals("Object uid match", auditEvent.getObjectUid(),
-                                                rdbmsAudit.getObjectUid()),
-                                () -> assertEquals("Status match", auditEvent.getStatus(),
-                                                rdbmsAudit.getStatus()),
-                                () -> assertEquals("Target match", auditEvent.getTarget(),
-                                                rdbmsAudit.getTarget()),
-                                () -> assertNotNull("Uid not null", rdbmsAudit.getUid()));
-        }
+        AuditEventDb rdbmsAudit = eventsDao.findByUid(uid);
+        assertAll("Find by uid",
+                () -> assertNotNull(rdbmsAudit, "Audit event not null"),
+                () -> assertNotNull(rdbmsAudit.getPayload(), "Payload not null"),
+                () -> assertEquals(auditEvent.getAction(), rdbmsAudit.getAction(), "Action match"),
+                () -> assertNotNull(rdbmsAudit.getCreatedAt(), "Created at"),
+                () -> assertNotNull(rdbmsAudit.getLastUpdatedAt(), "Last updated at"),
+                () -> assertEquals(auditEvent.getObjectUid(), rdbmsAudit.getObjectUid(), "Object uid match"),
+                () -> assertEquals(auditEvent.getStatus(), rdbmsAudit.getStatus(), "Status match"),
+                () -> assertEquals(auditEvent.getTarget(), rdbmsAudit.getTarget(), "Target match"),
+                () -> assertNotNull(rdbmsAudit.getUid(), "Uid not null"));
+    }
 }

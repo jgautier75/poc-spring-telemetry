@@ -31,7 +31,7 @@ import java.util.Map;
 public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
     private static final Logger LOGGER = Logger.getLogger(KafkaConsumerProviderImpl.class);
     private static final Long POLL_DURATION = 5_000L;
-    private KeycloakSessionFactory keycloakSessionFactory;
+    private final KeycloakSessionFactory keycloakSessionFactory;
     private KafkaConsumer<String, DynamicMessage> kafkaConsumer;
 
     public KafkaConsumerProviderImpl(KeycloakSessionFactory keycloakSessionFactory) {

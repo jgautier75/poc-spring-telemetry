@@ -65,7 +65,7 @@ public class AppControllerAdvice {
     }
 
     @ExceptionHandler(ParsingException.class)
-    public ResponseEntity<ApiError> handlParsingException(ParsingException parsingException) {
+    public ResponseEntity<ApiError> handleParsingException(ParsingException parsingException) {
         String errorMessage = String.format("%s at position %s", parsingException.getMessage(), parsingException.getCharPositionInLine());
         ApiError apiError = ApiError.builder()
                 .kind(ErrorKind.FUNCTIONAL)

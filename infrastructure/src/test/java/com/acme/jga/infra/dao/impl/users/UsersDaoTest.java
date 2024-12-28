@@ -31,7 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = {DatabaseTestConfig.class, DaoTestConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -86,9 +86,8 @@ class UsersDaoTest {
                 .tenantId(tenantCompositeId.getId())
                 .build();
         CompositeId orgCompositeId = organizationsDao.createOrganization(organizationDb);
-        assertNotNull("Organization composite id not null", orgCompositeId);
-        assertNotNull("Organization id not null", orgCompositeId.getId());
-        assertNotNull("Organization uid not null", orgCompositeId.getUid());
+        assertNotNull(orgCompositeId, "Organization composite id not null");
+        assertNotNull(orgCompositeId.getUid(), "Organization uid not null");
 
         // Create user
         UserDb userDb = UserDb.builder()
@@ -103,26 +102,26 @@ class UsersDaoTest {
                 .build();
 
         CompositeId userCompositeId = usersDao.createUser(userDb);
-        assertNotNull("User create: compositeId not null", userCompositeId);
+        assertNotNull(userCompositeId, "User create: compositeId not null");
 
         // Find by id
         Optional<UserDb> userRdbms = usersDao.findById(tenantCompositeId.getId(), orgCompositeId.getId(),
                 userCompositeId.getId());
-        assertTrue("User find by id: user not null", userRdbms.isPresent());
-        assertEquals("User find by id: id match", userCompositeId.getId(), userRdbms.get().getId());
-        assertEquals("User find by id: email match", (String) userDb.getEmail(), (String) userRdbms.get().getEmail());
-        assertEquals("User find by id: firstName match", userDb.getFirstName(), userRdbms.get().getFirstName());
-        assertEquals("User find by id: lastName match", userDb.getLastName(), userRdbms.get().getLastName());
-        assertEquals("User find by id: login match", userDb.getLogin(), userRdbms.get().getLogin());
-        assertEquals("User find by id: middleName match", userDb.getMiddleName(), userRdbms.get().getMiddleName());
-        assertEquals("User find by id: orgId match", orgCompositeId.getId(), userRdbms.get().getOrgId());
-        assertEquals("User find by id: orgId match", userDb.getStatus(), userRdbms.get().getStatus());
-        assertEquals("User find by id: tenantId match", tenantCompositeId.getId(), userRdbms.get().getTenantId());
-        assertEquals("User find by id: uid match", userCompositeId.getUid(), userRdbms.get().getUid());
+        assertTrue(userRdbms.isPresent(), "User find by id: user not null");
+        assertEquals(userCompositeId.getId(), userRdbms.get().getId(), "User find by id: id match");
+        assertEquals(userDb.getEmail(), userRdbms.get().getEmail(), "User find by id: email match");
+        assertEquals(userDb.getFirstName(), userRdbms.get().getFirstName(), "User find by id: firstName match");
+        assertEquals(userDb.getLastName(), userRdbms.get().getLastName(), "User find by id: lastName match");
+        assertEquals(userDb.getLogin(), userRdbms.get().getLogin(), "User find by id: login match");
+        assertEquals(userDb.getMiddleName(), userRdbms.get().getMiddleName(), "User find by id: middleName match");
+        assertEquals(orgCompositeId.getId(), userRdbms.get().getOrgId(), "User find by id: orgId match");
+        assertEquals(userDb.getStatus(), userRdbms.get().getStatus(), "User find by id: orgId match");
+        assertEquals(tenantCompositeId.getId(), userRdbms.get().getTenantId(), "User find by id: tenantId match");
+        assertEquals(userCompositeId.getUid(), userRdbms.get().getUid(), "User find by id: uid match");
 
         // Find user by uid
         Optional<UserDb> userByUid = usersDao.findByUid(tenantCompositeId.getId(), orgCompositeId.getId(), userCompositeId.getUid());
-        assertTrue("User by uid: not null", userByUid.isPresent());
+        assertTrue(userByUid.isPresent(), "User by uid: not null");
 
         // Update user
         userByUid.get().setEmail("titi.toto@test.fr");
@@ -132,30 +131,23 @@ class UsersDaoTest {
         userByUid.get().setLogin("tutu");
         userByUid.get().setStatus(UserStatus.INACTIVE);
         Integer nbUpdated = usersDao.updateUser(userByUid.get());
-        assertEquals("1 row updated", (Integer) 1, nbUpdated);
+        assertEquals((Integer) 1, nbUpdated, "1 row updated");
 
         Optional<UserDb> updatedUser = usersDao.findById(tenantCompositeId.getId(), orgCompositeId.getId(),
                 userCompositeId.getId());
-        assertEquals("Updated user: email match", (String) userByUid.get().getEmail(),
-                (String) updatedUser.get().getEmail());
-        assertEquals("Updated user: first name match", (String) userByUid.get().getFirstName(),
-                (String) updatedUser.get().getFirstName());
-        assertEquals("Updated user: last name match", (String) userByUid.get().getLastName(),
-                (String) updatedUser.get().getLastName());
-        assertEquals("Updated user: middle name match", (String) userByUid.get().getMiddleName(),
-                (String) updatedUser.get().getMiddleName());
-        assertEquals("Updated user: login match", (String) userByUid.get().getLogin(),
-                (String) updatedUser.get().getLogin());
-        assertEquals("Updated user: status match", (Integer) userByUid.get().getStatus().getCode(),
-                (Integer) updatedUser.get().getStatus().getCode());
+        assertEquals(userByUid.get().getEmail(), updatedUser.get().getEmail(), "Updated user: email match");
+        assertEquals(userByUid.get().getFirstName(), updatedUser.get().getFirstName(), "Updated user: first name match");
+        assertEquals(userByUid.get().getLastName(), updatedUser.get().getLastName(), "Updated user: last name match");
+        assertEquals(userByUid.get().getMiddleName(), updatedUser.get().getMiddleName(), "Updated user: middle name match");
+        assertEquals(userByUid.get().getLogin(), updatedUser.get().getLogin(), "Updated user: login match");
+        assertEquals(userByUid.get().getStatus().getCode(), updatedUser.get().getStatus().getCode(), "Updated user: status match");
 
         // Delete user
-        Integer nbDeleted = usersDao.deleteUser(tenantCompositeId.getId(), orgCompositeId.getId(),
-                userCompositeId.getId());
-        assertEquals("1 row deleted", (Integer) 1, nbDeleted);
+        Integer nbDeleted = usersDao.deleteUser(tenantCompositeId.getId(), orgCompositeId.getId(), userCompositeId.getId());
+        assertEquals((Integer) 1, nbDeleted, "1 row deleted");
 
         Optional<UserDb> userDeleted = usersDao.findById(tenantCompositeId.getId(), orgCompositeId.getId(), userCompositeId.getId());
-        assertTrue("Deleted user not found", userDeleted.isEmpty());
+        assertTrue(userDeleted.isEmpty(), "Deleted user not found");
     }
 
 }

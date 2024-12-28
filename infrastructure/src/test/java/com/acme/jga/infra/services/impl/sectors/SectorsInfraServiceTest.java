@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class SectorsInfraServiceTest {
@@ -81,26 +80,26 @@ class SectorsInfraServiceTest {
         // THEN
         sectorsInfraService.mapSectorsRecursively(rootSector, sectors);
 
-        assertNotNull("Sector not null", rootSector);
-        assertEquals("Two children of root sector", 2, rootSector.getChildren().size());
+        assertNotNull(rootSector, "Sector not null");
+        assertEquals(2, rootSector.getChildren().size(), "Two children of root sector");
         assertAll(() -> {
             Optional<SectorDb> optNothSector = rootSector.getChildren().stream()
                     .filter(c -> c.getLabel().equals("north")).findFirst();
-            assertTrue("Found north sector", optNothSector.isPresent());
+            assertTrue(optNothSector.isPresent(), "Found north sector");
             Optional<SectorDb> optSouthSector = rootSector.getChildren().stream()
                     .filter(c -> c.getLabel().equals("south")).findFirst();
-            assertTrue("Found south sector", optSouthSector.isPresent());
+            assertTrue(optSouthSector.isPresent(), "Found south sector");
 
-            assertTrue("North sector has 1 child", optNothSector.get().hasChildren());
-            assertTrue("South sector has 1 child", optSouthSector.get().hasChildren());
+            assertTrue(optNothSector.get().hasChildren(), "North sector has 1 child");
+            assertTrue(optSouthSector.get().hasChildren(), "South sector has 1 child");
 
             Optional<SectorDb> optNorthWest = optNothSector.get().getChildren().stream()
                     .filter(child -> child.getLabel().equals("north-west")).findFirst();
-            assertTrue("Found north west sector", optNorthWest.isPresent());
+            assertTrue(optNorthWest.isPresent(), "Found north west sector");
 
             Optional<SectorDb> optSouthEast = optSouthSector.get().getChildren().stream()
                     .filter(child -> child.getLabel().equals("south-east")).findFirst();
-            assertTrue("Found south east sector", optSouthEast.isPresent());
+            assertTrue(optSouthEast.isPresent(), "Found south east sector");
         });
 
     }
