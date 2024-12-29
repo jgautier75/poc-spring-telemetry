@@ -141,7 +141,7 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * @return User infos
      */
     private Optional<UserInfosDto> fetchUser(FederationConstants.SearchFilterField searchField, String searchValue) {
-        try (HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(5)).build();) {
+        try (HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(30)).build();) {
             HttpRequest byUserIdReq = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(buildSearchFilterURI(searchField, searchValue)))

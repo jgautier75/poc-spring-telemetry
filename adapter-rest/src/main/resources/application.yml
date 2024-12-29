@@ -38,7 +38,7 @@ spring:
           issuerUri: http://localhost:7080/realms/myrealm
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/poc_st
+    url: jdbc:postgresql://localhost:5432/poc-st
     username: poc_st_app
     password: poc_st_app
     hikari:
@@ -59,14 +59,14 @@ management:
         include: 'health,metrics,prometheus'
   endpoint:
     health:
-      enabled: true
+      access: READ_ONLY
       probes:
         enabled: true
       show-details: always
     metrics:
-      enabled: true
+      access: READ_ONLY
     prometheus:
-      enabled: true
+      access: READ_ONLY
   health:
     readinessstate:
       enabled: true
@@ -92,7 +92,7 @@ app:
   config:
     moduleName: poc-st
     errorPath: "./errors"
-    otlp-endpoint: http://192.168.1.15:4317
+    otlp-endpoint: http://localhost:4317
     otlp-push-frequency: 5
   debugging:
     forceDebugMode: "false"
@@ -106,8 +106,8 @@ app:
       auditEventsGroupId: "kproto-grp"
     producer:
       bootstrap-servers:
-        - 192.168.1.15:9092
-      schema-registry: "http://192.168.1.15:8085"
+        - localhost:9092
+      schema-registry: "http://localhost:8085"
       acks: all
       client-id: "poc-st"
       retries: 100

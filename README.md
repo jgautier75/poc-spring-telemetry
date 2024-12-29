@@ -125,10 +125,10 @@ Open ports:
 
 Database schema management relies on liquibase, to setup:
 
-1. Connect to postgreSQL container and execute docker/db_accounts_setup.sql which:
+1. Connect to postgreSQL container and execute:
 
-- Creates database
-- Creates accounts:
+- Creates database: create_database.sql
+- Creates accounts: accounts_setup.sql
     - poc_st_dba: database account with DDL authorizations (Data Definition Language)
     - poc_st_spp: database account with only DML authorizations (Data Modeling Language). This account is used by spring boot application since applicative accounts must not have the rights to alter database schema
 
@@ -143,7 +143,7 @@ mvn clean package install -DskipTests
 4. Perform Liquibase update manually:
 
 ```java
-java -jar db-migration.jar --classpath=db-migration.jar --driver=org.postgresql.Driver --url="jdbc:postgresql://localhost:5432/poc_st" --changeLogFile="postgresql/changelogs.xml" --username=poc_st_dba --password=poc_st_dba --logLevel=info --contexts="all,grants" update
+java -jar db-migration.jar --classpath=db-migration.jar --driver=org.postgresql.Driver --url="jdbc:postgresql://localhost:5432/poc-st" --changeLogFile="postgresql/changelogs.xml" --username=poc_st_dba --password=poc_st_dba --logLevel=info --contexts="all,grants" update
 ```
 
 #### Docker image

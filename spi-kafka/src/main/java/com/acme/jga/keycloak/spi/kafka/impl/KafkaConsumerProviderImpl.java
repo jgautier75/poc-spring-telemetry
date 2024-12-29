@@ -50,7 +50,8 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
             kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
             while (true) {
-                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(POLL_DURATION));
+                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer
+                        .poll(Duration.ofMillis(POLL_DURATION));
                 processRecords(consumerRecords);
             }
         }).start();
@@ -66,22 +67,34 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
                 try {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
-                    Event.AuditEventMessage auditEventMessage = Event.AuditEventMessage.newBuilder().build().getParserForType().parseFrom(consumerRecord.value().toByteArray());
-                    LOGGER.infof("Processing audit event for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]",
+                    Event.AuditEventMessage auditEventMessage = Event.AuditEventMessage.newBuilder().build()
+                            .getParserForType().parseFrom(consumerRecord.value().toByteArray());
+                    LOGGER.infof(
+                            "Processing audit event for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]",
                             auditEventMessage.getScope().getTenantName(),
                             auditEventMessage.getScopeOrBuilder().getOrganizationName(),
                             auditEventMessage.getTarget(),
                             auditEventMessage.getAction(),
-                            auditEventMessage.getObjectUid()
-                    );
-                    //Process only user audit events with update action (FirstName, LastName & Email update)
-                    if (KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget() && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction())) {
+                            auditEventMessage.getObjectUid());
+                    // Process only user audit events with update action (FirstName, LastName &
+                    // Email update)
+                    if (KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget()
+                            && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction())) {
                         // Ensure tenant (equals realm) exists otherwise skip message
                         String tenantName = auditEventMessage.getScope().getTenantName();
+                        LOGGER.infof("Search tenant [%s]", tenantName);
                         List<String> entities = findRealm(jpaConnectionProvider, tenantName);
                         if (!entities.isEmpty()) {
                             updateUser(auditEventMessage, jpaConnectionProvider);
+                        } else {
+                            LOGGER.infof("Tenant [%s] not found", tenantName);
                         }
+                    }else {
+                        LOGGER.infof("Event ignored for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]", auditEventMessage.getScope().getTenantName(),
+                        auditEventMessage.getScopeOrBuilder().getOrganizationName(),
+                        auditEventMessage.getTarget(),
+                        auditEventMessage.getAction(),
+                        auditEventMessage.getObjectUid());
                     }
                 } catch (InvalidProtocolBufferException e) {
                     LOGGER.error(e);
@@ -98,7 +111,8 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * @return Realm id list
      */
     private static List<String> findRealm(JpaConnectionProvider jpaConnectionProvider, String tenantName) {
-        TypedQuery<String> query = jpaConnectionProvider.getEntityManager().createNamedQuery("getRealmIdByName", String.class);
+        TypedQuery<String> query = jpaConnectionProvider.getEntityManager().createNamedQuery("getRealmIdByName",
+                String.class);
         query.setParameter("name", tenantName);
         return query.getResultList();
     }
@@ -110,19 +124,23 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * @param jpaConnectionProvider Jpa provider
      */
     private void updateUser(Event.AuditEventMessage auditEventMessage, JpaConnectionProvider jpaConnectionProvider) {
-        LOGGER.debugf("Storage util, search user width id [%s]", StorageId.externalId(auditEventMessage.getObjectUid()));
-        UserEntity userEntity = jpaConnectionProvider.getEntityManager().find(UserEntity.class, StorageId.externalId(auditEventMessage.getObjectUid()));
-        LOGGER.debugf("UserLocal [%s]", userEntity != null ? userEntity.getUsername() : "null");
+        LOGGER.infof("Storage util, search user width id [%s]",
+                StorageId.externalId(auditEventMessage.getObjectUid()));
+        UserEntity userEntity = jpaConnectionProvider.getEntityManager().find(UserEntity.class,
+                StorageId.externalId(auditEventMessage.getObjectUid()));
+        LOGGER.infof("UserLocal [%s]", userEntity != null ? userEntity.getUsername() : "null");
         if (userEntity != null) {
+            LOGGER.infof("Audit nb of changes [%s]", auditEventMessage.getChangesCount());
             auditEventMessage.getChangesList().forEach(auditChange -> {
+                LOGGER.infof("Processing audit change with object [%s]",auditChange.getObject());
                 if (KafkaConsumerConstants.EVENT_CHANGE_FIRST_NAME.equals(auditChange.getObject())) {
-                    LOGGER.debugf("Updating firstName to [%s]", auditChange.getTo());
+                    LOGGER.infof("Updating firstName to [%s]", auditChange.getTo());
                     userEntity.setFirstName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_LAST_NAME.equals(auditChange.getObject())) {
-                    LOGGER.debugf("Updating lastName to [%s]", auditChange.getTo());
+                    LOGGER.infof("Updating lastName to [%s]", auditChange.getTo());
                     userEntity.setLastName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_EMAIL.equals(auditChange.getObject())) {
-                    LOGGER.debugf("Updating email to [%s]", auditChange.getTo());
+                    LOGGER.infof("Updating email to [%s]", auditChange.getTo());
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
@@ -144,7 +162,8 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, getEnvVariable(KafkaConsumerConstants.SHEMA_REGISTRY));
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG,
+                getEnvVariable(KafkaConsumerConstants.SHEMA_REGISTRY));
         LOGGER.infof("Initializing kafka consumer with properties [%s]", props);
         return props;
     }

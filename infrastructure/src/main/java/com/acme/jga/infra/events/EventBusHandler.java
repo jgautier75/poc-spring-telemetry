@@ -116,7 +116,8 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
             auditEventMessageBuilder.setAuthor(Event.AuditAuthor.newBuilder().setName(auditEvent.getAuthor().getName()).setUid(auditEvent.getAuthor().getUid()).build());
         }
         convertScope(auditEvent, auditEventMessageBuilder);
-        ofNullableList(auditEvent.getChanges()).forEach(EventBusHandler::convertAuditChange);
+        List<Event.AuditChange> evtChanges = ofNullableList(auditEvent.getChanges()).map(EventBusHandler::convertAuditChange).toList();
+        auditEventMessageBuilder.addAllChanges(evtChanges);
         return auditEventMessageBuilder.build();
     }
 
