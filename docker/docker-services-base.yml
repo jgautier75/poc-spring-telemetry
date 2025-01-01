@@ -50,7 +50,7 @@ services:
       KC_METRICS_ENABLED: "true"
       #DEBUG: 'true'
       #DEBUG_PORT: '*:8787'
-      federation_endpoint: http://MYIPADDRESS:8080/poc-st/api/v1/spi/user
+      federation_endpoint: http://192.168.1.13:8080/poc-st/api/v1/spi/user
       federation_user: admin
       federation_pass: admin
       kafka_consumer_topic: audit_events
