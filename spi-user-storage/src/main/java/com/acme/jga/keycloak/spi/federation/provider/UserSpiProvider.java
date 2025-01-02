@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.github.jopenlibs.vault.Vault;
+import io.github.jopenlibs.vault.VaultConfig;
+import io.github.jopenlibs.vault.VaultException;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.*;
@@ -20,12 +23,15 @@ import org.keycloak.models.credential.PasswordCredentialModel;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.user.UserLookupProvider;
 
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.util.Base64;
@@ -41,6 +47,8 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
     private final ComponentModel storageProviderModel;
     private final KeycloakSession keycloakSession;
     private CryptoEngine cryptoEngine;
+    private VaultConfig vaultConfig;
+    private Vault vault;
 
     public UserSpiProvider(ComponentModel storageProviderModel, KeycloakSession keycloakSession) {
         this.storageProviderModel = storageProviderModel;
@@ -52,13 +60,28 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * Initialize HTTP client and cryto engine.
      */
     public void initialize() {
-        LOGGER.infof("Initialize SPI: [%s]", FederationConstants.ENDPOINT + "=[" + getEnvVariable(FederationConstants.ENDPOINT)+"]");
+        LOGGER.infof("Initialize SPI: [%s]=[%s]", FederationConstants.ENDPOINT, getEnvVariable(FederationConstants.ENDPOINT));
         this.objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
-        cryptoEngine = new CryptoEngine();
+
+        LOGGER.infof("Initialize Vault : [%s]=[%s]", FederationConstants.VAULT_ADDRESS, getEnvVariable(FederationConstants.VAULT_ADDRESS));
+        try {
+            this.vaultConfig = new VaultConfig()
+                    .address(getEnvVariable(FederationConstants.VAULT_ADDRESS))
+                    .token(getEnvVariable(FederationConstants.VAULT_TOKEN))
+                    .build();
+            this.vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
+            this.cryptoEngine = new CryptoEngine();
+            LOGGER.infof("Vault key=[%s]", getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS));
+            String cipherKey = vault.logical().read(getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS), true, FederationConstants.VAULT_VERSION)
+                    .getData().get(FederationConstants.VAULT_CIPHER_KEY);
+            this.cryptoEngine.initCrypto(cipherKey);
+        } catch (VaultException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

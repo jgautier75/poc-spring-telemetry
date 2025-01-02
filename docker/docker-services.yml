@@ -42,6 +42,7 @@ services:
     #image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
+      - poc-st-init-openbao
     environment:
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
@@ -64,6 +65,10 @@ services:
       kafka_consumer_bootstrap_servers: "poc-st-kafka:19092"
       kafka_consumer_group_id: keycloak-kafka-consumer
       kafka_consumer_schema_registry_url: "http://poc-st-schema-registry:8085"
+      vault-address: "http://poc-st-openbao:8200"
+      vault-token: "dev-root-token"
+      vault-path: "dev-secrets"
+      vault-secrets: "creds"
     volumes:
       - ./poc-realms:/opt/keycloak/data/import
       - ./poc-providers:/opt/keycloak/providers
