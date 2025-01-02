@@ -75,9 +75,8 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
                     .build();
             this.vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
             this.cryptoEngine = new CryptoEngine();
-            LOGGER.infof("Vault key=[%s]", getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS));
-            String cipherKey = vault.logical().read(getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS), true, FederationConstants.VAULT_VERSION)
-                    .getData().get(FederationConstants.VAULT_CIPHER_KEY);
+            String secretPath = getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS);       
+            String cipherKey = vault.logical().read(secretPath, true, FederationConstants.VAULT_VERSION).getData().get(FederationConstants.VAULT_CIPHER_KEY);
             this.cryptoEngine.initCrypto(cipherKey);
         } catch (VaultException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
