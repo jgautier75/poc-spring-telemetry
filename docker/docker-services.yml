@@ -6,9 +6,16 @@ services:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       OPENBAO_SKIP_VERIFY: "true"
     volumes:
-      - "poc-st-openbao:/openbao/config"
+      - ./poc-st-openbao/config.hcl:/openbao/config/config.hcl
     ports:
       - 8200:8200
+  poc-st-init-openbao:
+    image: alpine/curl:8.10.0
+    volumes:
+      - ./poc-st-init-openbao:/openbao
+    depends_on:
+      - poc-st-openbao
+    command: sh ./openbao/vault_se_init.sh
   poc-st-app-storage:
     image: postgres:17.1
     volumes:
@@ -173,11 +180,11 @@ volumes:
     driver: local
   poc-st-kafka-data:
     driver: local
-  poc-st-openbao:
-    driver: local
   poc-realms:
     driver: local
   poc-providers:
     driver: local
   poc-keycloak-scripts:
+    driver: local
+  poc-st-init-openbao:
     driver: local
