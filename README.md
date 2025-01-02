@@ -59,6 +59,42 @@ vault kv get -mount=secret poc-st
 vault kv put -mount=secret poc-st foo=bar
 ```
 
+Api call example:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/secret/data/poc-st
+```
+
+```json
+{
+   "request_id":"c1a7af13-bf6e-e073-28bc-54cb680daacf",
+   "lease_id":"",
+   "renewable":false,
+   "lease_duration":0,
+   "data":{
+      "data":{
+         "mysecret":"mysupersecretvalue"
+      },
+      "metadata":{
+         "created_time":"2025-01-01T16:59:13.529218629Z",
+         "custom_metadata":null,
+         "deletion_time":"",
+         "destroyed":false,
+         "version":1
+      }
+   },
+   "wrap_info":null,
+   "warnings":null,
+   "auth":null
+}
+```
+
+If jq is intalled, secret values can be extracted using a command like:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/secret/data/poc-st | jq '.data.data'
+```
+
 ## OpenTelemetry
 
 Quote from OpenTelemetry website: "OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces)"
@@ -69,13 +105,7 @@ Different docker configurations are provided in this project, jaeger or grafana 
 
 ## Docker - Base
 
-Use docker/docker-services.yml to start the following "base" containers/services:
-
-Command:
-
-```shell
-docker-compose -f docker-services.yml up -d
-```
+Use docker/setup_base.sh script to start the following "base" containers/services:
 
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
