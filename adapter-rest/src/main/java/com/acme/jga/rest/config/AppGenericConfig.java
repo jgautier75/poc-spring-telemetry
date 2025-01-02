@@ -17,4 +17,6 @@ public class AppGenericConfig {
     private String errorPath;
     private String otlpEndpoint;
     private Long otlpPushFrequency;
+    private String vaultPath;
+    private String vaultSecret;
 }

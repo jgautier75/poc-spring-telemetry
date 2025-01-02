@@ -25,7 +25,6 @@ public class SystemController {
     private final MicrometerPrometheus micrometerPrometheus;
     private final ISystemPortService systemPortService;
     private final AppGenericConfig appGenericConfig;
-    private final VaultSecrets vaultSecrets;
 
     @PostMapping(value = WebApiVersions.SystemResourceVersion.KAFKA_WAKEUP)
     public ResponseEntity<Void> kafkaWakeUp() {
@@ -64,19 +63,19 @@ public class SystemController {
 
     @PostMapping(value = WebApiVersions.SystemResourceVersion.VAULT_STORE)
     public ResponseEntity<Void> storeSecret(@RequestBody SystemSecretDto systemSecretDto) {
-        systemPortService.storeSecret(appGenericConfig.getModuleName(), systemSecretDto);
+        systemPortService.storeSecret(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret(), systemSecretDto);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.VAULT_READ)
     public ResponseEntity<SystemSecretValueDto> readSecret(@RequestParam(value = "secretName") String secretName) {
-        String secretValue = systemPortService.readSecret(appGenericConfig.getModuleName(), secretName);
+        String secretValue = systemPortService.readSecret(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret(), secretName);
         return ResponseEntity.ok(SystemSecretValueDto.builder().value(secretValue).build());
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.VAULT_LIST)
     public ResponseEntity<SystemSecretListDto> listSecrets() {
-        SystemSecretListDto systemSecretListDto = systemPortService.readAllSecrets(appGenericConfig.getModuleName());
+        SystemSecretListDto systemSecretListDto = systemPortService.readAllSecrets(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret());
         return ResponseEntity.ok().body(systemSecretListDto);
     }
 

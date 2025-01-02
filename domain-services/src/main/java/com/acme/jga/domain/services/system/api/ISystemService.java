@@ -10,11 +10,11 @@ public interface ISystemService {
 
     SystemErrorFile readErrorFile(String errorPath, String fullFileName);
 
-    Integer storeSecret(String moduleName,String name, String value);
+    Integer storeSecret(String path, String secret,String name, String value);
 
-    String readSecret(String moduleName, String name);
+    String readSecret(String path, String secret, String name);
 
-    Map<String,Object> readAllSecrets(String moduleName);
+    Map<String,Object> readAllSecrets(String path, String secret);
 
     Map<String,String> readDependenciesVersions();
 }

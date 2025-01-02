@@ -65,6 +65,25 @@ Api call example:
 curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/secret/data/poc-st
 ```
 
+Config HTTP status:
+
+```bash
+HTTP_STATUS=$(curl -H "X-Vault-Token: dev-root-token" -w "%{http_code}" -o >(cat >&3) 'http://192.168.1.15:8200/v1/secret/config' ); 
+echo "HTTP_STATUS: $HTTP_STATUS"
+```
+
+Inserting a secret:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" --request POST --data @vault_data.json http://192.168.1.15:8200/v1/secret/data/poc-st
+```
+
+Delete secret version:
+
+```bash
+curl -v -H "X-Vault-Token: dev-root-token" --request PUT --data @vault_versions_delete.json http://192.168.1.15:8200/v1/secret/poc-st
+```
+
 ```json
 {
    "request_id":"c1a7af13-bf6e-e073-28bc-54cb680daacf",

@@ -11,11 +11,11 @@ public interface ISystemPortService {
 
     SystemErrorFileDto readErrorFile(String errorPath, String fileName);
 
-    Integer storeSecret(String moduleName, SystemSecretDto systemSecretDto);
+    Integer storeSecret(String path, String secret, SystemSecretDto systemSecretDto);
 
-    String readSecret(String moduleName, String name);
+    String readSecret(String path, String secret, String name);
 
-    SystemSecretListDto readAllSecrets(String moduleName);
+    SystemSecretListDto readAllSecrets(String path, String secret);
 
     DependencyListDto readDependenciesVersions();
 }

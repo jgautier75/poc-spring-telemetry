@@ -18,7 +18,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SystemService implements ISystemService {
     private final VaultTemplate vaultTemplate;
-    private static final String PATH = "secret";
 
     @Override
     public List<SystemErrorFile> listErrorFiles(String path) {
@@ -34,27 +33,27 @@ public class SystemService implements ISystemService {
     }
 
     @Override
-    public Integer storeSecret(String moduleName, String name, String value) {
-        VaultResponse response = vaultTemplate.opsForKeyValue(PATH, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(moduleName);
+    public Integer storeSecret(String path, String secret, String name, String value) {
+        VaultResponse response = vaultTemplate.opsForKeyValue(path, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(secret);
         Map<String, Object> mapSecrets = new HashMap<>();
         if (response != null) {
             mapSecrets = Optional.ofNullable(response.getData()).orElse(new HashMap<>());
         }
         mapSecrets.put(name, value);
-        VaultKeyValueOperations vaultKeyValueOperations = vaultTemplate.opsForKeyValue(PATH, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2);
-        vaultKeyValueOperations.put(moduleName, mapSecrets);
+        VaultKeyValueOperations vaultKeyValueOperations = vaultTemplate.opsForKeyValue(path, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2);
+        vaultKeyValueOperations.put(secret, mapSecrets);
         return 1;
     }
 
     @Override
-    public String readSecret(String moduleName, String name) {
-        VaultResponse response = vaultTemplate.opsForKeyValue(PATH, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(moduleName);
+    public String readSecret(String path, String secret, String name) {
+        VaultResponse response = vaultTemplate.opsForKeyValue(path, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(secret);
         return (String) Optional.ofNullable(response.getData()).map(m -> m.get(name)).orElse(null);
     }
 
     @Override
-    public Map<String, Object> readAllSecrets(String moduleName) {
-        VaultResponse response = vaultTemplate.opsForKeyValue(PATH, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(moduleName);
+    public Map<String, Object> readAllSecrets(String path, String secret) {
+        VaultResponse response = vaultTemplate.opsForKeyValue(path, VaultKeyValueOperationsSupport.KeyValueBackend.KV_2).get(secret);
         return response != null ? Optional.ofNullable(response.getData()).orElse(new HashMap<>()) : new HashMap<>();
     }
 

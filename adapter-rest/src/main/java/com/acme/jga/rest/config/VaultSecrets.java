@@ -1,21 +1,28 @@
 package com.acme.jga.rest.config;
 
+import com.acme.jga.crypto.CryptoEngine;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.vault.annotation.VaultPropertySource;
 
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 @Configuration
-@VaultPropertySource("secret/poc-st")
+@VaultPropertySource("dev-secrets/creds")
 @Slf4j
-public class VaultSecrets implements InitializingBean {
+public class VaultSecrets {
     @Autowired
     Environment env;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        log.info("mySecret={}", env.getProperty("mySecret"));
+    @Bean
+    public CryptoEngine cryptoEngine() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        CryptoEngine cryptoEngine = new CryptoEngine();
+        cryptoEngine.initCrypto(env.getProperty("cipherKey"));
+        return cryptoEngine;
     }
 }

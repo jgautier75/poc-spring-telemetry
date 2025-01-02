@@ -37,18 +37,18 @@ public class SystemPortService implements ISystemPortService {
     }
 
     @Override
-    public Integer storeSecret(String moduleName, SystemSecretDto systemSecretDto) {
-        return systemService.storeSecret(moduleName, systemSecretDto.getKey(), systemSecretDto.getValue());
+    public Integer storeSecret(String path, String secret, SystemSecretDto systemSecretDto) {
+        return systemService.storeSecret(path, secret, systemSecretDto.getKey(), systemSecretDto.getValue());
     }
 
     @Override
-    public String readSecret(String moduleName, String name) {
-        return systemService.readSecret(moduleName, name);
+    public String readSecret(String path, String secret, String name) {
+        return systemService.readSecret(path, secret, name);
     }
 
     @Override
-    public SystemSecretListDto readAllSecrets(String moduleName) {
-        Map<String, Object> mapSecrets = systemService.readAllSecrets(moduleName);
+    public SystemSecretListDto readAllSecrets(String path, String secret) {
+        Map<String, Object> mapSecrets = systemService.readAllSecrets(path, secret);
         List<SystemSecretDto> systemSecretDtos = SystemConverter.convertSecretsMap(mapSecrets);
         return new SystemSecretListDto(systemSecretDtos);
     }

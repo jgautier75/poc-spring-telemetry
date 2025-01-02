@@ -52,7 +52,7 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * Initialize HTTP client and cryto engine.
      */
     public void initialize() {
-        LOGGER.infof("Initialize SPI: [%s]", FederationConstants.ENDPOINT + "=[" + getEnvVariable(FederationConstants.ENDPOINT));
+        LOGGER.infof("Initialize SPI: [%s]", FederationConstants.ENDPOINT + "=[" + getEnvVariable(FederationConstants.ENDPOINT)+"]");
         this.objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

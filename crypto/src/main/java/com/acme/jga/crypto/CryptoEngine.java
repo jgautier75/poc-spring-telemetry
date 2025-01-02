@@ -11,20 +11,15 @@ import java.util.Base64;
 
 public class CryptoEngine {
     private static final String ALGORITHM = "AES";
-    private static final String SECRET_KEY = "1c9e1cfbe63844b1a0772aea4cba5gg6";
     private Cipher encodingCipher;
     private Cipher decodingCipher;
 
     public CryptoEngine() {
-        try {
-            initCrypto();
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
+        // Default constructor
     }
 
-    public void initCrypto() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), ALGORITHM);
+    public void initCrypto(String secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), ALGORITHM);
         this.encodingCipher = Cipher.getInstance(ALGORITHM);
         this.encodingCipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
         this.decodingCipher = Cipher.getInstance(ALGORITHM);
