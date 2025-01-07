@@ -7,13 +7,11 @@ import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class TenantListImpl extends DomainFunction implements TenantList {
     private static final String INSTRUMENTATION_NAME = TenantListImpl.class.getCanonicalName();
     private final ITenantInfraService tenantInfraService;

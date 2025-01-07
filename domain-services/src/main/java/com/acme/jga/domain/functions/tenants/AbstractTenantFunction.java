@@ -14,11 +14,7 @@ import java.util.List;
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createTenantAuditEvent;
 
 public abstract class AbstractTenantFunction extends DomainFunction {
-    protected IEventsInfraService eventsInfraService;
-
-    public AbstractTenantFunction() {
-        super();
-    }
+    protected final IEventsInfraService eventsInfraService;
 
     public AbstractTenantFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory);

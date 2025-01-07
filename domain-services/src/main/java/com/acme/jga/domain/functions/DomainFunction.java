@@ -12,12 +12,8 @@ import java.util.function.Function;
 import static com.acme.jga.utils.http.RequestCorrelationId.correlationKey;
 
 public abstract class DomainFunction {
-    private OpenTelemetryWrapper openTelemetryWrapper;
-    protected BundleFactory bundleFactory;
-
-    protected DomainFunction() {
-        // Default constructor
-    }
+    private final OpenTelemetryWrapper openTelemetryWrapper;
+    protected final BundleFactory bundleFactory;
 
     protected DomainFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory) {
         this.openTelemetryWrapper = openTelemetryWrapper;

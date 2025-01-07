@@ -12,14 +12,12 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
 public class TenantDeleteImpl extends AbstractTenantFunction implements TenantDelete {
     private static final String INSTRUMENTATION_NAME = TenantDeleteImpl.class.getCanonicalName();
     private final ILogService logService;

@@ -1,11 +1,10 @@
 package com.acme.jga.rest.controllers;
 
+import com.acme.jga.crypto.CryptoEngine;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.acme.jga.rest.config.SecurityProperties;
 import com.acme.jga.rest.config.VaultSecrets;
 import com.acme.jga.utils.test.TestUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import liquibase.command.CommandScope;
 import liquibase.command.core.UpdateCommandStep;
@@ -54,8 +53,6 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -83,6 +80,9 @@ class AppLoadingTest {
 
     @MockitoBean
     private VaultSecrets vaultSecrets;
+
+    @MockitoBean
+    private CryptoEngine cryptoEngine;
 
     @RegisterExtension
     private static final WireMockExtension wireMockServer = WireMockExtension.newInstance().options(wireMockConfig().dynamicPort()).build();
@@ -125,11 +125,6 @@ class AppLoadingTest {
                     .willReturn(aResponse()
                             .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                             .withBody(certs)));
-/*
-            String vaultSecretsUri = "/v1/secret/poc-st";
-            wireMockServer.stubFor(get(vaultSecretsUri).willReturn(aResponse()
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody("{\"ping\":\"pong\",\"cipherKey\": \"1c9e1cfbe63844b1a0772aea4cba5gg6\"}")));*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -180,15 +175,6 @@ class AppLoadingTest {
             log.error("Unable to query actuator", e);
         }
         return () -> httpStatus.get() == HttpStatus.OK.value();
-    }
-
-    public static void main(String[] args) throws JsonProcessingException {
-        Map<String, String> test = new HashMap<>();
-        test.put("mykey", "myvalue");
-        test.put("ping", "pong");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String s = objectMapper.writeValueAsString(test);
-        System.out.println(s);
     }
 
 }

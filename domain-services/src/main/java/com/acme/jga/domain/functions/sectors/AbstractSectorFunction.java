@@ -17,11 +17,7 @@ import java.util.List;
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createSectorAuditEvent;
 
 public abstract class AbstractSectorFunction extends DomainFunction {
-    private IEventsInfraService eventsInfraService;
-
-    public AbstractSectorFunction() {
-        // Default constructor
-    }
+    private final IEventsInfraService eventsInfraService;
 
     public AbstractSectorFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory);

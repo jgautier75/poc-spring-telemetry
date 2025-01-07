@@ -16,7 +16,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class OrganizationUpdateImpl extends AbstractOrganizationFunction implements OrganizationUpdate {
     private static final String INSTRUMENTATION_NAME = OrganizationUpdateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;

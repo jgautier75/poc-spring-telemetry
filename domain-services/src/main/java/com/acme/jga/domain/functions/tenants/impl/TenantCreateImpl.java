@@ -15,14 +15,12 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class TenantCreateImpl extends AbstractTenantFunction implements TenantCreate {
     private static final String INSTRUMENTATION_NAME = TenantCreateImpl.class.getCanonicalName();
     private final ITenantInfraService tenantInfraService;
@@ -34,7 +32,6 @@ public class TenantCreateImpl extends AbstractTenantFunction implements TenantCr
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantInfraService = tenantInfraService;
         this.logService = logService;
-        this.eventsInfraService = eventsInfraService;
     }
 
     @Audited

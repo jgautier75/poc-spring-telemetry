@@ -13,13 +13,11 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class TenantUpdateImpl extends AbstractTenantFunction implements TenantUpdate {
     private static final String INSTRUMENTATION_NAME = TenantUpdateImpl.class.getCanonicalName();
     private final ITenantInfraService tenantInfraService;

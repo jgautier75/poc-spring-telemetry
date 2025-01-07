@@ -18,11 +18,7 @@ import static com.acme.jga.domain.model.utils.AuditEventFactory.createOrganizati
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createSectorAuditEvent;
 
 public class AbstractOrganizationFunction extends DomainFunction {
-    private EventsInfraService eventsInfraService;
-
-    public AbstractOrganizationFunction() {
-        // Default constructor
-    }
+    private final EventsInfraService eventsInfraService;
 
     public AbstractOrganizationFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory);

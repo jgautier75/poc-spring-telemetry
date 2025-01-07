@@ -8,13 +8,11 @@ import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class OrganizationFilterImpl extends DomainFunction implements OrganizationFilter {
     private static final String INSTRUMENTATION_NAME = OrganizationFilterImpl.class.getCanonicalName();
     private final IOrganizationsInfraService organizationsInfraService;
