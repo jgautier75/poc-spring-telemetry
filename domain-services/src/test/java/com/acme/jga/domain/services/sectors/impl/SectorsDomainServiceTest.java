@@ -1,12 +1,13 @@
 package com.acme.jga.domain.services.sectors.impl;
 
+import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
+import com.acme.jga.domain.functions.sectors.api.SectorCreate;
+import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.*;
-import com.acme.jga.domain.services.organizations.impl.OrganizationsDomainService;
-import com.acme.jga.domain.services.tenants.impl.TenantDomainService;
 import com.acme.jga.domain.services.utils.VoidSpan;
 import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.infra.services.impl.sectors.SectorsInfraService;
@@ -30,9 +31,9 @@ import static org.junit.Assert.assertThrows;
 @RunWith(MockitoJUnitRunner.class)
 public class SectorsDomainServiceTest {
     @Mock
-    TenantDomainService tenantDomainService;
+    TenantFind tenantFind;
     @Mock
-    OrganizationsDomainService organizationsDomainService;
+    OrganizationFind organizationFind;
     @Mock
     SectorsInfraService sectorsInfraService;
     @Mock
@@ -46,7 +47,7 @@ public class SectorsDomainServiceTest {
     @Mock
     PublishSubscribeChannel eventAuditChannel;
     @InjectMocks
-    SectorsDomainService sectorsDomainService;
+    SectorCreate sectorCreate;
 
     @Test
     public void createSectorNominal() throws FunctionalException {
@@ -58,19 +59,18 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantDomainService.findTenantByUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationsDomainService.findOrganizationByTenantAndUid(Mockito.any(), Mockito.any(),
-                        Mockito.anyBoolean(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
+        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
                 .thenReturn(organization);
         Mockito.when(sectorsInfraService.existsByCode(Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(sectorsInfraService.findSectorByUid(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(Optional.of(sector));
+        Mockito.when(sectorsInfraService.findSectorByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(sector));
         Mockito.when(sectorsInfraService.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
         Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        CompositeId sectorCompId = sectorsDomainService.createSector(tenant.getUid(), organization.getUid(), sector, null);
+        CompositeId sectorCompId = sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null);
         assertNotNull(sectorCompId);
     }
 
@@ -83,14 +83,13 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantDomainService.findTenantByUid(Mockito.any(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class,
-                () -> sectorsDomainService.createSector(tenant.getUid(), organization.getUid(), sector, null));
+        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
     }
 
     @Test
@@ -102,16 +101,14 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantDomainService.findTenantByUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationsDomainService.findOrganizationByTenantAndUid(Mockito.any(), Mockito.any(),
-                        Mockito.anyBoolean(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
+        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(),Mockito.any(),Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class,
-                () -> sectorsDomainService.createSector(tenant.getUid(), organization.getUid(), sector, null));
+        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
     }
 
     private Tenant mockTenant() {

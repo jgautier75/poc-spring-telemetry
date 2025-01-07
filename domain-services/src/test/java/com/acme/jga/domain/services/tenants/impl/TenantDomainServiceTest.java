@@ -1,6 +1,9 @@
 package com.acme.jga.domain.services.tenants.impl;
 
 import com.acme.jga.domain.events.EventBuilderTenant;
+import com.acme.jga.domain.functions.tenants.impl.TenantCreateImpl;
+import com.acme.jga.domain.functions.tenants.impl.TenantDeleteImpl;
+import com.acme.jga.domain.functions.tenants.impl.TenantUpdateImpl;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.ids.CompositeId;
@@ -46,7 +49,11 @@ public class TenantDomainServiceTest {
     @Mock
     BundleFactory bundleFactory;
     @InjectMocks
-    TenantDomainService tenantDomainService;
+    TenantCreateImpl tenantCreate;
+    @InjectMocks
+    TenantUpdateImpl tenantUpdate;
+    @InjectMocks
+    TenantDeleteImpl tenantDelete;
 
     @Test
     public void createTenantNominal() throws FunctionalException {
@@ -63,7 +70,7 @@ public class TenantDomainServiceTest {
         Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
 
         // THEN
-        CompositeId compositeId = tenantDomainService.createTenant(tenant, null);
+        CompositeId compositeId = tenantCreate.execute(tenant, null);
         assertNotNull("Composite id not null", compositeId);
     }
 
@@ -77,7 +84,7 @@ public class TenantDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> tenantDomainService.createTenant(tenant, null));
+        assertThrows(WrappedFunctionalException.class, () -> tenantCreate.execute(tenant, null));
     }
 
     @Test
@@ -94,7 +101,7 @@ public class TenantDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        Integer nbUpdated = tenantDomainService.updateTenant(tenant, null);
+        Integer nbUpdated = tenantUpdate.execute(tenant, null);
         assertEquals(1L, nbUpdated.longValue());
     }
 
@@ -115,7 +122,7 @@ public class TenantDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        Integer nbDeleted = tenantDomainService.deleteTenant(UUID.randomUUID().toString(), null);
+        Integer nbDeleted = tenantDelete.execute(tenant.getUid(), null);
         assertEquals(1L, nbDeleted.longValue());
     }
 
