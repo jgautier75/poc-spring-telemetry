@@ -1,11 +1,11 @@
 package com.acme.jga.ports.services.impl.organization;
 
+import com.acme.jga.domain.functions.organizations.api.*;
+import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.filtering.FilteringConstants;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.domain.services.organizations.api.IOrganizationsDomainService;
-import com.acme.jga.domain.services.tenants.api.ITenantDomainService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.converters.organization.OrganizationsPortConverter;
@@ -32,20 +32,29 @@ import java.util.Map;
 @Service
 public class OrganizationPortService extends AbstractPortService implements IOrganizationPortService {
     private static final String INSTRUMENTATION_NAME = OrganizationPortService.class.getCanonicalName();
-    private ITenantDomainService tenantDomainService;
-    private IOrganizationsDomainService organizationDomainService;
+    private TenantFind tenantFind;
+    private OrganizationCreate organizationCreate;
     private OrganizationsPortConverter organizationsConverter;
     private OrganizationsValidationEngine organizationsValidationEngine;
     private final QueryParser queryParser = new QueryParser();
+    private OrganizationFilter organizationFilter;
+    private OrganizationFind organizationFind;
+    private OrganizationUpdate organizationUpdate;
+    private OrganizationDelete organizationDelete;
 
     @Autowired
-    public OrganizationPortService(ITenantDomainService tenantDomainService, IOrganizationsDomainService organizationDomainService, OrganizationsPortConverter organizationsConverter,
-                                   OrganizationsValidationEngine organizationsValidationEngine, OpenTelemetryWrapper openTelemetryWrapper) {
+    public OrganizationPortService(TenantFind tenantFind, OrganizationCreate organizationCreate, OrganizationsPortConverter organizationsConverter,
+                                   OrganizationsValidationEngine organizationsValidationEngine, OpenTelemetryWrapper openTelemetryWrapper,
+                                   OrganizationFilter organizationFilter, OrganizationFind organizationFind,
+                                   OrganizationUpdate organizationUpdate, OrganizationDelete organizationDelete) {
         super(openTelemetryWrapper);
-        this.organizationDomainService = organizationDomainService;
-        this.tenantDomainService = tenantDomainService;
+        this.organizationCreate = organizationCreate;
+        this.tenantFind = tenantFind;
         this.organizationsConverter = organizationsConverter;
         this.organizationsValidationEngine = organizationsValidationEngine;
+        this.organizationFilter = organizationFilter;
+        this.organizationFind = organizationFind;
+        this.organizationUpdate = organizationUpdate;
     }
 
     /**
@@ -59,7 +68,7 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
                 throw new ValidationException(validationResult.getErrors());
             }
             Organization org = organizationsConverter.convertOrganizationDtoToDomain(organizationDto);
-            CompositeId compositeId = organizationDomainService.createOrganization(tenantUid, org, orgSpan);
+            CompositeId compositeId = organizationCreate.execute(tenantUid, org, orgSpan);
             return new UidDto(compositeId.getUid());
         });
     }
@@ -70,9 +79,9 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
     @Override
     public OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilterDto) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_LIGHT", null, (span -> {
-            Tenant tenant = tenantDomainService.findTenantByUid(tenantUid, span);
+            Tenant tenant = tenantFind.byUid(tenantUid, span);
             Map<String, Object> searchParams = extractSearchParams(searchFilterDto);
-            PaginatedResults<Organization> paginatedResults = organizationDomainService.filterOrganizations(tenant.getId(), span, searchParams);
+            PaginatedResults<Organization> paginatedResults = organizationFilter.execute(tenant.getId(), span, searchParams);
             List<OrganizationLightDto> lightOrgs = new ArrayList<>();
             paginatedResults.getResults().forEach(org -> lightOrgs.add(organizationsConverter.convertOrganizationToLightOrgDto(org)));
             return new OrganizationListLightDto(paginatedResults.getNbResults(), paginatedResults.getNbPages(), paginatedResults.getPageIndex(), paginatedResults.getPageSize(), lightOrgs);
@@ -85,8 +94,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
     @Override
     public OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_UID", null, (span) -> {
-            Tenant tenant = tenantDomainService.findTenantByUid(tenantUid, span);
-            Organization org = organizationDomainService.findOrganizationByTenantAndUid(tenant.getId(), orgUid, fetchSectors, span);
+            Tenant tenant = tenantFind.byUid(tenantUid, span);
+            Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, fetchSectors, span);
             OrganizationDto organizationDto = organizationsConverter.convertOrganizationToDto(org);
             organizationDto.setTenantUid(tenantUid);
             return organizationDto;
@@ -99,9 +108,9 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
     @Override
     public Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_UPDATE", null, (span) -> {
-            tenantDomainService.findTenantByUid(tenantUid, span);
+            tenantFind.byUid(tenantUid, span);
             Organization org = organizationsConverter.convertOrganizationDtoToDomain(organizationDto);
-            return organizationDomainService.updateOrganization(tenantUid, orgUid, org, span);
+            return organizationUpdate.execute(tenantUid, orgUid, org, span);
         });
     }
 
@@ -110,7 +119,7 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      */
     @Override
     public Integer deleteOrganization(String tenantUid, String orgUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_DELETE", null, (span) -> organizationDomainService.deleteOrganization(tenantUid, orgUid, span));
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_DELETE", null, (span) -> organizationDelete.execute(tenantUid, orgUid, span));
     }
 
     private Map<String, Object> extractSearchParams(SearchFilterDto searchFilterDto) {

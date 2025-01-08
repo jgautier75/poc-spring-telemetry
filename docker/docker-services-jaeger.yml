@@ -20,7 +20,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
   poc-st-otel-collector:
     image: otel/opentelemetry-collector-contrib:0.106.1
     command: ["--config=/etc/otel-collector-config.yml"]

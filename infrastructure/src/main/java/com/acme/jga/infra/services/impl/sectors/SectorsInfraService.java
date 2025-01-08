@@ -12,6 +12,7 @@ import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,6 +74,7 @@ public class SectorsInfraService extends AbstractInfraService implements ISector
     protected void mapSectorsRecursively(SectorDb parentSector, List<SectorDb> sectors) {
         List<SectorDb> children = sectors.stream()
                 .filter(sect -> sect.getParentId() != null && sect.getParentId().equals(parentSector.getId()))
+                .sorted(Comparator.comparing(SectorDb::getLabel))
                 .toList();
         children.forEach(child -> {
             parentSector.addChild(child);

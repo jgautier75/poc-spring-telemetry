@@ -1,0 +1,7 @@
+apiVersion: 1
+
+datasources:
+  - name: poc-st-prometheus
+    type: prometheus
+    access: proxy
+    url: http://poc-st-prometheus:9090
