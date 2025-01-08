@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: poc-spring-opentelemetry
+    folder: 'poc-spring-opentelemetry'
+    type: file
+    disableDeletion: true
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
