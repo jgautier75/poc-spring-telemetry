@@ -121,9 +121,6 @@ class UsersControllerTest {
                 .firstName("fname")
                 .lastName("lname")
                 .login("tlogin")
-                .middleName("mname")
-                .organization(OrganizationLightDto.builder().kind(OrganizationKind.BU).label("orglabel")
-                        .status(OrganizationStatus.ACTIVE).uid(ORG_UID).build())
                 .uid(uidDto.getUid())
                 .build();
         List<UserDisplayDto> usersList = List.of(userDisplayDto);

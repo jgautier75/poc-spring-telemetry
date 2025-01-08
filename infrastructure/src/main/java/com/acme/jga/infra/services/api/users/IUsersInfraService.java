@@ -3,6 +3,7 @@ package com.acme.jga.infra.services.api.users;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.User;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import io.opentelemetry.api.trace.Span;
 
@@ -26,7 +27,7 @@ public interface IUsersInfraService {
 
     Integer deleteUser(Long tenantId, Long orgId, Long userId, Span parentSpan);
 
-    PaginatedResults<User> filterUsers(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams);
+    PaginatedResults<UserDisplay> filterUsers(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams);
 
     Optional<User> findByUid(String userUid, Span parentSpan);
 

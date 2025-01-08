@@ -6,8 +6,10 @@ import com.acme.jga.domain.model.utils.KeyValuePair;
 import com.acme.jga.domain.model.v1.UserMetaData;
 import com.acme.jga.infra.dao.api.users.IUsersDao;
 import com.acme.jga.infra.dao.extractors.UsersDbExtractor;
+import com.acme.jga.infra.dao.extractors.UsersDisplayDbExtractor;
 import com.acme.jga.infra.dao.processors.ExpressionsProcessor;
 import com.acme.jga.infra.dto.users.v1.UserDb;
+import com.acme.jga.infra.dto.users.v1.UserDisplayDb;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
@@ -243,8 +245,8 @@ public class UsersDao extends AbstractJdbcDaoSupport implements IUsersDao {
     }
 
     @Override
-    public PaginatedResults<UserDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams) {
-        String baseQuery = super.getQuery(BASE_SELECT);
+    public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams) {
+        String baseQuery = super.getQuery("user_display");
         Map<String, Object> params = new HashMap<>();
         params.put(DaoConstants.P_TENANT_ID, tenantId);
         params.put(DaoConstants.P_ORG_ID, orgId);
@@ -275,11 +277,11 @@ public class UsersDao extends AbstractJdbcDaoSupport implements IUsersDao {
 
         // Select query
         String fullQuery = baseQuery + whereClause + compositeQuery.orderBy() + compositeQuery.pagination();
-        List<UserDb> results = super.getNamedParameterJdbcTemplate().query(fullQuery, compositeQuery.parameters(), new RowMapper<>() {
+        List<UserDisplayDb> results = super.getNamedParameterJdbcTemplate().query(fullQuery, compositeQuery.parameters(), new RowMapper<>() {
             @Override
             @Nullable
-            public UserDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
-                return UsersDbExtractor.extractUser(rs, false);
+            public UserDisplayDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
+                return UsersDisplayDbExtractor.extractUser(rs, false);
             }
         });
         return new PaginatedResults<>(nbResults,

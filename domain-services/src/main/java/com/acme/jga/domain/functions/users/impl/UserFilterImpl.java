@@ -2,7 +2,7 @@ package com.acme.jga.domain.functions.users.impl;
 
 import com.acme.jga.domain.functions.DomainFunction;
 import com.acme.jga.domain.functions.users.api.UserFilter;
-import com.acme.jga.domain.model.v1.User;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.infra.services.api.users.IUsersInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.bundle.BundleFactory;
@@ -23,7 +23,7 @@ public class UserFilterImpl extends DomainFunction implements UserFilter {
     }
 
     @Override
-    public PaginatedResults<User> execute(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
+    public PaginatedResults<UserDisplay> execute(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
         return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FILTER", parentSpan, (span) -> usersInfraService.filterUsers(tenantId, orgId, span, searchParams));
     }
 }

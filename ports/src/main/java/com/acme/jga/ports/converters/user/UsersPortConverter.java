@@ -3,10 +3,12 @@ package com.acme.jga.ports.converters.user;
 import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.domain.model.v1.UserCommons;
 import com.acme.jga.domain.model.v1.UserCredentials;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
 import com.acme.jga.ports.dtos.users.v1.UserDisplayDto;
 import com.acme.jga.ports.dtos.users.v1.UserDto;
+import com.acme.jga.ports.dtos.users.v1.UsersDisplayListDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -47,7 +49,6 @@ public class UsersPortConverter {
             Optional.ofNullable(user.getCommons()).ifPresent(c -> {
                 displayDto.setFirstName(user.getCommons().getFirstName());
                 displayDto.setLastName(user.getCommons().getLastName());
-                displayDto.setMiddleName(user.getCommons().getMiddleName());
             });
             Optional.ofNullable(user.getCredentials()).ifPresent(userCredentials -> {
                 displayDto.setEmail(userCredentials.getEmail());
@@ -59,7 +60,6 @@ public class UsersPortConverter {
                 orgDto.setLabel(user.getOrganization().getCommons().getLabel());
                 orgDto.setStatus(user.getOrganization().getCommons().getStatus());
                 orgDto.setUid(user.getOrganization().getUid());
-                displayDto.setOrganization(orgDto);
             });
             return displayDto;
         }).orElse(null);
@@ -76,6 +76,10 @@ public class UsersPortConverter {
            userInfosDto.setLastName(user.getCommons().getLastName());
            return userInfosDto;
         });
+    }
+
+    public UserDisplayDto convertUserDisplayToDto(UserDisplay u){
+        return UserDisplayDto.builder().uid(u.getUid()).firstName(u.getFirstName()).lastName(u.getLastName()).email(u.getEmail()).login(u.getLogin()).status(u.getStatus()).build();
     }
 
 }

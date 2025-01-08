@@ -8,6 +8,7 @@ import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.converters.user.UsersPortConverter;
@@ -113,11 +114,11 @@ public class UserPortService extends AbstractPortService implements IUserPortSer
 
             // Search/filter users
             Map<String, Object> searchParams = buildSearchParams(searchFilter);
-            PaginatedResults<User> paginatedResults = userFilter.execute(tenant.getId(), org.getId(), span, searchParams);
+            PaginatedResults<UserDisplay> paginatedResults = userFilter.execute(tenant.getId(), org.getId(), span, searchParams);
 
             // Convert and return
             List<UserDisplayDto> lightUsers = new ArrayList<>();
-            paginatedResults.getResults().forEach(usr -> lightUsers.add(usersConverter.convertUserDomainToDisplay(usr)));
+            paginatedResults.getResults().forEach(usr -> lightUsers.add(usersConverter.convertUserDisplayToDto(usr)));
             return new UsersDisplayListDto(paginatedResults.getNbResults(), paginatedResults.getNbPages(), paginatedResults.getPageIndex(), paginatedResults.getPageSize(), lightUsers);
         });
     }

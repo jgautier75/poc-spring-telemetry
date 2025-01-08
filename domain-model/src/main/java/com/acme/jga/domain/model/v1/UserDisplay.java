@@ -1,7 +1,5 @@
-package com.acme.jga.ports.dtos.users.v1;
+package com.acme.jga.domain.model.v1;
 
-import com.acme.jga.domain.model.v1.UserStatus;
-import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder(toBuilder = true)
-public class UserDisplayDto {
+public class UserDisplay {
     private String uid;
-    private String login;
-    private String email;
     private String firstName;
     private String lastName;
+    private String login;
+    private String email;
     private UserStatus status;
 }

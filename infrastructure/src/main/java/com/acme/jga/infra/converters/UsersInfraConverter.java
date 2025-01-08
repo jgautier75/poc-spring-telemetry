@@ -3,7 +3,9 @@ package com.acme.jga.infra.converters;
 import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.domain.model.v1.UserCommons;
 import com.acme.jga.domain.model.v1.UserCredentials;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.infra.dto.users.v1.UserDb;
+import com.acme.jga.infra.dto.users.v1.UserDisplayDb;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -50,4 +52,7 @@ public class UsersInfraConverter {
         }).orElse(null);
     }
 
+    public UserDisplay convertUserDisplayDbToUserDisplay(UserDisplayDb userDisplayDb){
+        return Optional.ofNullable(userDisplayDb).map(u -> UserDisplay.builder().uid(u.getUid()).firstName(u.getFirstName()).lastName(u.getLastName()).email(u.getEmail()).login(u.getLogin()).status(u.getStatus()).build()).orElse(null);
+    }
 }

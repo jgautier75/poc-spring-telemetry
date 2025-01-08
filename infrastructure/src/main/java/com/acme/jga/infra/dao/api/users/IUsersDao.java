@@ -2,6 +2,7 @@ package com.acme.jga.infra.dao.api.users;
 
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.infra.dto.users.v1.UserDb;
+import com.acme.jga.infra.dto.users.v1.UserDisplayDb;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 
 import java.util.List;
@@ -32,5 +33,5 @@ public interface IUsersDao {
 
     List<UserDb> findUsers(Long tenantId, Long orgId);
 
-    PaginatedResults<UserDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams);
+    PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams);
 }

@@ -4,9 +4,11 @@ import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.filtering.FilteringConstants;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.User;
+import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.infra.converters.UsersInfraConverter;
 import com.acme.jga.infra.dao.api.users.IUsersDao;
 import com.acme.jga.infra.dto.users.v1.UserDb;
+import com.acme.jga.infra.dto.users.v1.UserDisplayDb;
 import com.acme.jga.infra.services.api.users.IUsersInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
@@ -82,11 +84,11 @@ public class UsersInfraService extends AbstractInfraService implements IUsersInf
     }
 
     @Override
-    public PaginatedResults<User> filterUsers(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
+    public PaginatedResults<UserDisplay> filterUsers(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
         return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FILTER", parentSpan, () -> {
-            PaginatedResults<UserDb> paginatedResults = usersDao.filterUsers(tenantId, orgId, searchParams);
-            List<User> users = paginatedResults.getResults().stream()
-                    .map(usersInfraConverter::convertUserDbToUser)
+            PaginatedResults<UserDisplayDb> paginatedResults = usersDao.filterUsers(tenantId, orgId, searchParams);
+            List<UserDisplay> users = paginatedResults.getResults().stream()
+                    .map(usersInfraConverter::convertUserDisplayDbToUserDisplay)
                     .toList();
             return new PaginatedResults<>(
                     paginatedResults.getNbResults(),
