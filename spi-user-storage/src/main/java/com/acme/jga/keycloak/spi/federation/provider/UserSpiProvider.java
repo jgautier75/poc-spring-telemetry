@@ -60,13 +60,11 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * Initialize HTTP client and cryto engine.
      */
     public void initialize() {
-        LOGGER.infof("Initialize SPI: [%s]=[%s]", FederationConstants.ENDPOINT, getEnvVariable(FederationConstants.ENDPOINT));
-        this.objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, false);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+        initJackson();
+        initVault();
+    }
 
+    private void initVault() {
         LOGGER.infof("Initialize Vault : [%s]=[%s]", FederationConstants.VAULT_ADDRESS, getEnvVariable(FederationConstants.VAULT_ADDRESS));
         try {
             this.vaultConfig = new VaultConfig()
@@ -75,12 +73,21 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
                     .build();
             this.vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
             this.cryptoEngine = new CryptoEngine();
-            String secretPath = getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS);       
+            String secretPath = getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS);
             String cipherKey = vault.logical().read(secretPath, true, FederationConstants.VAULT_VERSION).getData().get(FederationConstants.VAULT_CIPHER_KEY);
             this.cryptoEngine.initCrypto(cipherKey);
         } catch (VaultException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void initJackson() {
+        LOGGER.infof("Initialize UserStorage Spi: [%s]=[%s]", FederationConstants.ENDPOINT, getEnvVariable(FederationConstants.ENDPOINT));
+        this.objectMapper = new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, false);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
     }
 
     @Override
@@ -278,14 +285,10 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * @return PasswordCredentialProvider
      */
     private Optional<PasswordCredentialProvider> lookupPasswordCredentialProvider() {
-        Set<CredentialProvider> allProviders = this.keycloakSession.getAllProviders(CredentialProvider.class);
-        Optional<CredentialProvider> optProvider = allProviders.stream().filter(p -> PasswordCredentialModel.TYPE.equalsIgnoreCase(p.getType())).findFirst();
-        if (optProvider.isPresent()) {
-            PasswordCredentialProvider passwordCredentialProvider = (PasswordCredentialProvider) optProvider.get();
-            return Optional.of(passwordCredentialProvider);
-        } else {
-            return Optional.empty();
-        }
+        return this.keycloakSession.getAllProviders(CredentialProvider.class).stream()
+                .filter(p -> PasswordCredentialModel.TYPE.equalsIgnoreCase(p.getType()))
+                .findFirst()
+                .map(p -> (PasswordCredentialProvider) p);
     }
 
 }
