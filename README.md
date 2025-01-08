@@ -18,12 +18,12 @@ Other modules:
 - dao-lib         : DAO utilities (AbstractJdbcDaoSupport, SQLExtractor, DaoConstants)
 - db-migration    : Liquibase database migration changeLogs
 - docker          : Docker-compose files (grafana, jaeger, openbao, opentelemetry, prometheus)
-- kube            : Helm chart dor datrabase init and web api deployment
+- kube            : Helm chart for database init and rest apis deployment
 - logging         : Transverse logging service
 - opentelemetry   : OpenTelemetry wrapper
 - search-filter   : ANTLR4 for search filtering
 - shared-utils    : Request correlation id (ThreadLocal), Streams util
-- spi-kafka       : Keycloak Spi, a kafka consumer for audit events in order to update user's basic infos)
+- spi-kafka       : Keycloak Spi, a kafka consumer consumming audit events in order to update user's basic infos
 - spi-user-storage: Keycloak Spi, a keycloak user provider coupled with users management's REST api
 - spring-native   : Reflect configuration file required for application compilation in native format
 - validation      : Abstract validation engine (payload validation)
@@ -256,7 +256,7 @@ docker run -it --env P_PGHOST=192.168.1.15 --env P_PGPORT=5432 --env P_PGUSER=po
     - Storage of audit events.
     - An audit event is always recorded when an entity is created (tenant, organization, sector), updated or deleted
     - Properties:
-        - uid: A uique identifier (uuid)
+        - uid: A unique identifier (uuid)
         - created_at: Creation timestamp (UTC/ISO-8601)
         - last_updated_at: Last update timestamp (UTC/ISO-8601)
         - target: Entity type (Enumeration: Tenant(0), Organization(1), User(2), Sector(3))
