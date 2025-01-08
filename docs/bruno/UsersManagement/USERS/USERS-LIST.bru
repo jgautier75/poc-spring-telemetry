@@ -5,16 +5,16 @@ meta {
 }
 
 get {
-  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/8d4296d3-ce15-47dd-a6ac-e22191bf83d9/organizations/8fbf3eeb-4b70-40dd-9a7d-140286ee9269/users?size=100&index=1
+  url: {{httpScheme}}://{{httpHost}}/{{baseUri}}/tenants/a2abf01f-54e7-4d98-bde7-cd8f81980154/organizations/089aec77-5fea-4024-b9ca-63da730fde42/users?index=1&orderBy=%2BlastName&filter=firstName eq 'Ada' and lastName eq 'LOVELACE'
   body: none
   auth: bearer
 }
 
 params:query {
-  size: 100
   index: 1
-  ~orderBy: %2BlastName
-  ~filter: firstName eq 'Nicolas' and middleName eq 'L'
+  orderBy: %2BlastName
+  filter: firstName eq 'Ada' and lastName eq 'LOVELACE'
+  ~size: 5
 }
 
 headers {
