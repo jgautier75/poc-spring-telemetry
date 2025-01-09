@@ -1,16 +1,16 @@
 package com.acme.jga.rest.controllers;
 
+import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.versions.ApiVersion;
 import com.acme.jga.domain.model.versions.VersionsList;
 import com.acme.jga.infra.config.KafkaProducerConfig;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.dtos.dependencies.v1.DependencyListDto;
 import com.acme.jga.ports.dtos.system.v1.*;
 import com.acme.jga.ports.services.api.system.ISystemPortService;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
-import com.acme.jga.rest.config.VaultSecrets;
 import com.acme.jga.rest.versioning.WebApiVersions;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.support.MessageBuilder;
@@ -19,12 +19,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 
 @RestController
-@RequiredArgsConstructor
-public class SystemController {
+public class SystemController extends AbstractController {
+    private static final String INSTRUMENTATION_NAME = SystemController.class.getCanonicalName();
     private final PublishSubscribeChannel eventAuditChannel;
     private final MicrometerPrometheus micrometerPrometheus;
     private final ISystemPortService systemPortService;
     private final AppGenericConfig appGenericConfig;
+
+    public SystemController(OpenTelemetryWrapper openTelemetryWrapper, PublishSubscribeChannel eventAuditChannel, MicrometerPrometheus micrometerPrometheus, ISystemPortService systemPortService, AppGenericConfig appGenericConfig) {
+        super(openTelemetryWrapper);
+        this.eventAuditChannel = eventAuditChannel;
+        this.micrometerPrometheus = micrometerPrometheus;
+        this.systemPortService = systemPortService;
+        this.appGenericConfig = appGenericConfig;
+    }
 
     @PostMapping(value = WebApiVersions.SystemResourceVersion.KAFKA_WAKEUP)
     public ResponseEntity<Void> kafkaWakeUp() {
@@ -50,8 +58,8 @@ public class SystemController {
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.ERRORS_LIST)
-    public ResponseEntity<SystemErrorList> listSystemErrors() {
-        SystemErrorList systemErrorList = systemPortService.listErrorFiles(appGenericConfig.getErrorPath());
+    public ResponseEntity<SystemErrorList> listSystemErrors() throws FunctionalException {
+        SystemErrorList systemErrorList = withSpan(INSTRUMENTATION_NAME, "API_ERRORS_LIST", (span) -> systemPortService.listErrorFiles(appGenericConfig.getErrorPath(), span));
         return ResponseEntity.ok(systemErrorList);
     }
 

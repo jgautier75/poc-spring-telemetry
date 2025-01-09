@@ -5,9 +5,10 @@ import com.acme.jga.ports.dtos.system.v1.SystemErrorFileDto;
 import com.acme.jga.ports.dtos.system.v1.SystemErrorList;
 import com.acme.jga.ports.dtos.system.v1.SystemSecretDto;
 import com.acme.jga.ports.dtos.system.v1.SystemSecretListDto;
+import io.opentelemetry.api.trace.Span;
 
 public interface ISystemPortService {
-    SystemErrorList listErrorFiles(String errorPath);
+    SystemErrorList listErrorFiles(String errorPath, Span parentSpan);
 
     SystemErrorFileDto readErrorFile(String errorPath, String fileName);
 

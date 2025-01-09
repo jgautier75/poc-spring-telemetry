@@ -24,6 +24,7 @@ import com.acme.jga.search.filtering.parser.QueryParser;
 import com.acme.jga.search.filtering.utils.ParsingResult;
 import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
+import io.opentelemetry.api.trace.Span;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,8 +66,8 @@ public class UserPortService extends AbstractPortService implements IUserPortSer
     }
 
     @Override
-    public UidDto createUser(String tenantUid, String orgUid, UserDto userDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", null, (span) -> {
+    public UidDto createUser(String tenantUid, String orgUid, UserDto userDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", parentSpan, (span) -> {
             ValidationResult validationResult = usersValidationEngine.validate(userDto);
             if (!validationResult.isSuccess()) {
                 throw new ValidationException(validationResult.getErrors());
@@ -78,8 +79,8 @@ public class UserPortService extends AbstractPortService implements IUserPortSer
     }
 
     @Override
-    public Integer updateUser(String tenantUid, String orgUid, String userUid, UserDto userDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", null, (span) -> {
+    public Integer updateUser(String tenantUid, String orgUid, String userUid, UserDto userDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", parentSpan, (span) -> {
             userDto.setUid(userUid);
             ValidationResult validationResult = usersValidationEngine.validate(userDto);
             if (!validationResult.isSuccess()) {
@@ -92,21 +93,21 @@ public class UserPortService extends AbstractPortService implements IUserPortSer
 
 
     @Override
-    public Integer deleteUser(String tenantUid, String orgUid, String userUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_DELETE", null, (span) -> userDelete.execute(tenantUid, orgUid, userUid, span));
+    public Integer deleteUser(String tenantUid, String orgUid, String userUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_DELETE", parentSpan, (span) -> userDelete.execute(tenantUid, orgUid, userUid, span));
     }
 
     @Override
-    public UserDisplayDto findUser(String tenantUid, String orgUid, String userUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_FIND_UID", null, (span) -> {
+    public UserDisplayDto findUser(String tenantUid, String orgUid, String userUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_FIND_UID", parentSpan, (span) -> {
             User user = userFind.byUid(tenantUid, orgUid, userUid, span);
             return usersConverter.convertUserDomainToDisplay(user);
         });
     }
 
     @Override
-    public UsersDisplayListDto filterUsers(String tenantUid, String orgUid, SearchFilterDto searchFilter) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_FILTER", null, (span) -> {
+    public UsersDisplayListDto filterUsers(String tenantUid, String orgUid, SearchFilterDto searchFilter, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_FILTER", parentSpan, (span) -> {
             // Ensure tenant exists
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             // Ensure organization exists

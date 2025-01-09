@@ -21,6 +21,7 @@ import com.acme.jga.search.filtering.parser.QueryParser;
 import com.acme.jga.search.filtering.utils.ParsingResult;
 import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,8 +62,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      * @inheritDoc
      */
     @Override
-    public UidDto createOrganization(String tenantUid, OrganizationDto organizationDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_CREATE", null, (orgSpan) -> {
+    public UidDto createOrganization(String tenantUid, OrganizationDto organizationDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_CREATE", parentSpan, (orgSpan) -> {
             ValidationResult validationResult = organizationsValidationEngine.validate(organizationDto);
             if (!validationResult.isSuccess()) {
                 throw new ValidationException(validationResult.getErrors());
@@ -77,8 +78,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      * @inheritDoc
      */
     @Override
-    public OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilterDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_LIGHT", null, (span -> {
+    public OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilterDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_LIGHT", parentSpan, (span -> {
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             Map<String, Object> searchParams = extractSearchParams(searchFilterDto);
             PaginatedResults<Organization> paginatedResults = organizationFilter.execute(tenant.getId(), span, searchParams);
@@ -92,8 +93,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      * @inheritDoc
      */
     @Override
-    public OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_UID", null, (span) -> {
+    public OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_UID", parentSpan, (span) -> {
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, fetchSectors, span);
             OrganizationDto organizationDto = organizationsConverter.convertOrganizationToDto(org);
@@ -106,8 +107,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      * @inheritDoc
      */
     @Override
-    public Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_UPDATE", null, (span) -> {
+    public Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_UPDATE", parentSpan, (span) -> {
             tenantFind.byUid(tenantUid, span);
             Organization org = organizationsConverter.convertOrganizationDtoToDomain(organizationDto);
             return organizationUpdate.execute(tenantUid, orgUid, org, span);
@@ -118,8 +119,8 @@ public class OrganizationPortService extends AbstractPortService implements IOrg
      * @inheritDoc
      */
     @Override
-    public Integer deleteOrganization(String tenantUid, String orgUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_DELETE", null, (span) -> organizationDelete.execute(tenantUid, orgUid, span));
+    public Integer deleteOrganization(String tenantUid, String orgUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_DELETE", parentSpan, (span) -> organizationDelete.execute(tenantUid, orgUid, span));
     }
 
     private Map<String, Object> extractSearchParams(SearchFilterDto searchFilterDto) {

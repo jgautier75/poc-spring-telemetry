@@ -2,6 +2,7 @@ package com.acme.jga.ports.services.impl.system;
 
 import com.acme.jga.domain.model.v1.SystemErrorFile;
 import com.acme.jga.domain.services.system.api.ISystemService;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.converters.system.SystemConverter;
 import com.acme.jga.ports.dtos.dependencies.v1.DependencyListDto;
 import com.acme.jga.ports.dtos.system.v1.SystemErrorFileDto;
@@ -9,7 +10,10 @@ import com.acme.jga.ports.dtos.system.v1.SystemErrorList;
 import com.acme.jga.ports.dtos.system.v1.SystemSecretDto;
 import com.acme.jga.ports.dtos.system.v1.SystemSecretListDto;
 import com.acme.jga.ports.services.api.system.ISystemPortService;
+import com.acme.jga.ports.services.impl.AbstractPortService;
+import io.opentelemetry.api.trace.Span;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +22,18 @@ import java.util.Map;
 import static com.acme.jga.utils.lambdas.StreamUtil.ofNullableList;
 
 @Service
-@RequiredArgsConstructor
-public class SystemPortService implements ISystemPortService {
+public class SystemPortService extends AbstractPortService implements ISystemPortService {
+    private static final String INSTRUMENTATION_NAME = SystemPortService.class.getCanonicalName();
     private final ISystemService systemService;
 
+    public SystemPortService(OpenTelemetryWrapper openTelemetryWrapper, ISystemService systemService) {
+        super(openTelemetryWrapper);
+        this.systemService = systemService;
+    }
+
     @Override
-    public SystemErrorList listErrorFiles(String path) {
-        List<SystemErrorFile> systemErrorFiles = systemService.listErrorFiles(path);
+    public SystemErrorList listErrorFiles(String path, Span parentSpan) {
+        List<SystemErrorFile> systemErrorFiles = processWithSpan(INSTRUMENTATION_NAME, "PORT_ERRORS_LIST", parentSpan, (span) -> systemService.listErrorFiles(path));
         SystemErrorList systemErrorList = new SystemErrorList();
         systemErrorList.setErrors(ofNullableList(systemErrorFiles).map(SystemConverter::convertSystemErrorFile).toList());
         return systemErrorList;

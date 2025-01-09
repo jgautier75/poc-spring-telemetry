@@ -16,6 +16,7 @@ import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.validation.sectors.SectorsValidationEngine;
 import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +45,8 @@ public class SectorsPortService extends AbstractPortService implements ISectorsP
     }
 
     @Override
-    public UidDto createSector(String tenantUid, String organizationUid, SectorDto sectorDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "SECTOR_PORT_CREATE", null, (span) -> {
+    public UidDto createSector(String tenantUid, String organizationUid, SectorDto sectorDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "SECTOR_PORT_CREATE", parentSpan, (span) -> {
             ValidationResult validationResult = sectorsValidationEngine.validate(sectorDto);
             if (!validationResult.isSuccess()) {
                 throw new ValidationException(validationResult.getErrors());
@@ -57,16 +58,16 @@ public class SectorsPortService extends AbstractPortService implements ISectorsP
     }
 
     @Override
-    public SectorDisplayDto findSectors(String tenantUid, String organizationUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_LIST", null, (span) -> {
+    public SectorDisplayDto findSectors(String tenantUid, String organizationUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_LIST", parentSpan, (span) -> {
             Sector rootSector = sectorHierarchy.execute(tenantUid, organizationUid, span);
             return sectorsConverter.convertSectorDomainToSectorDisplay(rootSector);
         });
     }
 
     @Override
-    public Integer updateSector(String tenantUid, String organizationUid, String sectorUid, SectorDto sectorDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_UPDATE", null, (span) -> {
+    public Integer updateSector(String tenantUid, String organizationUid, String sectorUid, SectorDto sectorDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_UPDATE", parentSpan, (span) -> {
             ValidationResult validationResult = sectorsValidationEngine.validate(sectorDto);
             if (!validationResult.isSuccess()) {
                 throw new ValidationException(validationResult.getErrors());
@@ -77,8 +78,8 @@ public class SectorsPortService extends AbstractPortService implements ISectorsP
     }
 
     @Override
-    public Integer deleteSector(String tenantUid, String organizationUid, String sectorUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_DELETE", null, (span) -> sectorDelete.execute(tenantUid, organizationUid, sectorUid, span));
+    public Integer deleteSector(String tenantUid, String organizationUid, String sectorUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_DELETE", parentSpan, (span) -> sectorDelete.execute(tenantUid, organizationUid, sectorUid, span));
     }
 
 }

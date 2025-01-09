@@ -59,14 +59,14 @@ class TenantsControllerTest {
         String tenantJson = mapper.writeValueAsString(tenantDto);
 
         // WHEN
-        Mockito.when(tenantPortService.createTenant(Mockito.any())).thenReturn(uidDto);
+        Mockito.when(tenantPortService.createTenant(Mockito.any(), Mockito.any())).thenReturn(uidDto);
 
         // THEN
         mockMvc.perform(post("/api/v1/tenants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(tenantJson)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(tenantJson)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.uid", "").exists())
                 .andExpect(jsonPath("$.uid", "").value(uidDto.getUid()));
@@ -84,15 +84,15 @@ class TenantsControllerTest {
         String tenantJson = mapper.writeValueAsString(tenantDto);
 
         // WHEN
-        Mockito.when(tenantPortService.updateTenant(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(tenantPortService.updateTenant(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
 
         // THEN
         String targetUri = "/api/v1/tenants/" + uidDto.getUid();
         mockMvc.perform(post(targetUri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(tenantJson)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(tenantJson)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isNoContent());
     }
 
@@ -105,13 +105,13 @@ class TenantsControllerTest {
         UidDto uidDto = new UidDto(UUID.randomUUID().toString());
 
         // WHEN
-        Mockito.when(tenantPortService.deleteTenant(Mockito.any())).thenReturn(1);
+        Mockito.when(tenantPortService.deleteTenant(Mockito.any(), Mockito.any())).thenReturn(1);
 
         // THEN
         String targetUri = "/api/v1/tenants/" + uidDto.getUid();
         mockMvc.perform(delete(targetUri)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isNoContent());
     }
 

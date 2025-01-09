@@ -13,6 +13,7 @@ import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -73,7 +74,7 @@ class OrganizationsControllerTest {
         String orgJson = objectMapper.writeValueAsString(organizationDto);
 
         // WHEN
-        Mockito.when(organizationPortService.createOrganization(Mockito.any(), Mockito.any())).thenReturn(uidDto);
+        Mockito.when(organizationPortService.createOrganization(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(uidDto);
 
         // THEN
         mockMvc.perform(post("/api/v1/tenants/" + TENANT_UID + "/organizations")
@@ -109,7 +110,7 @@ class OrganizationsControllerTest {
         String orgJson = objectMapper.writeValueAsString(organizationDto);
 
         // WHEN
-        Mockito.when(organizationPortService.updateOrganization(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(organizationPortService.updateOrganization(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(1);
         // THEN
         String targetUri = "/api/v1/tenants/" + TENANT_UID + "/organizations/" + uidDto.getUid();
@@ -130,7 +131,7 @@ class OrganizationsControllerTest {
         UidDto uidDto = new UidDto(UUID.randomUUID().toString());
 
         // WHEN
-        Mockito.when(organizationPortService.deleteOrganization(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(organizationPortService.deleteOrganization(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
 
         // THEN
         String targetUri = "/api/v1/tenants/" + TENANT_UID + "/organizations/" + uidDto.getUid();

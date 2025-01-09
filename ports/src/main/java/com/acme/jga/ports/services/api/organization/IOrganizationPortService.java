@@ -5,6 +5,7 @@ import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationListLightDto;
 import com.acme.jga.ports.dtos.search.v1.SearchFilterDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
+import io.opentelemetry.api.trace.Span;
 
 public interface IOrganizationPortService {
 
@@ -16,7 +17,7 @@ public interface IOrganizationPortService {
      * @return Generated uid
      * @throws com.acme.jga.domain.model.exceptions.FunctionalException Functional error
      */
-    UidDto createOrganization(String tenantUid, OrganizationDto organizationDto) throws FunctionalException;
+    UidDto createOrganization(String tenantUid, OrganizationDto organizationDto, Span parentSpan) throws FunctionalException;
 
     /**
      * Find all organizations in a tenant.
@@ -26,7 +27,7 @@ public interface IOrganizationPortService {
      * @return Light representation of organization.
      * @throws FunctionalException Functional error
      */
-    OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilter) throws FunctionalException;
+    OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilter, Span parentSpan) throws FunctionalException;
 
     /**
      * Update organization.
@@ -36,7 +37,7 @@ public interface IOrganizationPortService {
      * @param organizationDto Organization payload
      * @throws FunctionalException Functional error
      */
-    Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto)
+    Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto, Span parentSpan)
             throws FunctionalException;
 
     /**
@@ -48,8 +49,7 @@ public interface IOrganizationPortService {
      * @return Organization
      * @throws FunctionalException Functional error
      */
-    OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors)
-            throws FunctionalException;
+    OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors, Span parentSpan) throws FunctionalException;
 
     /**
      * Delete organization.
@@ -59,6 +59,6 @@ public interface IOrganizationPortService {
      * @return Nb od rows deleted
      * @throws FunctionalException Functional error
      */
-    Integer deleteOrganization(String tenantUid, String orgUid) throws FunctionalException;
+    Integer deleteOrganization(String tenantUid, String orgUid, Span parentSpan) throws FunctionalException;
 
 }

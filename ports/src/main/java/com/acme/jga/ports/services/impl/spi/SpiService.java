@@ -8,6 +8,7 @@ import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
 import com.acme.jga.ports.services.api.spi.ISpiService;
 import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.services.impl.user.UserPortService;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,8 @@ public class SpiService extends AbstractPortService implements ISpiService {
     }
 
     @Override
-    public Optional<UserInfosDto> findByCriteria(String field, String value) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_SPI_FIND", null, (span) -> {
+    public Optional<UserInfosDto> findByCriteria(String field, String value, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_SPI_FIND", parentSpan, (span) -> {
             Optional<User> optDomainUser = Optional.empty();
             if ("email".equalsIgnoreCase(field)) {
                 optDomainUser = userFind.byEmail(value, null);

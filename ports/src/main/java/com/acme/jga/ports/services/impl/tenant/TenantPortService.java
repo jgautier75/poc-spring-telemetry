@@ -15,6 +15,7 @@ import com.acme.jga.ports.validation.tenants.TenantsValidationEngine;
 import com.acme.jga.utils.lambdas.StreamUtil;
 import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +50,8 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
      * @inheritDoc
      */
     @Override
-    public UidDto createTenant(TenantDto tenantDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_CREATE", null, (span) -> {
+    public UidDto createTenant(TenantDto tenantDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_CREATE", parentSpan, (span) -> {
             ValidationResult validationResult = tenantsValidationEngine.validate(tenantDto);
             if (!validationResult.isSuccess()) {
                 throw new ValidationException(validationResult.getErrors());
@@ -62,8 +63,8 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     }
 
     @Override
-    public TenantDisplayDto findTenantByUid(String uid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_UID", null, (span) -> {
+    public TenantDisplayDto findTenantByUid(String uid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_UID", parentSpan, (span) -> {
             Tenant tenant = tenantFind.byUid(uid, span);
             TenantDisplayDto tenantDisplayDto = tenantsConverter.tenantDomainToDisplay(tenant);
             return tenantDisplayDto;
@@ -71,8 +72,8 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     }
 
     @Override
-    public TenantListDisplayDto findAllTenants() {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_ALL", null, (span) -> {
+    public TenantListDisplayDto findAllTenants(Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_ALL", parentSpan, (span) -> {
             List<Tenant> tenants = tenantList.execute(span);
             List<TenantDisplayDto> tenantDisplayDtos = StreamUtil.ofNullableList(tenants).map(tenant -> tenantsConverter.tenantDomainToDisplay(tenant)).toList();
             return new TenantListDisplayDto(tenantDisplayDtos);
@@ -80,8 +81,8 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     }
 
     @Override
-    public Integer updateTenant(String uid, TenantDto tenantDto) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_UPDATE", null, (span) -> {
+    public Integer updateTenant(String uid, TenantDto tenantDto, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_UPDATE", parentSpan, (span) -> {
             Tenant tenant = tenantsConverter.tenantDtoToDomainTenant(tenantDto);
             tenant.setUid(uid);
             return tenantUpdate.execute(tenant, span);
@@ -89,8 +90,8 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     }
 
     @Override
-    public Integer deleteTenant(String tenantUid) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_DELETE", null, (span) -> tenantDelete.execute(tenantUid, span));
+    public Integer deleteTenant(String tenantUid, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_DELETE", parentSpan, (span) -> tenantDelete.execute(tenantUid, span));
     }
 
 }

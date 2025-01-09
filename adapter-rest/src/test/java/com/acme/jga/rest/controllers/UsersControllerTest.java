@@ -65,7 +65,7 @@ class UsersControllerTest {
         String userJson = mapper.writeValueAsString(userDto);
 
         // WHEN
-        Mockito.when(userPortService.createUser(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(userPortService.createUser(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(uidDto);
 
         // THEN
@@ -94,7 +94,7 @@ class UsersControllerTest {
         String userJson = mapper.writeValueAsString(userDto);
 
         // WHEN
-        Mockito.when(userPortService.createUser(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(userPortService.createUser(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(uidDto);
 
         // THEN
@@ -127,7 +127,7 @@ class UsersControllerTest {
         UsersDisplayListDto usersDisplayListDto = new UsersDisplayListDto(0, 0, 0, 0, usersList);
 
         // WHEN
-        Mockito.when(userPortService.filterUsers(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(usersDisplayListDto);
+        Mockito.when(userPortService.filterUsers(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(usersDisplayListDto);
 
         // THEN
         String usersUri = "/api/v1/tenants/" + TENANT_UID + "/organizations/" + ORG_UID + "/users";
@@ -148,7 +148,7 @@ class UsersControllerTest {
         UidDto uidDto = new UidDto(UUID.randomUUID().toString());
 
         // WHEN
-        Mockito.when(userPortService.deleteUser(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(userPortService.deleteUser(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
 
         // THEN
         String usersUri = "/api/v1/tenants/" + TENANT_UID + "/organizations/" + ORG_UID + "/users/"
