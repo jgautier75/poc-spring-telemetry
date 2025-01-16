@@ -7,6 +7,7 @@ import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -144,7 +145,11 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
+            EntityTransaction tx =  jpaConnectionProvider.getEntityManager().getTransaction();;
+            tx.begin();
             jpaConnectionProvider.getEntityManager().persist(userEntity);
+            tx.commit();
+            
         }
     }
 
