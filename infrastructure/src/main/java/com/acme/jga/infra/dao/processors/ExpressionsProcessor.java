@@ -62,7 +62,7 @@ public class ExpressionsProcessor {
                     sqlBuffer.append(" ( ");
                     break;
                 case COMPARISON:
-                    isLikeOperator = FilterComparison.LIKE == FilterComparison.fromValueParam(expression.getValue());
+                    isLikeOperator = isLikeOperator(expression);
                     sqlBuffer.append(" ").append(getSqlParam(expression)).append(" ");
                     break;
                 case CLOSING_PARENTEHSIS:
@@ -77,20 +77,11 @@ public class ExpressionsProcessor {
                 case PROPERTY:
                     propertyName.setLength(0);
                     propertyName.append(stripEnclosingQuotes(expression.getValue()));
-                    KeyValuePair columnNameAndColumnType = domainEntityMetaData.get(stripEnclosingQuotes(expression.getValue()));
-                    if (Optional.ofNullable(columnNameAndColumnType).isEmpty()) {
-                        throw new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.INVALID_PROPERTY.name(), null, "Unmapped property named [" + stripEnclosingQuotes(expression.getValue()) + "]"));
-                    }
-                    appendProperty(expression, columnNameAndColumnType.getKey(), paramName, sqlBuffer, index);
-                    isTypeNumber = DataType.NUMBER.name().equals(columnNameAndColumnType.getValue());
+                    appendPropertyToSql(expression, domainEntityMetaData, paramName, sqlBuffer, index);
+                    isTypeNumber = isNumberType(domainEntityMetaData, propertyName.toString());
                     break;
                 case VALUE:
-                    if (OrganizationMetaData.KIND.getAlias().equalsIgnoreCase(propertyName.toString())) {
-                        sqlBuffer.append(":").append(paramName);
-                        params.put(paramName.toString(), OrganizationKind.valueOf(stripEnclosingQuotes(expression.getValue())).getCode());
-                    } else {
-                        appendValue(sqlBuffer, expression, paramName, params, isTypeNumber, isLikeOperator);
-                    }
+                    appendValueToSql(expression, params, sqlBuffer, paramName, isTypeNumber, isLikeOperator);
                     isTypeNumber = false;
                     isLikeOperator = false;
                     break;
@@ -114,6 +105,7 @@ public class ExpressionsProcessor {
         if (hasExpressions) {
             buildSqlFromExpressions(parsingResult.getExpressions(), params, sqlBuffer, domainEntityMetaData);
         }
+
         // Compute pagination
         AbstractJdbcDaoSupport.PaginationResult paginationResult = computePagination(searchParams, domainEntityMetaData);
         return new AbstractJdbcDaoSupport.CompositeQuery(hasExpressions, sqlBuffer.toString(), params, paginationResult.pagination(), paginationResult.orderBy());
@@ -127,26 +119,29 @@ public class ExpressionsProcessor {
      */
     public String stripEnclosingQuotes(String value) {
         if (value != null && value.startsWith("'") && value.endsWith("'")) {
-            String leftPart = value.substring(1);
-            return leftPart.substring(0, leftPart.length() - 1);
-        } else {
-            return value;
+            return value.substring(1, value.length() - 1);
         }
+        return value;
     }
 
     /**
      * Append property for parameter.
      *
      * @param expression     Expression
-     * @param realColumnName Real column name
      * @param paramName      Parameter name
      * @param sqlBuffer      SQL query buffer
      * @param index          Index
      */
-    private void appendProperty(Expression expression, String realColumnName, StringBuilder paramName, StringBuilder sqlBuffer, int index) {
-        sqlBuffer.append(realColumnName);
+    private void appendPropertyToSql(Expression expression, Map<String, KeyValuePair> domainEntityMetaData, StringBuilder paramName, StringBuilder sqlBuffer, int index) {
+        String propertyName = stripEnclosingQuotes(expression.getValue());
+        KeyValuePair columnNameAndColumnType = domainEntityMetaData.get(propertyName);
+        if (columnNameAndColumnType == null) {
+            throw new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.INVALID_PROPERTY.name(), null, "Unmapped property named [" + propertyName + "]"));
+        }
+
+        sqlBuffer.append(columnNameAndColumnType.getKey());
         paramName.setLength(0);
-        paramName.append("p").append(stripEnclosingQuotes(expression.getValue())).append(index);
+        paramName.append("p").append(propertyName).append(index);
     }
 
     /**
@@ -159,12 +154,12 @@ public class ExpressionsProcessor {
      * @param isTypeInteger  Is value of type integer
      * @param isLikeOperator Is value of type like
      */
-    private void appendValue(StringBuilder sqlBuffer, Expression expression, StringBuilder paramName, Map<String, Object> params, boolean isTypeInteger, boolean isLikeOperator) {
+    private void appendValueToSql(Expression expression, Map<String, Object> params, StringBuilder sqlBuffer, StringBuilder paramName, boolean isTypeInteger, boolean isLikeOperator) {
         String value = stripEnclosingQuotes(expression.getValue());
         sqlBuffer.append(":").append(paramName);
 
-        if (isTypeInteger) {
-            params.put(paramName.toString(), Integer.valueOf(value));
+        if (OrganizationMetaData.KIND.getAlias().equalsIgnoreCase(paramName.toString())) {
+            params.put(paramName.toString(), OrganizationKind.valueOf(value).getCode());
         } else {
             params.put(paramName.toString(), isLikeOperator ? "%" + value + "%" : value);
         }
@@ -181,8 +176,7 @@ public class ExpressionsProcessor {
     }
 
     /**
-     * Compute page index.<br/>
-     * By default page starts atr index 0 in SQL
+     * Compute page index.
      *
      * @param searchParams Search Parameters
      * @return Page index
@@ -194,7 +188,7 @@ public class ExpressionsProcessor {
     }
 
     /**
-     * Compute page size if present, otherwise use default page sze.
+     * Compute page size if present, otherwise use default page size.
      *
      * @param searchParams Search parameters
      * @return Page size
@@ -223,14 +217,20 @@ public class ExpressionsProcessor {
 
         String orderColumn = orderByParam.substring(1);
         KeyValuePair columnNameAndType = columnsDefinitionsByAlias.get(orderColumn);
-        if (Optional.ofNullable(columnNameAndType).isEmpty()) {
+        if (columnNameAndType == null) {
             throw new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.INVALID_PROPERTY.name(), null, "Unknown orderBy named [" + orderColumn + "]"));
         }
-        String orderBy = DaoConstants.ORDER_BY + columnNameAndType.getKey();
 
-        return orderBy + (DaoConstants.ORDER_ASC_SIGN.equals(orderDirection)
-                ? DaoConstants.ORDER_ASC_KEYWORD
-                : DaoConstants.ORDER_DESC_KEYWORD);
+        return DaoConstants.ORDER_BY + columnNameAndType.getKey() +
+                (DaoConstants.ORDER_ASC_SIGN.equals(orderDirection) ? DaoConstants.ORDER_ASC_KEYWORD : DaoConstants.ORDER_DESC_KEYWORD);
     }
 
+    private boolean isLikeOperator(Expression expression) {
+        return FilterComparison.LIKE == FilterComparison.fromValueParam(expression.getValue());
+    }
+
+    private boolean isNumberType(Map<String, KeyValuePair> domainEntityMetaData, String propertyName) {
+        KeyValuePair columnNameAndColumnType = domainEntityMetaData.get(propertyName);
+        return columnNameAndColumnType != null && DataType.NUMBER.name().equals(columnNameAndColumnType.getValue());
+    }
 }
