@@ -1,6 +1,6 @@
 [
   {
-    "name": "com.acme.jga.users.mgt.domain.events.v1.AuditEvent",
+    "name": "com.acme.jga.domain.model.events.v1.AuditEvent",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -20,7 +20,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.jga.users.mgt.domain.events.v1.AuditScope",
+    "name": "com.acme.jga.domain.model.events.v1.AuditScope",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -40,7 +40,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.jga.users.mgt.domain.events.v1.AuditChange",
+    "name": "com.acme.jga.domain.model.events.v1.AuditChange",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -60,7 +60,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.jga.users.mgt.dto.api.ApiError",
+    "name": "com.acme.jga.domain.model.api.ApiError",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -180,7 +180,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.users.mgt.events.protobuf.Event$AuditEventMessage",
+    "name": "com.acme.jga.domain.model.events.protobuf.Event$AuditEventMessage",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -200,7 +200,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.users.mgt.events.protobuf.Event$AuditEventMessage$Builder",
+    "name": "com.acme.jga.domain.model.events.protobuf.Event$AuditEventMessage$Builder",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -220,7 +220,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.users.mgt.events.protobuf.Event$AuditAuthor",
+    "name": "com.acme.jga.domain.model.events.protobuf.Event$AuditAuthor",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -240,7 +240,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.users.mgt.events.protobuf.Event$AuditScope",
+    "name": "com.acme.jga.domain.model.events.protobuf.Event$AuditScope",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
@@ -260,7 +260,7 @@
     "unsafeAllocated": true
   },
   {
-    "name": "com.acme.users.mgt.events.protobuf.Event$AuditChange",
+    "name": "com.acme.jga.domain.model.events.protobuf.Event$AuditChange",
     "allDeclaredClasses": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true,
