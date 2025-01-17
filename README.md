@@ -132,7 +132,7 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | keycloak            | 26.0    | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.1    | 5433    | Keycloak app storage                      |
 | openbao             | 2.0.3   | 7080    | OpenBao port                              |
-| akhq                | 0.24.0  | 8086    | GUI for kefka (topics, consumers, ...)    | 
+| akhq                | 0.24.0  | 8086    | GUI for kafka (topics, consumers, ...)    | 
 | zookeeper           | 7.6.1   | 2181    | Centralized service for kafka management  |
 | kafka               | 7.4.3   | 9092    | Kafka broker                              |
 | schema-registry     | 7.4.3   | 8085    | Schema registry (protobuf schemas storage |
