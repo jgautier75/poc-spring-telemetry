@@ -131,7 +131,7 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | postgreSQL          | 17.1    | 5432    | Spring app storage                        |
 | keycloak            | 26.0    | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.1    | 5433    | Keycloak app storage                      |
-| openbao             | 2.0.3   | 7080    | OpenBao port                              |
+| openbao             | 2.0.3   | 8200    | OpenBao port                              |
 | akhq                | 0.24.0  | 8086    | GUI for kafka (topics, consumers, ...)    | 
 | zookeeper           | 7.6.1   | 2181    | Centralized service for kafka management  |
 | kafka               | 7.4.3   | 9092    | Kafka broker                              |
@@ -324,7 +324,7 @@ Messages formats sent to kafka are likely to change across time (new fields, ref
 
 Google [Protobuf](https://protobuf.dev) provides a convenient way to manage versioning and also offers better performance than standard json or other binary formats.
 
-Protobuf relies on message definitions in [.protoc](https://protobuf.dev/programming-guides/proto3/) format (see domain-model/src/protobuf/event.proto).
+Protobuf relies on message definitions in [.protoc](https://protobuf.dev/programming-guides/proto3/) format (see protobuf-model/src/main/protobuf/event.proto).
 
 To generate java pojos from .proto file, execute the following command:
 
