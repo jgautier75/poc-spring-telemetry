@@ -1,8 +1,8 @@
 package com.acme.jga.keycloak.spi.kafka.impl;
 
 import com.acme.jga.keycloak.spi.kafka.KafkaConsumerProvider;
-import com.acme.jga.keycloak.spi.kafka.model.Event;
 import com.acme.jga.keycloak.spi.kafka.utils.KafkaConsumerConstants;
+import com.acme.users.mgt.events.protobuf.Event;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -72,17 +72,16 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                             .getParserForType().parseFrom(consumerRecord.value().toByteArray());
                     LOGGER.infof(
                             "Processing audit event for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]",
-                            auditEventMessage.getScope().getTenantName(),
-                            auditEventMessage.getScopeOrBuilder().getOrganizationName(),
+                            auditEventMessage.getScope().getTenantCode(),
+                            auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
                             auditEventMessage.getTarget(),
                             auditEventMessage.getAction(),
                             auditEventMessage.getObjectUid());
                     // Process only user audit events with update action (FirstName, LastName &
                     // Email update)
-                    if (KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget()
-                            && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction())) {
+                    if (KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget().getNumber() && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction().name())) {
                         // Ensure tenant (equals realm) exists otherwise skip message
-                        String tenantName = auditEventMessage.getScope().getTenantName();
+                        String tenantName = auditEventMessage.getScope().getTenantCode();
                         LOGGER.infof("Search tenant [%s]", tenantName);
                         List<String> entities = findRealm(jpaConnectionProvider, tenantName);
                         if (!entities.isEmpty()) {
@@ -91,8 +90,8 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                             LOGGER.infof("Tenant [%s] not found", tenantName);
                         }
                     }else {
-                        LOGGER.infof("Event ignored for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]", auditEventMessage.getScope().getTenantName(),
-                        auditEventMessage.getScopeOrBuilder().getOrganizationName(),
+                        LOGGER.infof("Event ignored for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]", auditEventMessage.getScope().getTenantCode(),
+                        auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
                         auditEventMessage.getTarget(),
                         auditEventMessage.getAction(),
                         auditEventMessage.getObjectUid());

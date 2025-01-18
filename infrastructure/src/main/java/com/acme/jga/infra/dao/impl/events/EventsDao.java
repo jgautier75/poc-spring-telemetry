@@ -1,7 +1,6 @@
 package com.acme.jga.infra.dao.impl.events;
 
 import com.acme.jga.domain.model.events.v1.EventStatus;
-import com.acme.jga.utils.date.DateTimeUtils;
 import com.acme.jga.infra.dao.api.events.IEventsDao;
 import com.acme.jga.infra.dao.extractors.AuditEventDbExtractor;
 import com.acme.jga.infra.dto.events.v1.AuditEventDb;
@@ -11,6 +10,7 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.utils.date.DateTimeUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -42,10 +42,10 @@ public class EventsDao extends AbstractJdbcDaoSupport implements IEventsDao {
         params.put(DaoConstants.P_UID, uuid);
         params.put("pCreatedAt", event.getCreatedAt());
         params.put("pUpdatedAt", event.getLastUpdatedAt());
-        params.put("pTarget", event.getTarget().getValue());
+        params.put("pTarget", event.getTarget().ordinal());
         params.put("pObjectUid", event.getObjectUid());
         params.put("pAction", event.getAction().name());
-        params.put("pStatus", event.getStatus().getValue());
+        params.put("pStatus", event.getStatus().ordinal());
         params.put("pPayload", super.buildPGobject(event.getPayload()));
         super.getNamedParameterJdbcTemplate().update(baseQuery, params);
         return uuid;
@@ -79,7 +79,7 @@ public class EventsDao extends AbstractJdbcDaoSupport implements IEventsDao {
                 .expression(buildSQLEqualsExpression(DaoConstants.FIELD_STATUS, DaoConstants.P_STATUS))
                 .operator(WhereOperator.AND)
                 .paramName(DaoConstants.P_STATUS)
-                .paramValue(EventStatus.PENDING.getValue())
+                .paramValue(EventStatus.PENDING.ordinal())
                 .build());
         Map<String, Object> params = super.buildParams(whereClauses);
         OrderByClause createdAtAsc = OrderByClause.builder().expression("created_at").orderDirection(OrderDirection.ASC).build();
@@ -98,7 +98,7 @@ public class EventsDao extends AbstractJdbcDaoSupport implements IEventsDao {
         String updateQuery = super.getQuery("events_update_status");
         Map<String, Object> params = new HashMap<>();
         params.put("pUids", eventsUidList);
-        params.put(DaoConstants.P_STATUS, eventStatus.getValue());
+        params.put(DaoConstants.P_STATUS, eventStatus.ordinal());
         params.put("pUpdated", DateTimeUtils.nowIso());
         return super.getNamedParameterJdbcTemplate().update(updateQuery, params);
     }

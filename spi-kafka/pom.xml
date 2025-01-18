@@ -31,6 +31,7 @@
                             <include>com.squareup.wire:wire-schema-jvm</include>
                             <include>com.squareup.wire:wire-runtime-jvm</include>
                             <include>org.jetbrains.kotlin:kotlin-stdlib</include>
+                            <include>com.acme.jga:protobuf-model</include>
                         </includes>
                     </artifactSet>
                 </configuration>
@@ -112,6 +113,11 @@
             <artifactId>keycloak-model-jpa</artifactId>
             <version>${keycloak-version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.acme.jga</groupId>
+            <artifactId>protobuf-model</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 

@@ -98,7 +98,7 @@ tolerations: []
 affinity: {}
 
 application:
-  datasource: jdbc:postgresql://192.168.1.15:5432/poc_st
+  datasource: jdbc:postgresql://192.168.1.15:5432/poc-st
   db_user: poc_st_app
   db_pass: poc_st_app
   force_debug_mode: "false"

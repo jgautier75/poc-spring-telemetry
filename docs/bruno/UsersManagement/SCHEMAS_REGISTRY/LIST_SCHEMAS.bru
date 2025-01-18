@@ -1,0 +1,11 @@
+meta {
+  name: LIST_SCHEMAS
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:{{schemaRegistryPort}}/schemas
+  body: none
+  auth: none
+}

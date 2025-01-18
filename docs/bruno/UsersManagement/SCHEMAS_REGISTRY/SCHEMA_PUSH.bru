@@ -1,0 +1,23 @@
+meta {
+  name: SCHEMA_PUSH
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:{{schemaRegistryPort}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/vnd.schemaregistry.v1+json
+}
+
+body:json {
+  {
+    "schemaType": "PROTOBUF",
+    "schema":"syntax = \"proto3\";\npackage com.acme.users.mgt.events.protobuf;\nmessage AuditEventMessage {\n  string createdAt = 1;\n  string lastUpdatedAt = 2;\n  string uid = 3;\n  int32 target = 4;\n  .com.acme.users.mgt.events.protobuf.AuditAuthor author = 5;\n  .com.acme.users.mgt.events.protobuf.AuditScope scope = 6;\n  string objectUid = 7;\n  string action = 8;\n  int32 status = 9;\n  repeated .com.acme.users.mgt.events.protobuf.AuditChange changes = 10;\n}\nmessage AuditAuthor {\n  string uid = 1;\n  string name = 2;\n}\nmessage AuditScope {\n  string tenantUid = 1;\n  string tenantName = 2;\n  string organizationUid = 3;\n  string organizationName = 4;\n}\nmessage AuditChange {\n  string object = 1;\n  string from = 2;\n  string to = 3;\n  string operation = 4;\n}\n"
+  }
+  
+}

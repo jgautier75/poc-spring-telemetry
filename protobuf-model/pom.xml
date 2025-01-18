@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.acme.jga</groupId>
+        <artifactId>poc-spring-telemetry</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>protobuf-model</artifactId>
+
+    <properties>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <!--<plugin>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>2.10.1</version>
+                <configuration>
+                    <protocVersion>3.21.12</protocVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <plugin>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-schema-registry-maven-plugin</artifactId>
+                <version>${kafka-main-version}</version>
+                <configuration>
+                    <schemaRegistryUrls>
+                        <param>http://localhost:8085</param>
+                    </schemaRegistryUrls>
+                    <compatibilityLevels>
+                        <audit-events-value>FORWARD_TRANSITIVE</audit-events-value>
+                    </compatibilityLevels>
+                    <schemas>
+                        <audit-events-value>src/main/protobuf/event.proto</audit-events-value>
+                    </schemas>
+                    <schemaTypes>
+                        <audit-events-value>PROTOBUF</audit-events-value>
+                    </schemaTypes>
+                    <messagePath/>
+                    <outputDirectory>target</outputDirectory>
+                    <outputPath/>
+                    <previousSchemaPaths/>
+                    <subjects>
+                        <audit-events-value>src/main/protobuf/event.proto</audit-events-value>
+                    </subjects>
+                </configuration>
+                <goals>
+                    <goal>register</goal>
+                </goals>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

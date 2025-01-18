@@ -1,7 +1,7 @@
 package com.acme.jga.kafka.consumer;
 
-import com.acme.jga.domain.model.events.protobuf.Event;
 import com.acme.jga.logging.services.api.ILogService;
+import com.acme.users.mgt.events.protobuf.Event;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.RequiredArgsConstructor;

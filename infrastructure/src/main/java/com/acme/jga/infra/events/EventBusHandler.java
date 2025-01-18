@@ -1,12 +1,12 @@
 package com.acme.jga.infra.events;
 
-import com.acme.jga.domain.model.events.protobuf.Event;
 import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.events.v1.AuditEvent;
 import com.acme.jga.domain.model.events.v1.EventStatus;
 import com.acme.jga.infra.config.KafkaProducerConfig;
 import com.acme.jga.infra.services.api.events.IEventsInfraService;
 import com.acme.jga.logging.services.api.ILogService;
+import com.acme.users.mgt.events.protobuf.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -102,15 +102,14 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
 
         AuditEvent auditEvent = objectMapper.readValue(payload, AuditEvent.class);
         DateTimeFormatter isoFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        auditEventMessageBuilder.setAction(auditEvent.getAction().name());
+        auditEventMessageBuilder.setAction(Event.AuditAction.forNumber(auditEvent.getAction().ordinal()));
         auditEventMessageBuilder.setCreatedAt(auditEvent.getCreatedAt().atZone(ZoneOffset.UTC).format(isoFormatter));
         auditEventMessageBuilder.setLastUpdatedAt(auditEvent.getLastUpdatedAt().atZone(ZoneOffset.UTC).format(isoFormatter));
         auditEventMessageBuilder.setUid(auditEvent.getObjectUid());
         auditEventMessageBuilder.setObjectUid(auditEvent.getObjectUid());
-        auditEventMessageBuilder.setAction(auditEvent.getAction().name());
-        auditEventMessageBuilder.setStatus(auditEvent.getStatus().getValue());
+        auditEventMessageBuilder.setStatus(auditEvent.getStatus().ordinal());
         if (auditEvent.getTarget() != null) {
-            auditEventMessageBuilder.setTarget(auditEvent.getTarget().getValue());
+            auditEventMessageBuilder.setTarget(Event.AuditTarget.forNumber(auditEvent.getTarget().ordinal()));
         }
         if (auditEvent.getAuthor() != null) {
             auditEventMessageBuilder.setAuthor(Event.AuditAuthor.newBuilder().setName(auditEvent.getAuthor().getName()).setUid(auditEvent.getAuthor().getUid()).build());
@@ -143,9 +142,9 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
             Event.AuditScope.Builder auditScopeBuilder = Event.AuditScope
                     .newBuilder()
                     .setTenantUid(auditEvent.getScope().getTenantUid())
-                    .setTenantName(auditEvent.getScope().getTenantName());
+                    .setTenantCode(auditEvent.getScope().getTenantName());
             if (auditEvent.getScope().getOrganizationName() != null) {
-                auditScopeBuilder.setOrganizationName(auditEvent.getScope().getOrganizationName());
+                auditScopeBuilder.setOrganizationCode(auditEvent.getScope().getOrganizationName());
             }
             if (auditEvent.getScope().getOrganizationUid() != null) {
                 auditScopeBuilder.setOrganizationUid(auditEvent.getScope().getOrganizationUid());

@@ -84,6 +84,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.acme.jga</groupId>
+            <artifactId>protobuf-model</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

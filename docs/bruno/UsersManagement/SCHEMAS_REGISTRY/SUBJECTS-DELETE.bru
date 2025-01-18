@@ -1,0 +1,15 @@
+meta {
+  name: SUBJECTS-DELETE
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:{{schemaRegistryPort}}/subjects/audit-events-value?permanent=true
+  body: none
+  auth: none
+}
+
+params:query {
+  permanent: true
+}

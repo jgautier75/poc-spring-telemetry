@@ -207,7 +207,7 @@
 		<dependency>
 			<groupId>io.confluent</groupId>
 			<artifactId>kafka-schema-serializer</artifactId>
-			<version>7.8.0</version>
+			<version>${kafka-main-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.opentelemetry</groupId>
@@ -252,5 +252,6 @@
         <module>crypto</module>
 		<module>spi-kafka</module>
 		<module>adapter-kafka</module>
-    </modules>
+		<module>protobuf-model</module>
+	</modules>
 </project>

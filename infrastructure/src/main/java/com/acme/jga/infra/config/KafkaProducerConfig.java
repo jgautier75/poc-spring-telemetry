@@ -1,6 +1,6 @@
 package com.acme.jga.infra.config;
 
-import com.acme.jga.domain.model.events.protobuf.Event;
+import com.acme.users.mgt.events.protobuf.Event;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
 import lombok.AccessLevel;
@@ -42,6 +42,7 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaProtobufSerializer.class);
+        props.put(AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS, true);
         // Uncomment for batch sending
         //props.put(ProducerConfig.BATCH_SIZE_CONFIG, 1);
         //props.put(ProducerConfig.LINGER_MS_CONFIG, 1);

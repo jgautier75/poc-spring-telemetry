@@ -22,8 +22,8 @@ public class AuditEventDbExtractor {
                     .lastUpdatedAt(SQLExtractor.extractLocalDateTime(resultSet, "last_updated_at"))
                     .objectUid(SQLExtractor.extractString(resultSet, "object_uid"))
                     .payload(SQLExtractor.extractString(resultSet, "payload"))
-                    .status(EventStatus.fromValue(SQLExtractor.extractInteger(resultSet, "status")))
-                    .target(EventTarget.fromValue(SQLExtractor.extractInteger(resultSet, "target")))
+                    .status(EventStatus.values()[SQLExtractor.extractInteger(resultSet, "status")])
+                    .target(EventTarget.values()[SQLExtractor.extractInteger(resultSet, "target")])
                     .uid(SQLExtractor.extractString(resultSet, "uid")).build();
         }
         return evt;
