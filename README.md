@@ -326,10 +326,10 @@ Google [Protobuf](https://protobuf.dev) provides a convenient way to manage vers
 
 Protobuf relies on message definitions in [.protoc](https://protobuf.dev/programming-guides/proto3/) format (see domain-model/src/protobuf/event.proto).
 
-To generate java pojos from .proto file, execute maven command:
+To generate java pojos from .proto file, execute the following command:
 
 ```sh
-mvn clean generate-sources
+protoc -I protobuf-model/src/main/protobuf --java_out=protobuf-model/src/main/java protobuf-model/src/main/protobuf/event.proto
 ```
 
 Audit events are sent to kafka using protobuf format (see EventBusHandler class).
@@ -367,6 +367,16 @@ Response:
 ]
 ```
 
+To validate a schema:
+```sh
+mvn schema-registry:validate
+```
+
+To push a schema into registry, use the following maven command:
+```sh
+mvn schema-registry:register
+```
+
 Obviously the schema above is the content of the .proto file define earlier in this document.
 
 If schema registry is configured in AKHQ, messages can be decoded into a human-readable format:
@@ -392,8 +402,7 @@ Map<String, Object> consumerConfigs() {
 }
 
 @Bean
-KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>>
-                    kafkaListenerContainerFactory() {
+KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>> kafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory());
     factory.setConcurrency(3);
