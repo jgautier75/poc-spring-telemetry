@@ -591,9 +591,15 @@ SPI API on Keycloak side is a jar with a class implementing at least:
 
 In this jar, declare a file in /src/main/resources/META-INF/services/org.keycloak.storage.UserStorageProviderFactory containing implementation class.
 
+> spi-user-storage jar is a fat jar, in other words it includes all dependencies
+
+
 ### Kafka consumer SPI (spi-kafka)
 
-This module deploys a kafka consumer listening to audit_events topic in order to update users firstName, lastName & email
+This module deploys a kafka consumer listening to audit_events topic in order to update users firstName, lastName & email.
+
+> spi-kafka is also a fat jar. However, to minimize jar's size, dependencies can be copied in /opt/keycloak/lib/lib/main folder (see docker-services.yml file where kafka-clients jar is copied in keycloak container)
+> Moreover, if a dependency is copied in keycloak container, don't forget ro mark dependecy with scope provided in spi pom.xml file and to remove/comment target library in maven-shade-plugin configuration
 
 ### Docker image (optimized)
 

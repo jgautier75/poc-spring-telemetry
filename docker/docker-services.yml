@@ -72,6 +72,7 @@ services:
     volumes:
       - ./poc-realms:/opt/keycloak/data/import
       - ./poc-providers:/opt/keycloak/providers
+      - ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
     #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
     #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG"]
     command: ["start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
