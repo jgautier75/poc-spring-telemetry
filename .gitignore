@@ -52,3 +52,4 @@ replay_pid*
 /adapter-rest/target/spring-aot/main/resources/META-INF/spring/logback-model
 /adapter-rest/target/spring-aot/main/resources/META-INF/spring/logback-pattern-rules
 /adapter-rest/target/adapter-rest
+protobuf-model/target/**/*.*
