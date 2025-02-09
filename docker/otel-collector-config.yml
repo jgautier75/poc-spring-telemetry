@@ -12,13 +12,11 @@ exporters:
   otlp/jaeger: # Jaeger supports OTLP directly. The default port for OTLP/gRPC is 4317
     endpoint: http://poc-st-jaeger:4317
     tls:
-      insecure: true
-  logging:
-    verbosity: detailed
-    sampling_initial: 5
-    sampling_thereafter: 200
+      insecure: true  
   prometheus:
     endpoint: "0.0.0.0:8889"
+  debug:
+    verbosity: detailed
 
 processors:
   batch:
@@ -36,7 +34,7 @@ service:
     logs:
       receivers: [otlp,otlp/2]
       processors: [batch]
-      exporters: [logging]
+      exporters: [debug]
     metrics:
       receivers: [otlp,otlp/2]
       processors: [batch]
