@@ -5,7 +5,7 @@ import com.acme.users.mgt.events.protobuf.Event;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.schemaregistry.client.SchemaMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -21,10 +21,10 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -96,13 +96,15 @@ class KafkaSerializeDeserializeTest {
     private void listSchemaRegistry(String schemaRegistryBaseUrl) {
         CachedSchemaRegistryClient cachedSchemaRegistryClient = new CachedSchemaRegistryClient(schemaRegistryBaseUrl, 10);
         try {
-            cachedSchemaRegistryClient.getAllSubjects().forEach(sub -> {
-                log.info("Subject [{}]", sub);
-            });
+            Collection<String> subjects = cachedSchemaRegistryClient.getAllSubjects();
+            for (String subject : subjects) {
+                log.info("Subject [{}]", subject);
+                SchemaMetadata latestSchemaMetadata = cachedSchemaRegistryClient.getLatestSchemaMetadata(subject);
+                log.info("Schema id [{}], type: [{}], schema [{}]", latestSchemaMetadata.getId(), latestSchemaMetadata.getSchemaType(), latestSchemaMetadata.getSchema());
+            }
         } catch (Exception e) {
-            // Silent catch
+            log.error("listSchemaRegistry", e);
         }
-
     }
 
     private Event.AuditEventMessage createAuditEvent() {
