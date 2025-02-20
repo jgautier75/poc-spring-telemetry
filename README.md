@@ -169,7 +169,7 @@ Open ports:
 
 ## OpenBao & Kafka setup
 
-To initialize OpenBao run the following ansible command
+To initialize OpenBao and Kafka topics creation run the following ansible command
 
 ```sh
 ansible-playbook -i inventory/hosts.ini docker-setup.yml --connection=local
