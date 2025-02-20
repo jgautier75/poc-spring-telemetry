@@ -45,3 +45,22 @@
       when:
         - response.status != 200
         - not (response.status == 400 and response.json.errors is search("check-and-set parameter did not match the current version"))
+    - name: "Kafka - List topics"
+      community.docker.docker_container_exec:
+        container: docker_poc-st-kafka_1
+        command: /bin/bash -c "kafka-topics --bootstrap-server {{ hostvars[inventory_hostname]['kafka_container_internal'] }} --list"
+      register: kafka_output
+    - name: "Kafka - Topics - List"
+      set_fact:
+        topics: "{{ kafka_output.stdout | split('\n') }}"
+    - name: "Kafka - List Topics Result"
+      ansible.builtin.debug:
+        var: topics
+    - name: "Kafka - Create topics"
+      vars:
+        topicName: "{{ hostvars[inventory_hostname]['kafka_audit_topic'] }}"
+      when: not (topics is contains(topicName))
+      community.docker.docker_container_exec:
+        container: "{{ hostvars[inventory_hostname]['kafka_container_external'] }}"
+        command: /bin/bash -c "kafka-topics --bootstrap-server {{ hostvars[inventory_hostname]['kafka_container_internal'] }} --create --if-not-exists --topic {{ topicName }} --replication-factor 1 --partitions 2"
+      register: kafka_output
