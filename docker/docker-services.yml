@@ -140,21 +140,6 @@ services:
       retries: 20
     links:
       - poc-st-zookeeper
-  poc-st-init-kafka:
-    image: confluentinc/cp-kafka:7.7.1
-    depends_on:
-      - poc-st-kafka
-    entrypoint: [ '/bin/sh', '-c' ]
-    command: |
-      "
-      # blocks until kafka is reachable
-      kafka-topics --bootstrap-server poc-st-kafka:19092 --list
-      echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server poc-st-kafka:19092 --create --if-not-exists --topic audit_events --replication-factor 1 --partitions 2
-      
-      echo -e 'Successfully created the following topics:'
-      kafka-topics --bootstrap-server poc-st-kafka:19092 --list
-      "
   poc-st-schema-registry:
     image: confluentinc/cp-schema-registry:7.7.1
     restart: unless-stopped
