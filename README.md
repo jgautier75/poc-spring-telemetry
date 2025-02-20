@@ -167,7 +167,15 @@ Open ports:
 - 3000: Grafana. User: admin, password: admin
 ````
 
-### Database setup
+## OpenBao & Kafka setup
+
+To initialize OpenBao run the following ansible command
+
+```sh
+ansible-playbook -i inventory/hosts.ini docker-setup.yml --connection=local
+```
+
+## Database setup
 
 
 #### Manually

@@ -9,13 +9,6 @@ services:
       - ./poc-st-openbao/config.hcl:/openbao/config/config.hcl
     ports:
       - 8200:8200
-  poc-st-init-openbao:
-    image: alpine/curl:8.10.0
-    volumes:
-      - ./poc-st-init-openbao:/openbao
-    depends_on:
-      - poc-st-openbao
-    command: sh ./openbao/vault_se_init.sh
   poc-st-app-storage:
     image: postgres:17.1
     volumes:
@@ -42,7 +35,6 @@ services:
     #image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
-      - poc-st-init-openbao
     environment:
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 7080
