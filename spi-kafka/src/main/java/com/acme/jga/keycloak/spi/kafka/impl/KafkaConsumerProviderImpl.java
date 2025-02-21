@@ -79,7 +79,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                             auditEventMessage.getObjectUid());
                     // Process only user audit events with update action (FirstName, LastName &
                     // Email update)
-                    if (KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget().getNumber() && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction().name())) {
+                    if (isUserUpdateEvent(auditEventMessage)) {
                         // Ensure tenant (equals realm) exists otherwise skip message
                         String tenantName = auditEventMessage.getScope().getTenantCode();
                         LOGGER.infof("Search tenant [%s]", tenantName);
@@ -89,12 +89,12 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                         } else {
                             LOGGER.infof("Tenant [%s] not found", tenantName);
                         }
-                    }else {
+                    } else {
                         LOGGER.infof("Event ignored for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]", auditEventMessage.getScope().getTenantCode(),
-                        auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
-                        auditEventMessage.getTarget(),
-                        auditEventMessage.getAction(),
-                        auditEventMessage.getObjectUid());
+                                auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
+                                auditEventMessage.getTarget(),
+                                auditEventMessage.getAction(),
+                                auditEventMessage.getObjectUid());
                     }
                 } catch (InvalidProtocolBufferException e) {
                     LOGGER.error(e);
@@ -132,7 +132,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
         if (userEntity != null) {
             LOGGER.infof("Audit nb of changes [%s]", auditEventMessage.getChangesCount());
             auditEventMessage.getChangesList().forEach(auditChange -> {
-                LOGGER.infof("Processing audit change with object [%s]",auditChange.getObject());
+                LOGGER.infof("Processing audit change with object [%s]", auditChange.getObject());
                 if (KafkaConsumerConstants.EVENT_CHANGE_FIRST_NAME.equals(auditChange.getObject())) {
                     LOGGER.infof("Updating firstName to [%s]", auditChange.getTo());
                     userEntity.setFirstName(auditChange.getTo());
@@ -144,11 +144,10 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
-            EntityTransaction tx =  jpaConnectionProvider.getEntityManager().getTransaction();;
+            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
             tx.begin();
             jpaConnectionProvider.getEntityManager().persist(userEntity);
             tx.commit();
-            
         }
     }
 
@@ -191,6 +190,10 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                 // Silent catch
             }
         }
+    }
+
+    private boolean isUserUpdateEvent(Event.AuditEventMessage auditEventMessage) {
+        return KafkaConsumerConstants.EVENT_USER == auditEventMessage.getTarget().getNumber() && KafkaConsumerConstants.EVENT_UPDATE.equals(auditEventMessage.getAction().name());
     }
 
 }
