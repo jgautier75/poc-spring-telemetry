@@ -55,63 +55,65 @@ Use Bruno collection to add/list secrets.
 ```bash
 export VAULT_ADDR='http://127.0.0.1:8200'
 vault login
-vault kv get -mount=secret poc-st
-vault kv put -mount=secret poc-st foo=bar
+vault kv get -mount=dev-secrets creds
+vault kv put -mount=dev-secrets creds foo=bar
 ```
 
 Api call example:
 
 ```bash
-curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/secret/data/poc-st
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds
 ```
 
 Config HTTP status:
 
 ```bash
-HTTP_STATUS=$(curl -H "X-Vault-Token: dev-root-token" -w "%{http_code}" -o >(cat >&3) 'http://192.168.1.15:8200/v1/secret/config' ); 
+HTTP_STATUS=$(curl -H "X-Vault-Token: dev-root-token" -w "%{http_code}" -o >(cat >&3) 'http://192.168.1.15:8200/v1/dev-secrets/config' ); 
 echo "HTTP_STATUS: $HTTP_STATUS"
 ```
 
 Inserting a secret:
 
 ```bash
-curl -H "X-Vault-Token: dev-root-token" --request POST --data @vault_data.json http://192.168.1.15:8200/v1/secret/data/poc-st
+curl -H "X-Vault-Token: dev-root-token" --request POST --data @vault_data.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
 ```
 
 Delete secret version:
 
 ```bash
-curl -v -H "X-Vault-Token: dev-root-token" --request PUT --data @vault_versions_delete.json http://192.168.1.15:8200/v1/secret/poc-st
+curl -v -H "X-Vault-Token: dev-root-token" --request PUT --data @vault_versions_delete.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
 ```
+
+Example:
 
 ```json
 {
-   "request_id":"c1a7af13-bf6e-e073-28bc-54cb680daacf",
-   "lease_id":"",
-   "renewable":false,
-   "lease_duration":0,
-   "data":{
-      "data":{
-         "mysecret":"mysupersecretvalue"
-      },
-      "metadata":{
-         "created_time":"2025-01-01T16:59:13.529218629Z",
-         "custom_metadata":null,
-         "deletion_time":"",
-         "destroyed":false,
-         "version":1
-      }
-   },
-   "wrap_info":null,
-   "warnings":null,
-   "auth":null
+  "request_id": "cfbe37cc-a076-000c-5911-b23cd8c213a1",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "data": {
+      "cipherKey": "1c9e1cfbe63844b1a0772aea4cba5gg6"
+    },
+    "metadata": {
+      "created_time": "2025-02-21T13:13:26.902464695Z",
+      "custom_metadata": null,
+      "deletion_time": "",
+      "destroyed": false,
+      "version": 1
+    }
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
 }
 ```
 
 If jq is intalled, secret values can be extracted using a command like:
 
 ```bash
-curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/secret/data/poc-st | jq '.data.data'
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds | jq '.data.data'
 ```
 
 ## OpenTelemetry
@@ -128,14 +130,14 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
-| postgreSQL          | 17.1    | 5432    | Spring app storage                        |
-| keycloak            | 26.0    | 7080    | Keycloak dev instance                     |
-| keycloak-postgreSQL | 17.1    | 5433    | Keycloak app storage                      |
-| openbao             | 2.0.3   | 8200    | OpenBao port                              |
-| akhq                | 0.24.0  | 8086    | GUI for kafka (topics, consumers, ...)    | 
-| zookeeper           | 7.6.1   | 2181    | Centralized service for kafka management  |
-| kafka               | 7.4.3   | 9092    | Kafka broker                              |
-| schema-registry     | 7.4.3   | 8085    | Schema registry (protobuf schemas storage |
+| postgreSQL          | 17.3    | 5432    | Spring app storage                        |
+| keycloak            | 26.1.2  | 7080    | Keycloak dev instance                     |
+| keycloak-postgreSQL | 17.3    | 5433    | Keycloak app storage                      |
+| openbao             | 2.2     | 8200    | OpenBao port                              |
+| akhq                | 0.25.1  | 8086    | GUI for kafka (topics, consumers, ...)    | 
+| zookeeper           | 7.9.0   | 2181    | Centralized service for kafka management  |
+| kafka               | 7.9.0   | 9092    | Kafka broker                              |
+| schema-registry     | 7.9.0   | 8085    | Schema registry (protobuf schemas storage |
 
 ## Docker - Jaeger
 
@@ -147,10 +149,10 @@ docker-compose -f docker-services-jaeger.yml up -d
 
 | Service                         | Version | Port              |
 |---------------------------------|---------|-------------------|
-| jaeger-all-in-one               | 1.57.0  | 16686             |
-| prometheus                      | v2.52.0 | 9090              |
-| grafana                         | 10.1.10 | 3000              |
-| opentelemetry-collector-contrib | 0.102.0 | 4317, 4318, 55679 |
+| jaeger-all-in-one               | 1.66.0  | 16686             |
+| prometheus                      | v3.2.0  | 9090              |
+| grafana                         | 11.5.2  | 3000              |
+| opentelemetry-collector-contrib | 0.120.0 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
@@ -170,6 +172,7 @@ Open ports:
 ## OpenBao & Kafka setup
 
 To initialize OpenBao and Kafka topics creation run the following ansible command.
+
 For testing purposes, vault password is set to "test"
 
 ```sh
