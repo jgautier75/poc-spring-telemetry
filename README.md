@@ -169,10 +169,11 @@ Open ports:
 
 ## OpenBao & Kafka setup
 
-To initialize OpenBao and Kafka topics creation run the following ansible command
+To initialize OpenBao and Kafka topics creation run the following ansible command.
+For testing purposes, vault password is set to "test"
 
 ```sh
-ansible-playbook -i inventory/hosts.ini docker-setup.yml --connection=local
+ansible-playbook -i inventory/hosts.ini docker-setup.yml --connection=local --ask-vault-pass
 ```
 
 ## Database setup
