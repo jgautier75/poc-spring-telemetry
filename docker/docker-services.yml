@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   poc-st-openbao:
-    image: quay.io/openbao/openbao:2.1.1
+    image: quay.io/openbao/openbao:2.2
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       OPENBAO_SKIP_VERIFY: "true"
@@ -10,7 +10,7 @@ services:
     ports:
       - 8200:8200
   poc-st-app-storage:
-    image: postgres:17.1
+    image: postgres:17.3
     volumes:
       - "poc-st-app-pg-data:/var/lib/postgresql/data/pgdata"
     restart: always
@@ -20,7 +20,7 @@ services:
     ports:
       - 5432:5432
   poc-st-keycloak-storage:
-    image: postgres:17.1
+    image: postgres:17.3
     volumes:
       - "poc-st-keycloak-pg-data:/var/lib/postgresql/data"
     environment:
@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.1.1
+    image: quay.io/keycloak/keycloak:26.1.2
     #image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
@@ -67,7 +67,7 @@ services:
       - ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
     #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
     #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG"]
-    command: ["start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
+    command: ["start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","-Djdk.httpclient.HttpClient.log=all"]
     ports:
       - "7080:7080"
       - "7443:7443"
@@ -96,7 +96,7 @@ services:
       - poc-st-kafka
       - poc-st-schema-registry
   poc-st-zookeeper:
-    image: confluentinc/cp-zookeeper:7.7.1
+    image: confluentinc/cp-zookeeper:7.9.0
     restart: unless-stopped
     ports:
       - "2181:2181"
@@ -112,7 +112,7 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: poc-st-zookeeper:2888:3888
   poc-st-kafka:
-    image: confluentinc/cp-kafka:7.7.1
+    image: confluentinc/cp-kafka:7.9.0
     restart: unless-stopped
     ports:
       - "9092:9092"
@@ -141,7 +141,7 @@ services:
     links:
       - poc-st-zookeeper
   poc-st-schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.1
+    image: confluentinc/cp-schema-registry:7.9.0
     restart: unless-stopped
     ports:
       - "8085:8085"
