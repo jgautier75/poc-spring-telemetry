@@ -8,7 +8,6 @@ import com.acme.jga.ports.dtos.search.v1.SearchFilterDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.services.api.organization.IOrganizationPortService;
 import com.acme.jga.rest.versioning.WebApiVersions;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
