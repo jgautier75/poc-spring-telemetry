@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.jopenlibs.vault.Vault;
 import io.github.jopenlibs.vault.VaultConfig;
 import io.github.jopenlibs.vault.VaultException;
+import io.github.jopenlibs.vault.response.LogicalResponse;
 import org.jboss.logging.Logger;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.credential.*;
@@ -34,10 +35,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.ZoneOffset;
-import java.util.Base64;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 public class UserSpiProvider implements UserLookupProvider, UserStorageProvider, CredentialInputValidator {
     private static final String AUTH_HEADER = "Authorization";
@@ -74,8 +72,9 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
             this.vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
             this.cryptoEngine = new CryptoEngine();
             String secretPath = getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS);
-            String cipherKey = vault.logical().read(secretPath, true, FederationConstants.VAULT_VERSION).getData().get(FederationConstants.VAULT_CIPHER_KEY);
-            this.cryptoEngine.initCrypto(cipherKey);
+            LogicalResponse logicalResponse = vault.logical().read(secretPath);
+            Map<String, String> responseData = logicalResponse.getData();
+            this.cryptoEngine.initCrypto(responseData.get(FederationConstants.VAULT_CIPHER_KEY));
         } catch (VaultException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
