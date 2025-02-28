@@ -3,6 +3,7 @@ package com.acme.jga.ports.services.impl.tenant;
 import com.acme.jga.domain.functions.tenants.api.*;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Tenant;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.converters.tenant.TenantsPortConverter;
 import com.acme.jga.ports.dtos.shared.UidDto;
@@ -31,11 +32,12 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     private final TenantUpdate tenantUpdate;
     private final TenantDelete tenantDelete;
     private final TenantsValidationEngine tenantsValidationEngine;
+    private final ILoggingFacade loggingFacade;
 
     @Autowired
     public TenantPortService(TenantsPortConverter tenantsConverter, TenantCreate tenantCreate, TenantsValidationEngine tenantsValidationEngine,
                              OpenTelemetryWrapper openTelemetryWrapper, TenantFind tenantFind, TenantList tenantList,
-                             TenantUpdate tenantUpdate, TenantDelete tenantDelete) {
+                             TenantUpdate tenantUpdate, TenantDelete tenantDelete, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper);
         this.tenantsConverter = tenantsConverter;
         this.tenantCreate = tenantCreate;
@@ -44,6 +46,7 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
         this.tenantUpdate = tenantUpdate;
         this.tenantDelete = tenantDelete;
         this.tenantsValidationEngine = tenantsValidationEngine;
+        this.loggingFacade = loggingFacade;
     }
 
     /**
@@ -65,7 +68,9 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     @Override
     public TenantDisplayDto findTenantByUid(String uid, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_UID", parentSpan, (span) -> {
+            loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant by uid [%s]", new Object[]{uid});
             Tenant tenant = tenantFind.byUid(uid, span);
+            loggingFacade.infoS(INSTRUMENTATION_NAME, "Convert tenant named [%s] from domain to dto", new Object[]{tenant.getLabel()});
             TenantDisplayDto tenantDisplayDto = tenantsConverter.tenantDomainToDisplay(tenant);
             return tenantDisplayDto;
         });

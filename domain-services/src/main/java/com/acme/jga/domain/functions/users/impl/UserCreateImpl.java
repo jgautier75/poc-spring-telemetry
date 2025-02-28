@@ -18,7 +18,7 @@ import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.infra.services.api.events.IEventsInfraService;
 import com.acme.jga.infra.services.api.users.IUsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.micrometer.common.util.StringUtils;
 import io.opentelemetry.api.trace.Span;
@@ -33,15 +33,17 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
     private static final String INSTRUMENTATION_NAME = UserCreateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
     private final CryptoEngine cryptoEngine;
     private final IUsersInfraService usersInfraService;
 
-    protected UserCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService, TenantFind tenantFind, OrganizationFind organizationFind, ILogService logService, CryptoEngine cryptoEngine, IUsersInfraService usersInfraService) {
+    protected UserCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService,
+                             TenantFind tenantFind, OrganizationFind organizationFind, ILoggingFacade loggingFacade,
+                             CryptoEngine cryptoEngine, IUsersInfraService usersInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
         this.cryptoEngine = cryptoEngine;
         this.usersInfraService = usersInfraService;
     }
@@ -62,7 +64,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
                 // Find tenant and organization
                 Tenant tenant = tenantFind.byUid(tenantUid, span);
                 Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
-                logService.infoS(callerName, "Create user with login [%s] for tenant [%s] and organization [%s]",
+                loggingFacade.infoS(callerName, "Create user with login [%s] for tenant [%s] and organization [%s]",
                         new Object[]{user.getCredentials().getLogin(), tenant.getCode(), org.getCommons().getCode()});
 
                 user.setTenantId(tenant.getId());
@@ -89,7 +91,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
     }
 
     private void validateLogin(User user, Span span, String callerName) {
-        logService.debugS(callerName, "Check if login [%s] is not already in use", new Object[]{user.getCredentials().getLogin()});
+        loggingFacade.debugS(callerName, "Check if login [%s] is not already in use", new Object[]{user.getCredentials().getLogin()});
         Optional<Long> loginAlreadyExist = usersInfraService.loginUsed(user.getCredentials().getLogin(), span);
         if (loginAlreadyExist.isPresent()) {
             throwWrappedException(FunctionalErrorsTypes.USER_LOGIN_ALREADY_USED.name(), "user_login_used", new Object[]{user.getCredentials().getEmail()});
@@ -97,7 +99,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
     }
 
     private void validateEmail(User user, Span span, String callerName) {
-        logService.debugS(callerName, "Check if email [%s] is not already in use", new Object[]{user.getCredentials().getEmail()});
+        loggingFacade.debugS(callerName, "Check if email [%s] is not already in use", new Object[]{user.getCredentials().getEmail()});
         Optional<Long> emailAlreadyExist = usersInfraService.emailUsed(user.getCredentials().getEmail(), span);
         if (emailAlreadyExist.isPresent()) {
             throwWrappedException(FunctionalErrorsTypes.USER_EMAIL_ALREADY_USED.name(), "user_email_used", new Object[]{user.getCredentials().getEmail()});

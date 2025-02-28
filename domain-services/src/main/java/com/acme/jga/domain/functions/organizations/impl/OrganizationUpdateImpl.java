@@ -13,7 +13,7 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
 import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -27,17 +27,17 @@ public class OrganizationUpdateImpl extends AbstractOrganizationFunction impleme
     private static final String INSTRUMENTATION_NAME = OrganizationUpdateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final IOrganizationsInfraService organizationsInfraService;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
     private final EventBuilderOrganization eventBuilderOrganization;
 
     public OrganizationUpdateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
                                   EventsInfraService eventsInfraService, TenantFind tenantFind,
-                                  IOrganizationsInfraService organizationsInfraService, ILogService logService,
+                                  IOrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade,
                                   EventBuilderOrganization eventBuilderOrganization) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
         this.eventBuilderOrganization = eventBuilderOrganization;
     }
 
@@ -47,7 +47,7 @@ public class OrganizationUpdateImpl extends AbstractOrganizationFunction impleme
     public Integer execute(String tenantUid, String orgUid, Organization organization, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_UPDATE", parentSpan, (span) -> {
             String callerName = this.getClass().getName() + "-updateOrganization";
-            logService.infoS(callerName, "Update organization [%s] of tenant [%s]", new Object[]{tenantUid, orgUid});
+            loggingFacade.infoS(callerName, "Update organization [%s] of tenant [%s]", new Object[]{tenantUid, orgUid});
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid, span);
             if (org.isEmpty()) {

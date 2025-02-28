@@ -13,6 +13,7 @@ import com.acme.jga.infra.services.api.events.IEventsInfraService;
 import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,14 @@ import java.util.List;
 public class TenantCreateImpl extends AbstractTenantFunction implements TenantCreate {
     private static final String INSTRUMENTATION_NAME = TenantCreateImpl.class.getCanonicalName();
     private final ITenantInfraService tenantInfraService;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
     public TenantCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                            ITenantInfraService tenantInfraService, ILogService logService,
+                            ITenantInfraService tenantInfraService, ILoggingFacade loggingFacade,
                             IEventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantInfraService = tenantInfraService;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
     }
 
     @Audited
@@ -49,7 +50,7 @@ public class TenantCreateImpl extends AbstractTenantFunction implements TenantCr
             }
             CompositeId compositeId = tenantInfraService.createTenant(tenant, span);
             tenant.setUid(compositeId.getUid());
-            logService.infoS(callerName, "Created tenant [%s]", new Object[]{compositeId.getUid()});
+            loggingFacade.infoS(callerName, "Created tenant [%s]", new Object[]{compositeId.getUid()});
 
             // Create audit event and send
             List<AuditChange> auditChanges = List.of(AuditChange.builder().to(tenant.getLabel()).object("label").operation(AuditOperation.ADD).build());

@@ -1,5 +1,7 @@
 package com.acme.jga.logging.services.api;
 
+import org.slf4j.event.Level;
+
 /**
  * Interface service de logging centralis&eacute;.
  */
@@ -14,6 +16,8 @@ public interface ILogService {
      */
     void infoB(String callerName, String bundleMessage, Object[] params);
 
+    void info(String msg);
+
     /**
      * Log level INFO with parameters substitutions (String.format(%s,xxx)).
      *
@@ -22,6 +26,8 @@ public interface ILogService {
      * @param params     Paramters
      */
     void infoS(String callerName, String message, Object[] params);
+
+    void debug(String message);
 
     /**
      * Log level DEBUG using bundle message.
@@ -41,6 +47,8 @@ public interface ILogService {
      */
     void debugS(String callerName, String message, Object[] params);
 
+    void trace(String msg);
+
     /**
      * Log level TRACE using bundle message.
      *
@@ -58,6 +66,8 @@ public interface ILogService {
      * @param params     Parameteres
      */
     void traceS(String callerName, String message, Object[] params);
+
+    void warn(String msg);
 
     /**
      * Log level WARNING using bundle key.
@@ -111,4 +121,9 @@ public interface ILogService {
      */
     void error(String callerName, Throwable t);
 
+    void logBundleMessage(Level level, String message, Object[] params, String callerName);
+
+    void logSimpleMessage(Level level, String message, Object[] params, String callerName);
+
+    String buildMessage(boolean bundleMessage, String msg, Object[] params, String callerName);
 }

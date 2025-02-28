@@ -6,7 +6,7 @@ import com.acme.jga.domain.model.api.ErrorKind;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.logging.utils.LogHttpUtils;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
@@ -34,7 +34,7 @@ import static com.acme.jga.utils.lambdas.StreamUtil.ofNullableList;
 @RequiredArgsConstructor
 @ControllerAdvice
 public class AppControllerAdvice {
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
     private final AppGenericConfig appGenericConfig;
     private final MicrometerPrometheus micrometerPrometheus;
 
@@ -111,13 +111,13 @@ public class AppControllerAdvice {
                     .errorUid(idError.toString())
                     .build();
 
-            logService.errorS(this.getClass().getName() + "-handleInternal", "Process error to %s - %s - %s",
+            loggingFacade.errorS(this.getClass().getName() + "-handleInternal", "Process error to %s - %s - %s",
                     new Object[]{appGenericConfig.getErrorPath(), appGenericConfig.getModuleName(),
                             idError.toString()});
-            LogHttpUtils.dumpToFile(logService, appGenericConfig.getErrorPath(), appGenericConfig.getModuleName(),
+            LogHttpUtils.dumpToFile(loggingFacade, appGenericConfig.getErrorPath(), appGenericConfig.getModuleName(),
                     idError.toString(), stack, request);
         } catch (Exception e) {
-            logService.error(this.getClass().getName() + "-handleInternal", e);
+            loggingFacade.error(this.getClass().getName() + "-handleInternal", e);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(apiError);
     }

@@ -7,7 +7,7 @@ import com.acme.jga.infra.dao.api.sectors.ISectorsDao;
 import com.acme.jga.infra.dto.sectors.v1.SectorDb;
 import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ public class SectorsInfraService extends AbstractInfraService implements ISector
     private static final String INSTRUMENTATION_NAME = SectorsInfraService.class.getCanonicalName();
     private final ISectorsDao sectorsDao;
     private final SectorsConverter sectorsConverter;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
-    public SectorsInfraService(ISectorsDao sectorsDao, SectorsConverter sectorsConverter, ILogService logService, OpenTelemetryWrapper openTelemetryWrapper) {
+    public SectorsInfraService(ISectorsDao sectorsDao, SectorsConverter sectorsConverter, ILoggingFacade loggingFacade, OpenTelemetryWrapper openTelemetryWrapper) {
         super(openTelemetryWrapper);
         this.sectorsDao = sectorsDao;
         this.sectorsConverter = sectorsConverter;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SectorsInfraService extends AbstractInfraService implements ISector
         return processWithSpan(INSTRUMENTATION_NAME, "INFRA_SECTOR_CREATE", parentSpan, () -> {
             SectorDb sectorDb = sectorsConverter.convertSectorDomaintoDb(sector);
             CompositeId compositeId = sectorsDao.createSector(tenantId, organizationId, sectorDb);
-            logService.infoS(this.getClass().getName() + "createSector",
+            loggingFacade.infoS(this.getClass().getName() + "createSector",
                     "Created sector with uid [%s] on tenant [%s] and organization [%s]",
                     new Object[]{compositeId.getUid(), tenantId, organizationId});
             return compositeId;

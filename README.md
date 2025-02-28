@@ -169,6 +169,8 @@ Open ports:
 - 3000: Grafana. User: admin, password: admin
 ````
 
+
+
 ## OpenBao & Kafka setup
 
 To initialize OpenBao and Kafka topics creation run the following ansible command.
@@ -848,6 +850,10 @@ To visualize logs in grafana from Loki datasource, navigate to "Explore -> Logs"
 To visualize counters from Tempo datasource, create a new visualization in grafana:
 
 ![](docs/images/tempo_counters.png)
+
+Finally, spans are also visible in tempo:
+
+![](docs/images/tempo.png)
 
 # Keycloak
 

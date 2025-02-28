@@ -1,6 +1,6 @@
 package com.acme.jga.domain.events;
 
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ErrorHandler;
@@ -8,11 +8,11 @@ import org.springframework.util.ErrorHandler;
 @Service
 @RequiredArgsConstructor
 public class EventBusErrorHandler implements ErrorHandler {
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
     @Override
     public void handleError(Throwable t) {
-        logService.error(this.getClass().getName(), t);
+        loggingFacade.error(this.getClass().getName(), t);
     }
 
 }

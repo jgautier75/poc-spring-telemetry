@@ -3,7 +3,7 @@ package com.acme.jga.logging.utils;
 import com.acme.jga.domain.model.exceptions.TechnicalException;
 import com.acme.jga.domain.model.v1.SystemErrorFile;
 import com.acme.jga.domain.model.v1.SystemErrorTemporal;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.utils.lambdas.StreamUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -29,6 +29,7 @@ public class LogHttpUtils {
     public static final String ERROR_FILE_SEPARATOR = "_";
     public static final String ERROR_FILE_EXTENSION = ".log";
     public static final String ERROR_FILE_TEMPORAL_PATTERN = "yyyy-MM-dd-HH-mm-ss-SSS";
+    public static final String OTEL_CORRELATION_KEY = "correlation-key";
 
     /**
      * Get error for application and id.
@@ -163,33 +164,33 @@ public class LogHttpUtils {
     /**
      * Dump text to file.
      *
-     * @param logService Log service
+     * @param loggingFacade Log service
      * @param path       Store path
      * @param moduleName Module name
      * @param errorUUID  Error uid
      * @param exContent  Exception content
      */
-    public static void dumpToFile(ILogService logService, String path, String moduleName, String errorUUID,
+    public static void dumpToFile(ILoggingFacade loggingFacade, String path, String moduleName, String errorUUID,
                                   String exContent) {
         try (FileWriter fw = new FileWriter(path + "/" + LogHttpUtils.generateErrorFileName(moduleName, errorUUID))) {
             fw.write("Error:" + errorUUID + " ****************************************************\n");
             fw.write(exContent);
         } catch (IOException ioe) {
-            logService.error("dumpToFile", ioe);
+            loggingFacade.error("dumpToFile", ioe);
         }
     }
 
     /**
      * Dump exception with http request to file.
      *
-     * @param logService         Log service
+     * @param loggingFacade         Log service
      * @param errorFilePath      Error file path
      * @param moduleName         Module name
      * @param errorUUID          Error uid
      * @param exContent          Exception content
      * @param httpServletRequest Http servlet request
      */
-    public static void dumpToFile(ILogService logService, String errorFilePath, String moduleName, String errorUUID,
+    public static void dumpToFile(ILoggingFacade loggingFacade, String errorFilePath, String moduleName, String errorUUID,
                                   String exContent, HttpServletRequest httpServletRequest) {
         String payload = dumpHttpRequest(httpServletRequest);
         try (FileWriter fw = new FileWriter(errorFilePath + "/" + LogHttpUtils.generateErrorFileName(moduleName, errorUUID))) {
@@ -203,7 +204,7 @@ public class LogHttpUtils {
             fw.write(CR_SEP);
             fw.write(exContent);
         } catch (IOException ioe) {
-            logService.error("dumpToFile", ioe);
+            loggingFacade.error("dumpToFile", ioe);
         }
     }
 

@@ -2,7 +2,7 @@ package com.acme.jga.rest.controllers;
 
 import com.acme.jga.domain.model.v1.OrganizationKind;
 import com.acme.jga.domain.model.v1.OrganizationStatus;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationCommonsDto;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
@@ -13,7 +13,6 @@ import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,7 +38,7 @@ class OrganizationsControllerTest {
     @MockitoBean
     private IOrganizationPortService organizationPortService;
     @MockitoBean
-    private ILogService logService;
+    private ILoggingFacade loggingFacade;
     @MockitoBean
     private AppGenericConfig appGenericConfig;
     @MockitoBean

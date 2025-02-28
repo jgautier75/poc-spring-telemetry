@@ -42,6 +42,11 @@ public class LogService implements ILogService {
         logBundleMessage(Level.INFO, bundleMessage, params, callerName);
     }
 
+    @Override
+    public void info(String msg) {
+        LOGGER.info(msg);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -58,12 +63,24 @@ public class LogService implements ILogService {
         logBundleMessage(Level.DEBUG, bundleMessage, params, callerName);
     }
 
+    @Override
+    public void debug(String message) {
+        if (LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
+            LOGGER.debug(message);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void debugS(String callerName, String message, Object[] params) {
         logSimpleMessage(Level.DEBUG, message, params, callerName);
+    }
+
+    @Override
+    public void trace(String msg) {
+        LOGGER.trace(msg);
     }
 
     /**
@@ -80,6 +97,11 @@ public class LogService implements ILogService {
     @Override
     public void traceS(String callerName, String message, Object[] params) {
         logSimpleMessage(Level.TRACE, message, params, callerName);
+    }
+
+    @Override
+    public void warn(String msg) {
+        LOGGER.warn(msg);
     }
 
     /**
@@ -132,17 +154,18 @@ public class LogService implements ILogService {
      * @param params     Parameters
      * @param callerName Caller
      */
-    private void logBundleMessage(Level level, String message, Object[] params, String callerName) {
+    public void logBundleMessage(Level level, String message, Object[] params, String callerName) {
+        String bundleMessage = buildMessage(true, message, params, callerName);
         if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
-            LOGGER.debug(buildMessage(true, message, params, callerName));
+            LOGGER.debug(bundleMessage);
         } else if (level == Level.ERROR && LOGGER.isErrorEnabled()) {
-            LOGGER.error(buildMessage(true, message, params, callerName));
+            LOGGER.error(bundleMessage);
         } else if (level == Level.INFO && LOGGER.isInfoEnabled()) {
-            LOGGER.info(buildMessage(true, message, params, callerName));
+            LOGGER.info(bundleMessage);
         } else if (level == Level.TRACE && LOGGER.isTraceEnabled()) {
-            LOGGER.trace(buildMessage(true, message, params, callerName));
+            LOGGER.trace(bundleMessage);
         } else if (level == Level.WARN && LOGGER.isWarnEnabled()) {
-            LOGGER.warn(buildMessage(true, message, params, callerName));
+            LOGGER.warn(bundleMessage);
         }
     }
 
@@ -155,17 +178,18 @@ public class LogService implements ILogService {
      * @param params     Parameters
      * @param callerName Caller name
      */
-    private void logSimpleMessage(Level level, String message, Object[] params, String callerName) {
+    public void logSimpleMessage(Level level, String message, Object[] params, String callerName) {
+        String bundleMessage = buildMessage(false, message, params, callerName);
         if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
-            LOGGER.debug(buildMessage(false, message, params, callerName));
+            LOGGER.debug(bundleMessage);
         } else if (level == Level.ERROR && LOGGER.isErrorEnabled()) {
-            LOGGER.error(buildMessage(false, message, params, callerName));
+            LOGGER.error(bundleMessage);
         } else if (level == Level.INFO && LOGGER.isInfoEnabled()) {
-            LOGGER.info(buildMessage(false, message, params, callerName));
+            LOGGER.info(bundleMessage);
         } else if (level == Level.TRACE && LOGGER.isTraceEnabled()) {
-            LOGGER.trace(buildMessage(false, message, params, callerName));
+            LOGGER.trace(bundleMessage);
         } else if (level == Level.WARN && LOGGER.isWarnEnabled()) {
-            LOGGER.warn(buildMessage(false, message, params, callerName));
+            LOGGER.warn(bundleMessage);
         }
     }
 
@@ -178,7 +202,7 @@ public class LogService implements ILogService {
      * @param callerName    Caller name
      * @return Message
      */
-    private String buildMessage(boolean bundleMessage, String msg, Object[] params, String callerName) {
+    public String buildMessage(boolean bundleMessage, String msg, Object[] params, String callerName) {
         String targetMsg;
         Object[] filteredParams = StreamUtil.ofNullableArray(params).map(F_DECODE).toList().toArray();
         if (bundleMessage) {

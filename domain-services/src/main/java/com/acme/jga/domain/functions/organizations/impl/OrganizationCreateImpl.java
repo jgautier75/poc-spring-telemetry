@@ -16,7 +16,7 @@ import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
 import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
 import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -31,17 +31,17 @@ public class OrganizationCreateImpl extends AbstractOrganizationFunction impleme
     private final TenantFind tenantFind;
     private final IOrganizationsInfraService organizationsInfraService;
     private final ISectorsInfraService sectorsInfraService;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
     public OrganizationCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
                                   EventsInfraService eventsInfraService, TenantFind tenantFind,
                                   IOrganizationsInfraService organizationsInfraService,
-                                  ISectorsInfraService sectorsInfraService, ILogService logService) {
+                                  ISectorsInfraService sectorsInfraService, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
         this.sectorsInfraService = sectorsInfraService;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class OrganizationCreateImpl extends AbstractOrganizationFunction impleme
             // Generate audit event for sector
             List<AuditChange> sectorAuditChanges = List.of(new AuditChange("label", AuditOperation.ADD, null, organization.getCommons().getLabel()));
             generateSectorAuditEventAndPush(organization, tenant, sector, span, AuditAction.CREATE, sectorAuditChanges);
-            logService.debugS(this.getClass().getName() + "-createOrganization", "Sector composite id [%s]", new Object[]{sectorCompositeId.getUid()});
+            loggingFacade.debugS(this.getClass().getName() + "-createOrganization", "Sector composite id [%s]", new Object[]{sectorCompositeId.getUid()});
 
             // Generate audit event for organization
             List<AuditChange> auditChanges = List.of(new AuditChange("label", AuditOperation.ADD, null, organization.getCommons().getLabel()));
