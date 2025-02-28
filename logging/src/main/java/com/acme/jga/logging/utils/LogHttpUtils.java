@@ -29,6 +29,7 @@ public class LogHttpUtils {
     public static final String ERROR_FILE_SEPARATOR = "_";
     public static final String ERROR_FILE_EXTENSION = ".log";
     public static final String ERROR_FILE_TEMPORAL_PATTERN = "yyyy-MM-dd-HH-mm-ss-SSS";
+    public static final String OTEL_CORRELATION_KEY = "correlation-key";
 
     /**
      * Get error for application and id.

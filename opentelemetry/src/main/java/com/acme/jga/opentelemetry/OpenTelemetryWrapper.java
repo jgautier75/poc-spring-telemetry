@@ -1,7 +1,5 @@
 package com.acme.jga.opentelemetry;
 
-import io.opentelemetry.api.logs.LoggerProvider;
-import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Span;
@@ -12,8 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
 @Component
 public class OpenTelemetryWrapper implements InitializingBean {
     @Autowired
@@ -21,9 +17,6 @@ public class OpenTelemetryWrapper implements InitializingBean {
 
     @Autowired
     private MeterProvider sdkMeterProvider;
-
-    @Autowired
-    private LoggerProvider sdkLoggerProvider;
 
     private LongCounter counterTest;
 
@@ -40,9 +33,6 @@ public class OpenTelemetryWrapper implements InitializingBean {
         }
     }
 
-    public void log(Severity severity, String message) {
-        this.sdkLoggerProvider.loggerBuilder("logger-builder").build().logRecordBuilder().setSeverity(severity).setObservedTimestamp(Instant.now()).setBody(message).emit();
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
