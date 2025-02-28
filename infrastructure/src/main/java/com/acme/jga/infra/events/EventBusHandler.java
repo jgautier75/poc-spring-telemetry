@@ -5,7 +5,7 @@ import com.acme.jga.domain.model.events.v1.AuditEvent;
 import com.acme.jga.domain.model.events.v1.EventStatus;
 import com.acme.jga.infra.config.KafkaProducerConfig;
 import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.users.mgt.events.protobuf.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +34,7 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
     private final KafkaProducerConfig kafkaProducerConfig;
     private final KafkaTemplate<String, Event.AuditEventMessage> kakaTemplateAudit;
     private final IEventsInfraService eventsInfraService;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
     private final PublishSubscribeChannel eventAuditChannel;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final ObjectMapper objectMapper;
@@ -47,13 +47,13 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
         String callerName = this.getClass().getName();
-        logService.debugS(callerName, "Handling wake-up message", null);
+        loggingFacade.debugS(callerName, "Handling wake-up message", null);
         if (!isRunning.get()) {
             try {
                 isRunning.set(true);
                 List<AuditEvent> auditEvents = eventsInfraService.findPendingEvents();
                 if (CollectionUtils.isEmpty(auditEvents)) {
-                    logService.warnS(callerName, "No pending event to send", null);
+                    loggingFacade.warnS(callerName, "No pending event to send", null);
                 }
                 auditEvents.forEach(auditEvent -> convertAndSend(auditEvent, callerName));
                 markEventsAsProcessed(auditEvents);
@@ -87,7 +87,7 @@ public class EventBusHandler implements MessageHandler, InitializingBean {
             ProducerRecord<String, Event.AuditEventMessage> producerRecord = new ProducerRecord<>(kafkaProducerConfig.getTopicNameAuditEvents(), auditEvent.getObjectUid(), auditEventMessage);
             kakaTemplateAudit.send(producerRecord);
         } catch (JsonProcessingException e) {
-            logService.error(callerName, e);
+            loggingFacade.error(callerName, e);
         }
     }
 

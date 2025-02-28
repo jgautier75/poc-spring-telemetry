@@ -7,7 +7,7 @@ import com.acme.jga.infra.dao.api.tenants.ITenantsDao;
 import com.acme.jga.infra.dto.tenants.v1.TenantDb;
 import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,12 @@ public class TenantInfraService extends AbstractInfraService implements ITenantI
     private static final String INSTRUMENTATION_NAME = TenantInfraService.class.getCanonicalName();
     private final ITenantsDao tenantsDao;
     private final TenantsInfraConverter tenantsInfraConverter;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
     @Autowired
-    public TenantInfraService(ITenantsDao tenantsDao, TenantsInfraConverter tenantsInfraConverter, ILogService logService, OpenTelemetryWrapper openTelemetryWrapper) {
+    public TenantInfraService(ITenantsDao tenantsDao, TenantsInfraConverter tenantsInfraConverter, ILoggingFacade loggingFacade, OpenTelemetryWrapper openTelemetryWrapper) {
         super(openTelemetryWrapper);
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
         this.tenantsDao = tenantsDao;
         this.tenantsInfraConverter = tenantsInfraConverter;
     }
@@ -59,7 +59,7 @@ public class TenantInfraService extends AbstractInfraService implements ITenantI
 
     @Override
     public Integer updateTenant(Tenant tenant, Span parentSpan) {
-        logService.debugS(this.getClass().getCanonicalName() + "-updateTenant", "tenant " + tenant.getCode() + " updated", null);
+        loggingFacade.debugS(this.getClass().getCanonicalName() + "-updateTenant", "tenant " + tenant.getCode() + " updated", null);
         return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_UPDATE", parentSpan, () ->
                 tenantsDao.updateTenant(tenant.getId(), tenant.getCode(), tenant.getLabel())
         );

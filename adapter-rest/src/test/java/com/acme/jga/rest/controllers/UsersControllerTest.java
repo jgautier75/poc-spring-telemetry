@@ -3,6 +3,7 @@ package com.acme.jga.rest.controllers;
 import com.acme.jga.domain.model.v1.OrganizationKind;
 import com.acme.jga.domain.model.v1.OrganizationStatus;
 import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.users.v1.*;
@@ -40,7 +41,7 @@ class UsersControllerTest {
     @MockitoBean
     private IUserPortService userPortService;
     @MockitoBean
-    private ILogService logService;
+    private ILoggingFacade loggingFacade;
     @MockitoBean
     private AppGenericConfig appGenericConfig;
     @MockitoBean

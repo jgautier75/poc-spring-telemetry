@@ -1,6 +1,6 @@
 package com.acme.jga.rest.controllers;
 
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.ports.services.api.tenant.ITenantPortService;
@@ -34,7 +34,7 @@ class TenantsControllerTest {
     @MockitoBean
     private ITenantPortService tenantPortService;
     @MockitoBean
-    private ILogService logService;
+    private ILoggingFacade loggingFacade;
     @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
     @MockitoBean

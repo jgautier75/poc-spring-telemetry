@@ -1,6 +1,6 @@
 package com.acme.jga.rest.filters;
 
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.logging.utils.CachedHttpServletRequest;
 import com.acme.jga.logging.utils.LogHttpUtils;
 import com.acme.jga.rest.config.AppDebuggingConfig;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class LogHttpFilter extends OncePerRequestFilter {
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
     private final AppDebuggingConfig appConfig;
 
     @Override
@@ -82,9 +82,9 @@ public class LogHttpFilter extends OncePerRequestFilter {
     public void doDebugRequest(CachedHttpServletRequest httpServletRequest) {
         String dumpHttpRequest = LogHttpUtils.dumpHttpRequest(httpServletRequest);
         String callerName = this.getClass().getName() + "-doDebugFiler";
-        logService.debugS(callerName, getRequestResponseLogHeader("REQUEST_BEGINS"), new Object[0]);
-        logService.debugS(callerName, dumpHttpRequest, new Object[0]);
-        logService.debugS(callerName, getRequestResponseLogHeader("REQUEST_ENDS"), new Object[0]);
+        loggingFacade.debugS(callerName, getRequestResponseLogHeader("REQUEST_BEGINS"), new Object[0]);
+        loggingFacade.debugS(callerName, dumpHttpRequest, new Object[0]);
+        loggingFacade.debugS(callerName, getRequestResponseLogHeader("REQUEST_ENDS"), new Object[0]);
     }
 
     /**
@@ -95,9 +95,9 @@ public class LogHttpFilter extends OncePerRequestFilter {
     public void doDebugResponse(ContentCachingResponseWrapper httpServletResponse) {
         String callerName = this.getClass().getName() + "-doDebugResponse";
         String dumpHttpResponse = LogHttpUtils.dumpHttpResponse(httpServletResponse);
-        logService.debugS(callerName, getRequestResponseLogHeader("RESPONSE_BEGINS"), new Object[0]);
-        logService.debugS(callerName, dumpHttpResponse, new Object[0]);
-        logService.debugS(callerName, getRequestResponseLogHeader("RESPONSE_ENDS"), new Object[0]);
+        loggingFacade.debugS(callerName, getRequestResponseLogHeader("RESPONSE_BEGINS"), new Object[0]);
+        loggingFacade.debugS(callerName, dumpHttpResponse, new Object[0]);
+        loggingFacade.debugS(callerName, getRequestResponseLogHeader("RESPONSE_ENDS"), new Object[0]);
     }
 
     /**

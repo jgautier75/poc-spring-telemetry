@@ -11,7 +11,7 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
 import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
-import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -25,15 +25,15 @@ public class OrganizationDeleteImpl extends AbstractOrganizationFunction impleme
     private static final String INSTRUMENTATION_NAME = OrganizationDeleteImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final IOrganizationsInfraService organizationsInfraService;
-    private final ILogService logService;
+    private final ILoggingFacade loggingFacade;
 
     public OrganizationDeleteImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
                                   EventsInfraService eventsInfraService, TenantFind tenantFind,
-                                  IOrganizationsInfraService organizationsInfraService, ILogService logService) {
+                                  IOrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
-        this.logService = logService;
+        this.loggingFacade = loggingFacade;
     }
 
     @Override
@@ -52,19 +52,19 @@ public class OrganizationDeleteImpl extends AbstractOrganizationFunction impleme
             // Delete users
             Integer nbUsersDeleted = organizationsInfraService.deleteUsersByOrganization(tenant.getId(), org.get().getId());
             totalDeleted += nbUsersDeleted;
-            logService.debugS(callerName, "Nb of users deleted: [%s]", new Object[]{nbUsersDeleted});
+            loggingFacade.debugS(callerName, "Nb of users deleted: [%s]", new Object[]{nbUsersDeleted});
 
             // Delete sectors
             Integer nbSectorsDeleted = organizationsInfraService.deleteSectors(tenant.getId(), org.get().getId());
             totalDeleted += nbSectorsDeleted;
-            logService.debugS(callerName, "Nb of sectors deleted: [%s]", new Object[]{nbSectorsDeleted});
+            loggingFacade.debugS(callerName, "Nb of sectors deleted: [%s]", new Object[]{nbSectorsDeleted});
 
             // Delete organization
             Integer nbOrgDeleted = organizationsInfraService.deleteById(tenant.getId(), org.get().getId());
             totalDeleted += nbOrgDeleted;
-            logService.debugS(callerName, "Nb of organizations deleted: [%s]", new Object[]{nbOrgDeleted});
+            loggingFacade.debugS(callerName, "Nb of organizations deleted: [%s]", new Object[]{nbOrgDeleted});
 
-            logService.debugS(callerName, "Total nb of records deleted: [%s]", new Object[]{totalDeleted});
+            loggingFacade.debugS(callerName, "Total nb of records deleted: [%s]", new Object[]{totalDeleted});
 
             // Create audit event
             generateOrgAuditEventAndPush(org.get(), tenant, span, AuditAction.DELETE, Collections.emptyList());
