@@ -1,0 +1,322 @@
+version: "3.1"
+
+networks:
+  poc-telemetry:
+    driver: local
+
+services:
+  poc-openbao:
+    image: quay.io/openbao/openbao:${OPENBAO_VERSION:-}
+    container_name: poc-openbao
+    environment:
+      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_TOKEN:-}
+      OPENBAO_SKIP_VERIFY: "true"
+    networks:
+      - poc-telemetry
+    volumes:
+      - ./poc-openbao/config.hcl:/openbao/config/config.hcl
+    ports:
+      - "8200:8200"
+  poc-app-storage:
+    image: postgres:${POSTGRES_VERSION:-}
+    container_name: poc-app-storage
+    volumes:
+      - "poc-app-storage:/var/lib/postgresql/data/pgdata"
+    restart: always
+    networks:
+      - poc-telemetry
+    environment:
+      POSTGRES_PASSWORD: posgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+  poc-keycloak-storage:
+    image: postgres:${POSTGRES_VERSION:-}
+    container_name: poc-keycloak-storage
+    networks:
+      - poc-telemetry
+    volumes:
+      - "poc-keycloak-storage:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: ${KEYCLOAK_PG_USER:-}
+      POSTGRES_PASSWORD: ${KEYCLOAK_PG_PASS:-}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5433"
+  poc-keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-}
+    #image: keycloak-with-spi:1.0.0
+    container_name: poc-keycloak
+    networks:
+      - poc-telemetry
+    depends_on:
+      - poc-keycloak-storage
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_GUI_USER:-}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_GUI_PASS:-}
+      KC_HEALTH_ENABLED: "false"
+      KC_LOG_LEVEL: info
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://poc-keycloak-storage/keycloak_db
+      KC_DB_USERNAME: ${KEYCLOAK_PG_USER:-}
+      KC_DB_PASSWORD: ${KEYCLOAK_PG_PASS:-}
+      KC_METRICS_ENABLED: "true"
+      #DEBUG: 'true'
+      #DEBUG_PORT: '*:8787'
+      federation_endpoint: http://MYIPADDRESS:8080/poc-st/api/v1/spi/user
+      federation_user: ${APP_SYS_USER:-}
+      federation_pass: ${APP_SYS_PASS:-}
+      kafka_consumer_topic: ${KAFKA_TOPIC:-}
+      kafka_consumer_bootstrap_servers: "localhost:19092"
+      kafka_consumer_group_id: keycloak-kafka-consumer
+      kafka_consumer_schema_registry_url: "http://localhost:8085"
+      vault-address: "http://localhost:8200"
+      vault-token: ${OPENBAO_TOKEN:-}
+      vault-path: ${OPENBAO_VAULT_PATH_ROOT:-}
+      vault-secrets: ${OPENBAO_VAULT_PATH_CREDS:-}
+    volumes:
+      - ./poc-realms:/opt/keycloak/data/import
+      - ./poc-providers:/opt/keycloak/providers
+      - ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
+    #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG","-Djdk.httpclient.HttpClient.log=all"]
+    command: [ "start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443" ]
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+      - "9000:9000"
+      - "8787:8787"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7080/health/ready" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+  poc-zookeeper:
+    image: confluentinc/cp-zookeeper:${CONFLUENT_VERSION:-}
+    container_name: poc-zookeeper
+    restart: unless-stopped
+    networks:
+      - poc-telemetry
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+      - "8087:8080"
+    volumes:
+      - poc-zoo-data:/var/lib/zookeeper/data:Z
+      - poc-zoo-log:/var/lib/zookeeper/log:Z
+    environment:
+      ZOOKEEPER_CLIENT_PORT: "2181"
+      ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: poc-st-zookeeper:2888:3888
+  poc-kafka:
+    image: confluentinc/cp-kafka:${CONFLUENT_VERSION:-}
+    container_name: poc-kafka
+    restart: unless-stopped
+    networks:
+      - poc-telemetry
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9999:9999"
+    volumes:
+      - poc-kafka-data:/var/lib/kafka/data:Z
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://localhost:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "poc-st-zookeeper:2181"
+      KAFKA_BROKER_ID: 0
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_JMX_PORT: 9001
+      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server=localhost:9092", "--list" ]
+      interval: 10s
+      retries: 20
+    links:
+      - poc-zookeeper
+  poc-schema-registry:
+    image: confluentinc/cp-schema-registry:${CONFLUENT_VERSION:-}
+    container_name: poc-schema-registry
+    restart: unless-stopped
+    networks:
+      - poc-telemetry
+    ports:
+      - "8085:8085"
+    depends_on:
+      - poc-kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://localhost:19092"
+      SCHEMA_REGISTRY_HOST_NAME: "poc-schema-registry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
+  poc-akhq:
+    image: tchiotludo/akhq:${AKHQ_VERSION:-}
+    restart: unless-stopped
+    container_name: poc-akhq
+    networks:
+      - poc-telemetry
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "localhost:19092"
+              schema-registry:
+                url: "http://localhost:8085"
+    ports:
+      - "8086:8080"
+    depends_on:
+      - poc-kafka
+      - poc-schema-registry
+  poc-prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION:-}
+    container_name: poc-prometheus
+    networks:
+      - poc-telemetry
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  poc-grafana-init-tempo:
+    image: grafana/tempo:latest
+    networks:
+      - poc-telemetry
+    user: root
+    entrypoint:
+      - "chown"
+      - "10001:10001"
+      - "/var/tempo"
+    volumes:
+      - "./poc-tempo-data:/var/tempo"
+  poc-grafana-tempo:
+    image: grafana/tempo:${TEMPO_VERSION:-}
+    container_name: poc-grafana-tempo
+    networks:
+      - poc-telemetry
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo-config.yml:/etc/tempo.yaml
+      - ./poc-tempo-data:/var/tempo
+    ports:
+      - "14268:14268"  # jaeger ingest
+      - "3200:3200"   # tempo
+      - "9095:9095" # tempo grpc
+      - "4317:4317"  # otlp grpc
+      - "4318:4318"  # otlp http
+      - "9411:9411"   # zipkin
+    depends_on:
+      - poc-grafana-init-tempo
+  poc-minio:
+    image: minio/minio:${MINIO_VERSION:-}
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_ROOT_USER=loki
+      - MINIO_ROOT_PASSWORD=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - 9000
+    volumes:
+      - "./poc-minio:/data"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 15s
+      timeout: 20s
+      retries: 5
+    networks:
+      - loki
+  poc-grafana-loki:
+    image: grafana/loki:${LOKI_VERSION:-}
+    container_name: poc-grafana-loki
+    depends_on:
+      - poc-minio
+    networks:
+      - poc-telemetry
+    command: "-config.file=/etc/loki/config.yaml -target=read"
+    ports:
+      - "3101:3100"
+      - "7946:7946"
+      - "9095:9095"
+    volumes:
+      - ./loki-config.yml:/etc/loki/config.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  poc-grafana-grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-}
+    container_name: poc-grafana-grafana
+    networks:
+      - poc-telemetry
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: datasource
+            access: proxy
+            url: http://localhost:9090      
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://localhost:3100
+            jsonData:
+              httpHeaderName1: "X-Scope-OrgID"
+            secureJsonData:
+              httpHeaderValue1: "tenant1"
+        EOF
+        /run.sh
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  - poc-app-storage:
+      driver: local
+  - poc-keycloak-storage:
+      driver: local
+  - poc-realms:
+      driver: local
+  - poc-providers:
+      driver: local
+  - poc-zoo-data:
+      driver: local
+  - poc-zoo-log:
+      driver: local
+  - poc-kafka-data:
+      driver: local
+  - poc-tempo-data:
+      driver: local
+  - poc-minio:
+      driver: local
