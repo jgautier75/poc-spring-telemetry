@@ -10,10 +10,10 @@
       ansible.builtin.debug:
         var: ansible_facts
       when: 0 > 1
-    - name: "Configuration: Afficher la clef de chiffrement"
+    - name: "Configuration: Display encryption key (for debugging purpose only)"
       when: 0 > 1
       ansible.builtin.debug:
-        msg: "Clef de chiffrement : {{ cipher_key }}"
+        msg: "Enceyption key: {{ cipher_key }}"
     - name: "Configuration: Get ipv4 address"
       ansible.builtin.debug:
         var: hostvars[inventory_hostname]['ansible_default_ipv4']['address']
@@ -55,15 +55,15 @@
       when:
         - response.status != 200
         - not (response.status == 400 and response.json.errors is search("check-and-set parameter did not match the current version"))
-    - name: "Kafka - List topics"
+    - name: "Kafka - Retreive existing topics"
       community.docker.docker_container_exec:
         container: docker_poc-st-kafka_1
         command: /bin/bash -c "kafka-topics --bootstrap-server {{ hostvars[inventory_hostname]['kafka_container_internal'] }} --list"
       register: kafka_output
-    - name: "Kafka - Topics - List"
+    - name: "Kafka - List Topics - Format"
       set_fact:
         topics: "{{ kafka_output.stdout | split('\n') }}"
-    - name: "Kafka - List Topics Result"
+    - name: "Kafka - List Topics - Result"
       ansible.builtin.debug:
         var: topics
     - name: "Kafka - Create topics"
