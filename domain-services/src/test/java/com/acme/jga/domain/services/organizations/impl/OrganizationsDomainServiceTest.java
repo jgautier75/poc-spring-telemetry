@@ -18,6 +18,7 @@ import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.infra.services.impl.organizations.OrganizationsInfraService;
 import com.acme.jga.infra.services.impl.sectors.SectorsInfraService;
 import com.acme.jga.logging.services.impl.LogService;
+import com.acme.jga.logging.services.impl.LoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.sdk.testing.junit5.OpenTelemetryExtension;
@@ -47,6 +48,8 @@ public class OrganizationsDomainServiceTest {
     TenantFind tenantFind;
     @Mock
     MessageSource messageSource;
+    @Mock
+    LoggingFacade loggingFacade;
     @Mock
     LogService logService;
     @Mock

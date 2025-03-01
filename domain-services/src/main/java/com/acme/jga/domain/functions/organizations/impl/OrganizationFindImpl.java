@@ -36,7 +36,7 @@ public class OrganizationFindImpl extends DomainFunction implements Organization
                 throwWrappedException(FunctionalErrorsTypes.ORG_NOT_FOUND.name(), "org_not_found_by_uid", new Object[]{orgUid});
             }
             if (fetchSectors) {
-                Sector sector = sectorsInfraService.fetchSectorsWithHierarchy(tenantId, org.get().getId());
+                Sector sector = sectorsInfraService.fetchSectorsWithHierarchy(tenantId, org.get().getId(), span);
                 org.get().setSector(sector);
             }
             return org.get();

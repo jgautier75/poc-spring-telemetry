@@ -14,6 +14,7 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -33,8 +34,9 @@ public class OrganizationsDao extends AbstractJdbcDaoSupport implements IOrganiz
     private final ExpressionsProcessor expressionsProcessor;
     private static final String BASE_SELECT = "org_sel_base";
 
-    public OrganizationsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ExpressionsProcessor expressionsProcessor) {
-        super(ds, namedParameterJdbcTemplate);
+    public OrganizationsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                            ExpressionsProcessor expressionsProcessor, OpenTelemetryWrapper openTelemetryWrapper) {
+        super(ds, namedParameterJdbcTemplate, openTelemetryWrapper);
         this.expressionsProcessor = expressionsProcessor;
         super.loadQueryFilePath(new String[]{"organizations.properties"});
     }

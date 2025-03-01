@@ -38,7 +38,7 @@ public class TenantInfraService extends AbstractInfraService implements ITenantI
 
     @Override
     public Optional<Tenant> findTenantByUid(String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_BY_UID", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_BY_UID", parentSpan, (span) -> {
             Optional<TenantDb> tenantDb = tenantsDao.findByUid(uid);
             return tenantDb.map(tenantsInfraConverter::tenantDbToTenantDomain);
         });
@@ -46,12 +46,13 @@ public class TenantInfraService extends AbstractInfraService implements ITenantI
 
     @Override
     public boolean tenantExistsByCode(String code, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_EXISTS_BY_CODE", parentSpan, () -> tenantsDao.existsByCode(code));
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_EXISTS_BY_CODE", parentSpan,
+                (span) -> tenantsDao.existsByCode(code));
     }
 
     @Override
     public List<Tenant> findAllTenants(Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_ALL", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_ALL", parentSpan, (span) -> {
             List<TenantDb> tenantDbs = tenantsDao.findAllTenants();
             return tenantDbs.stream().map(tenantsInfraConverter::tenantDbToTenantDomain).toList();
         });
@@ -60,35 +61,35 @@ public class TenantInfraService extends AbstractInfraService implements ITenantI
     @Override
     public Integer updateTenant(Tenant tenant, Span parentSpan) {
         loggingFacade.debugS(this.getClass().getCanonicalName() + "-updateTenant", "tenant " + tenant.getCode() + " updated", null);
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_UPDATE", parentSpan, () ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_UPDATE", parentSpan, (span) ->
                 tenantsDao.updateTenant(tenant.getId(), tenant.getCode(), tenant.getLabel())
         );
     }
 
     @Override
     public Integer deleteUsersByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_USERS", parentSpan, () ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_USERS", parentSpan, (span) ->
                 tenantsDao.deleteUsersByTenantId(tenantId)
         );
     }
 
     @Override
     public Integer deleteOrganizationsByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_ORG", parentSpan, () ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_ORG", parentSpan, (span) ->
                 tenantsDao.deleteOrganizationsByTenantId(tenantId)
         );
     }
 
     @Override
     public Integer deleteTenant(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_TENANT", parentSpan, () ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_TENANT", parentSpan, (span) ->
                 tenantsDao.deleteTenant(tenantId)
         );
     }
 
     @Override
     public Integer deleteSectorsByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_SECTORS", parentSpan, () ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_SECTORS", parentSpan, (span) ->
                 tenantsDao.deleteSectorsByTenantId(tenantId)
         );
     }

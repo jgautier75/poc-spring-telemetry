@@ -30,6 +30,8 @@ public class LogHttpUtils {
     public static final String ERROR_FILE_EXTENSION = ".log";
     public static final String ERROR_FILE_TEMPORAL_PATTERN = "yyyy-MM-dd-HH-mm-ss-SSS";
     public static final String OTEL_CORRELATION_KEY = "correlation-key";
+    public static final String OTEL_TRACE_ID = "trace_id";
+    public static final String OTEL_SPAN_ID = "span_id";
 
     /**
      * Get error for application and id.

@@ -14,6 +14,7 @@ import com.acme.jga.ports.services.api.tenant.ITenantPortService;
 import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.validation.tenants.TenantsValidationEngine;
 import com.acme.jga.utils.lambdas.StreamUtil;
+import com.acme.jga.utils.otel.OtelContext;
 import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
 import io.opentelemetry.api.trace.Span;
@@ -68,11 +69,10 @@ public class TenantPortService extends AbstractPortService implements ITenantPor
     @Override
     public TenantDisplayDto findTenantByUid(String uid, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_FIND_UID", parentSpan, (span) -> {
-            loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant by uid [%s]", new Object[]{uid});
+            loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant by uid [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
             Tenant tenant = tenantFind.byUid(uid, span);
-            loggingFacade.infoS(INSTRUMENTATION_NAME, "Convert tenant named [%s] from domain to dto", new Object[]{tenant.getLabel()});
-            TenantDisplayDto tenantDisplayDto = tenantsConverter.tenantDomainToDisplay(tenant);
-            return tenantDisplayDto;
+            loggingFacade.infoS(INSTRUMENTATION_NAME, "Convert tenant named [%s] from domain to dto", new Object[]{tenant.getLabel()}, OtelContext.fromSpan(span));
+            return tenantsConverter.tenantDomainToDisplay(tenant);
         });
     }
 

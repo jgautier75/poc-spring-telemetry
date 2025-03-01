@@ -33,7 +33,7 @@ public class SectorHierarchyImpl extends DomainFunction implements SectorHierarc
         return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_HIERARCHY", parentSpan, (span) -> {
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
-            return sectorsInfraService.fetchSectorsWithHierarchy(tenant.getId(), organization.getId());
+            return sectorsInfraService.fetchSectorsWithHierarchy(tenant.getId(), organization.getId(), span);
         });
     }
 }

@@ -169,8 +169,6 @@ Open ports:
 - 3000: Grafana. User: admin, password: admin
 ````
 
-
-
 ## OpenBao & Kafka setup
 
 To initialize OpenBao and Kafka topics creation run the following ansible command.
@@ -854,6 +852,8 @@ To visualize counters from Tempo datasource, create a new visualization in grafa
 Finally, spans are also visible in tempo:
 
 ![](docs/images/tempo.png)
+
+![](docs/images/tempo_2.png)
 
 # Keycloak
 

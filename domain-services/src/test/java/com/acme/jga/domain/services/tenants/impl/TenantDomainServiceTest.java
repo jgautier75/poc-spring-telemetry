@@ -3,6 +3,7 @@ package com.acme.jga.domain.services.tenants.impl;
 import com.acme.jga.domain.events.EventBuilderTenant;
 import com.acme.jga.domain.functions.tenants.impl.TenantCreateImpl;
 import com.acme.jga.domain.functions.tenants.impl.TenantDeleteImpl;
+import com.acme.jga.domain.functions.tenants.impl.TenantFindImpl;
 import com.acme.jga.domain.functions.tenants.impl.TenantUpdateImpl;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
@@ -13,6 +14,7 @@ import com.acme.jga.infra.services.impl.events.EventsInfraService;
 import com.acme.jga.infra.services.impl.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.impl.LogService;
+import com.acme.jga.logging.services.impl.LoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ public class TenantDomainServiceTest {
     @Mock
     TenantInfraService tenantInfraService;
     @Mock
+    LoggingFacade loggingFacade;
+    @Mock
     EventsInfraService eventsInfraService;
     @Mock
     EventBuilderTenant eventBuilderTenant;
@@ -48,6 +52,8 @@ public class TenantDomainServiceTest {
     PublishSubscribeChannel eventAuditChannel;
     @Mock
     BundleFactory bundleFactory;
+    @Mock
+    TenantFindImpl tenantFind;
     @InjectMocks
     TenantCreateImpl tenantCreate;
     @InjectMocks
@@ -64,8 +70,6 @@ public class TenantDomainServiceTest {
         // WHEN
         Mockito.when(tenantInfraService.tenantExistsByCode(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(tenantInfraService.createTenant(Mockito.any(), Mockito.any())).thenReturn(cid);
-        Mockito.doNothing().when(logService).infoS(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(logService).debugS(Mockito.any(), Mockito.any(), Mockito.any());
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
 
@@ -93,9 +97,7 @@ public class TenantDomainServiceTest {
         Tenant tenant = mockTenant();
 
         // WHEN
-        Mockito.doNothing().when(logService).infoS(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(logService).debugS(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.when(tenantInfraService.findTenantByUid(Mockito.any(), Mockito.any())).thenReturn(Optional.of(tenant));
+        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
         Mockito.when(tenantInfraService.updateTenant(Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
@@ -111,9 +113,7 @@ public class TenantDomainServiceTest {
         Tenant tenant = mockTenant();
 
         // WHEN
-        Mockito.when(tenantInfraService.findTenantByUid(Mockito.any(), Mockito.any())).thenReturn(Optional.of(tenant));
-        Mockito.doNothing().when(logService).infoS(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doNothing().when(logService).debugS(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
         Mockito.when(tenantInfraService.deleteUsersByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(tenantInfraService.deleteSectorsByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(tenantInfraService.deleteOrganizationsByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);

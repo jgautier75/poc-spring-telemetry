@@ -9,6 +9,7 @@ import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
@@ -31,26 +32,28 @@ public class SectorsInfraService extends AbstractInfraService implements ISector
     }
 
     @Override
-    public Sector fetchSectorsWithHierarchy(Long tenantId, Long organizationId) {
-        List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantId, organizationId);
-        return sectors.stream()
-                .filter(SectorDb::isRoot)
-                .findFirst()
-                .map(rootSectorDb -> {
-                    mapSectorsRecursively(rootSectorDb, sectors);
-                    return sectorsConverter.convertSectorDbToDomain(rootSectorDb);
-                })
-                .orElse(null);
+    public Sector fetchSectorsWithHierarchy(Long tenantId, Long organizationId, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_SECTORS_FIND_HIERARCHY", parentSpan, (span) -> {
+            List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantId, organizationId, span);
+            return sectors.stream()
+                    .filter(SectorDb::isRoot)
+                    .findFirst()
+                    .map(rootSectorDb -> {
+                        mapSectorsRecursively(rootSectorDb, sectors);
+                        return sectorsConverter.convertSectorDbToDomain(rootSectorDb);
+                    })
+                    .orElse(null);
+        });
     }
 
     @Override
     public CompositeId createSector(Long tenantId, Long organizationId, Sector sector, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_SECTOR_CREATE", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_SECTOR_CREATE", parentSpan, (span) -> {
             SectorDb sectorDb = sectorsConverter.convertSectorDomaintoDb(sector);
             CompositeId compositeId = sectorsDao.createSector(tenantId, organizationId, sectorDb);
             loggingFacade.infoS(this.getClass().getName() + "createSector",
                     "Created sector with uid [%s] on tenant [%s] and organization [%s]",
-                    new Object[]{compositeId.getUid(), tenantId, organizationId});
+                    new Object[]{compositeId.getUid(), tenantId, organizationId}, OtelContext.fromSpan(span));
             return compositeId;
         });
     }

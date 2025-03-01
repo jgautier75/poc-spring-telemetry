@@ -36,7 +36,7 @@ public class EventsInfraService extends AbstractInfraService implements IEventsI
 
     @Override
     public String createEvent(AuditEvent auditEvent, Span parentSpan) throws TechnicalException {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_CREATE", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_CREATE", parentSpan, (span) -> {
             try {
                 AuditEventDb auditEventDb = auditEventsInfraConverter.convertAuditEventToDb(auditEvent, objectMapper);
                 return eventsDao.insertEvent(auditEventDb);
@@ -48,7 +48,7 @@ public class EventsInfraService extends AbstractInfraService implements IEventsI
 
     @Override
     public List<AuditEvent> findPendingEvents() {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_FIND_PENDING", null, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_FIND_PENDING", null, (span) -> {
             List<AuditEventDb> auditEventDbs = eventsDao.findPendingEvents();
             return auditEventDbs.stream().map(auditEventsInfraConverter::convertAuditEventDbToDomain).toList();
         });
@@ -57,7 +57,7 @@ public class EventsInfraService extends AbstractInfraService implements IEventsI
     @Transactional
     @Override
     public Integer updateEventsStatus(List<String> uids, EventStatus eventStatus) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_UPDATE_STATUS", null, () -> eventsDao.updateEvents(uids, eventStatus));
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_UPDATE_STATUS", null, (span) -> eventsDao.updateEvents(uids, eventStatus));
     }
 
 

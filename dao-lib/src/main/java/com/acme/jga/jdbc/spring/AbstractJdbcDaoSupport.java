@@ -3,6 +3,9 @@ package com.acme.jga.jdbc.spring;
 import com.acme.jga.jdbc.dql.OrderByClause;
 import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,6 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Function;
+
+import static com.acme.jga.utils.http.RequestCorrelationId.correlationKey;
 
 @Slf4j
 public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
@@ -28,13 +34,15 @@ public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
 
     protected final Properties queries = new Properties();
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    protected OpenTelemetryWrapper openTelemetryWrapper;
 
     protected AbstractJdbcDaoSupport() {
         // Empty constructor for injection
     }
 
-    protected AbstractJdbcDaoSupport(DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    protected AbstractJdbcDaoSupport(DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate, OpenTelemetryWrapper openTelemetryWrapper) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.openTelemetryWrapper = openTelemetryWrapper;
         setDataSource(dataSource);
     }
 
@@ -260,6 +268,19 @@ public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
      */
     protected String buildSQLInExpression(String columnName, String paramName) {
         return columnName + " in (:" + paramName + ")";
+    }
+
+    protected <T> T processWithSpan(String instrumentationName, String action, Span parentSpan, Function<Span, T> operation) {
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey(), parentSpan);
+        try {
+            return operation.apply(span);
+        } catch (Exception e) {
+            span.setStatus(StatusCode.ERROR);
+            span.recordException(e);
+            throw e;
+        } finally {
+            span.end();
+        }
     }
 
 }

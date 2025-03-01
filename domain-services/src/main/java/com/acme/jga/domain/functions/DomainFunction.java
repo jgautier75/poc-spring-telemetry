@@ -3,7 +3,10 @@ package com.acme.jga.domain.functions;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.logging.bundle.BundleFactory;
+import com.acme.jga.logging.utils.LogHttpUtils;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.http.RequestCorrelationId;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 
@@ -33,6 +36,7 @@ public abstract class DomainFunction {
     protected <T> T processWithSpan(String instrumentationName, String operation, Span parentSpan, Function<Span, T> operationFunction) {
         Span span = openTelemetryWrapper.withSpan(instrumentationName, operation + "-" + correlationKey(), parentSpan);
         try {
+            span.setAttribute(AttributeKey.stringKey(LogHttpUtils.OTEL_CORRELATION_KEY), RequestCorrelationId.correlationKey());
             return operationFunction.apply(span);
         } catch (Exception e) {
             span.setStatus(StatusCode.ERROR);

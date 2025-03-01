@@ -10,6 +10,7 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.date.DateTimeUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -29,8 +30,8 @@ import java.util.Map;
 
 @Repository
 public class EventsDao extends AbstractJdbcDaoSupport implements IEventsDao {
-    public EventsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(ds, namedParameterJdbcTemplate);
+    public EventsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate, OpenTelemetryWrapper openTelemetryWrapper) {
+        super(ds, namedParameterJdbcTemplate, openTelemetryWrapper);
         super.loadQueryFilePath(new String[]{"events.properties"});
     }
 

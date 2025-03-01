@@ -8,6 +8,10 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.logging.services.api.ILoggingFacade;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,36 +30,43 @@ import java.util.*;
 
 @Repository
 public class SectorsDao extends AbstractJdbcDaoSupport implements ISectorsDao {
+    private final ILoggingFacade loggingFacade;
+    private static final String INSTRUMENTATION_NAME = SectorsDao.class.getCanonicalName();
 
-    public SectorsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(ds, namedParameterJdbcTemplate);
+    public SectorsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                      OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
+        super(ds, namedParameterJdbcTemplate, openTelemetryWrapper);
         super.loadQueryFilePath(new String[]{"sectors.properties"});
+        this.loggingFacade = loggingFacade;
     }
 
     @Override
-    public List<SectorDb> findSectorsByOrgId(Long tenantId, Long orgId) {
-        String baseQuery = super.getQuery("sector_base");
-        List<WhereClause> whereClauses = new ArrayList<>();
-        whereClauses.add(WhereClause.builder()
-                .expression(buildSQLEqualsExpression(DaoConstants.FIELD_TENANT_ID, DaoConstants.P_TENANT_ID))
-                .operator(WhereOperator.AND)
-                .paramName(DaoConstants.P_TENANT_ID)
-                .paramValue(tenantId)
-                .build());
-        whereClauses.add(WhereClause.builder()
-                .expression(buildSQLEqualsExpression(DaoConstants.FIELD_ORG_ID, DaoConstants.P_ORG_ID))
-                .operator(WhereOperator.AND)
-                .paramName(DaoConstants.P_ORG_ID)
-                .paramValue(orgId)
-                .build());
-        Map<String, Object> params = super.buildParams(whereClauses);
-        String fullQuery = super.buildFullQuery(baseQuery, whereClauses, Collections.emptyList(), (String[]) null);
-        return super.getNamedParameterJdbcTemplate().query(fullQuery, params, new RowMapper<>() {
-            @Override
-            @Nullable
-            public SectorDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
-                return SectorDbExtractor.extractSector(rs, false);
-            }
+    public List<SectorDb> findSectorsByOrgId(Long tenantId, Long orgId, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DAO_SECTORS_FIND_BY_ORG", parentSpan, (span) -> {
+            String baseQuery = super.getQuery("sector_base");
+            List<WhereClause> whereClauses = new ArrayList<>();
+            whereClauses.add(WhereClause.builder()
+                    .expression(buildSQLEqualsExpression(DaoConstants.FIELD_TENANT_ID, DaoConstants.P_TENANT_ID))
+                    .operator(WhereOperator.AND)
+                    .paramName(DaoConstants.P_TENANT_ID)
+                    .paramValue(tenantId)
+                    .build());
+            whereClauses.add(WhereClause.builder()
+                    .expression(buildSQLEqualsExpression(DaoConstants.FIELD_ORG_ID, DaoConstants.P_ORG_ID))
+                    .operator(WhereOperator.AND)
+                    .paramName(DaoConstants.P_ORG_ID)
+                    .paramValue(orgId)
+                    .build());
+            Map<String, Object> params = super.buildParams(whereClauses);
+            String fullQuery = super.buildFullQuery(baseQuery, whereClauses, Collections.emptyList(), (String[]) null);
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Sectors query [%s]", new Object[]{fullQuery}, OtelContext.fromSpan(span));
+            return super.getNamedParameterJdbcTemplate().query(fullQuery, params, new RowMapper<>() {
+                @Override
+                @Nullable
+                public SectorDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
+                    return SectorDbExtractor.extractSector(rs, false);
+                }
+            });
         });
     }
 

@@ -15,6 +15,10 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.logging.services.api.ILoggingFacade;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,11 +36,15 @@ import java.util.*;
 @Repository
 public class UsersDao extends AbstractJdbcDaoSupport implements IUsersDao {
     private final ExpressionsProcessor expressionsProcessor;
+    private static final String INSTRUMENTATION_NAME = UsersDao.class.getCanonicalName();
+    private final ILoggingFacade loggingFacade;
     private static final String BASE_SELECT = "user_sel_base";
 
-    public UsersDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ExpressionsProcessor expressionsProcessor) {
-        super(ds, namedParameterJdbcTemplate);
+    public UsersDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ExpressionsProcessor expressionsProcessor,
+                    OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
+        super(ds, namedParameterJdbcTemplate, openTelemetryWrapper);
         this.expressionsProcessor = expressionsProcessor;
+        this.loggingFacade = loggingFacade;
         super.loadQueryFilePath(new String[]{"users.properties"});
     }
 
@@ -245,51 +253,59 @@ public class UsersDao extends AbstractJdbcDaoSupport implements IUsersDao {
     }
 
     @Override
-    public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams) {
-        String baseQuery = super.getQuery("user_display");
-        Map<String, Object> params = new HashMap<>();
-        params.put(DaoConstants.P_TENANT_ID, tenantId);
-        params.put(DaoConstants.P_ORG_ID, orgId);
+    public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "USERS-DAO-FIND", parentSpan, (span) -> {
+            String baseQuery = super.getQuery("user_display");
+            Map<String, Object> params = new HashMap<>();
+            params.put(DaoConstants.P_TENANT_ID, tenantId);
+            params.put(DaoConstants.P_ORG_ID, orgId);
 
-        Map<String, KeyValuePair> columnsDefsByAlias = UserMetaData.columnsByAlias();
+            Map<String, KeyValuePair> columnsDefsByAlias = UserMetaData.columnsByAlias();
 
-        CompositeQuery compositeQuery = expressionsProcessor.buildFilterQuery(params, searchParams, columnsDefsByAlias);
-        String whereClause = DaoConstants.WHERE_CLAUSE
-                + super.buildSQLEqualsExpression(DaoConstants.FIELD_TENANT_ID, DaoConstants.P_TENANT_ID)
-                + DaoConstants.AND
-                + super.buildSQLEqualsExpression(DaoConstants.FIELD_ORG_ID, DaoConstants.P_ORG_ID);
+            CompositeQuery compositeQuery = expressionsProcessor.buildFilterQuery(params, searchParams, columnsDefsByAlias);
+            String whereClause = DaoConstants.WHERE_CLAUSE
+                    + super.buildSQLEqualsExpression(DaoConstants.FIELD_TENANT_ID, DaoConstants.P_TENANT_ID)
+                    + DaoConstants.AND
+                    + super.buildSQLEqualsExpression(DaoConstants.FIELD_ORG_ID, DaoConstants.P_ORG_ID);
 
-        // Count query
-        String countQuery = super.getQuery("user_count");
-        countQuery += whereClause;
-        if (compositeQuery.notEmpty()) {
-            whereClause += DaoConstants.AND + compositeQuery.query();
-            countQuery += DaoConstants.AND + compositeQuery.query();
-        }
-
-        Integer nbResults = super.getNamedParameterJdbcTemplate().query(countQuery, params, resultSet -> {
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            } else {
-                return null;
+            // Count query
+            String countQuery = super.getQuery("user_count");
+            countQuery += whereClause;
+            if (compositeQuery.notEmpty()) {
+                whereClause += DaoConstants.AND + compositeQuery.query();
+                countQuery += DaoConstants.AND + compositeQuery.query();
             }
-        });
 
-        // Select query
-        String fullQuery = baseQuery + whereClause + compositeQuery.orderBy() + compositeQuery.pagination();
-        List<UserDisplayDb> results = super.getNamedParameterJdbcTemplate().query(fullQuery, compositeQuery.parameters(), new RowMapper<>() {
-            @Override
-            @Nullable
-            public UserDisplayDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
-                return UsersDisplayDbExtractor.extractUser(rs, false);
-            }
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Count query: [%s]", new Object[]{countQuery}, OtelContext.fromSpan(span));
+            Integer nbResults = super.getNamedParameterJdbcTemplate().query(countQuery, params, resultSet -> {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                } else {
+                    return null;
+                }
+            });
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Count result: [%s]", new Object[]{nbResults}, OtelContext.fromSpan(span));
+
+            // Select query
+            String fullQuery = baseQuery + whereClause + compositeQuery.orderBy() + compositeQuery.pagination();
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Search query: [%s]", new Object[]{fullQuery}, OtelContext.fromSpan(span));
+
+            List<UserDisplayDb> results = super.getNamedParameterJdbcTemplate().query(fullQuery, compositeQuery.parameters(), new RowMapper<>() {
+                @Override
+                @Nullable
+                public UserDisplayDb mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
+                    return UsersDisplayDbExtractor.extractUser(rs, false);
+                }
+            });
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Search result: [%s]", new Object[]{results.size()}, OtelContext.fromSpan(span));
+
+            return new PaginatedResults<>(nbResults,
+                    nbResults != null ? (nbResults / (Integer) searchParams.get(FilteringConstants.PAGE_SIZE) + 1) : 0,
+                    results,
+                    (Integer) searchParams.get(FilteringConstants.PAGE_INDEX),
+                    (Integer) searchParams.get(FilteringConstants.PAGE_SIZE)
+            );
         });
-        return new PaginatedResults<>(nbResults,
-                nbResults != null ? (nbResults / (Integer) searchParams.get(FilteringConstants.PAGE_SIZE) + 1) : 0,
-                results,
-                (Integer) searchParams.get(FilteringConstants.PAGE_INDEX),
-                (Integer) searchParams.get(FilteringConstants.PAGE_SIZE)
-        );
     }
 
 }

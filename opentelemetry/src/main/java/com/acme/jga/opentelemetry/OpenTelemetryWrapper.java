@@ -26,11 +26,13 @@ public class OpenTelemetryWrapper implements InitializingBean {
 
     public Span withSpan(String instrumentationName, String spanName, Span parentSpan) {
         Tracer tracer = sdkTracerProvider.get(instrumentationName);
+        Span span;
         if (parentSpan != null) {
-            return tracer.spanBuilder(spanName).setParent(Context.current().with(parentSpan)).startSpan();
+            span = tracer.spanBuilder(spanName).setParent(Context.current().with(parentSpan)).startSpan();
         } else {
-            return tracer.spanBuilder(spanName).startSpan();
+            span = tracer.spanBuilder(spanName).startSpan();
         }
+        return span;
     }
 
 

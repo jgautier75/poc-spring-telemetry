@@ -36,7 +36,7 @@ public class OrganizationsInfraService extends AbstractInfraService implements I
     @Transactional
     @Override
     public CompositeId createOrganization(Organization organization, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CREATE", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CREATE", parentSpan, (span) -> {
             OrganizationDb orgDb = organizationsInfraConverter.convertOrganizationToOrganizationDb(organization);
             return organizationsDao.createOrganization(orgDb);
         });
@@ -44,12 +44,12 @@ public class OrganizationsInfraService extends AbstractInfraService implements I
 
     @Override
     public PaginatedResults<Organization> filterOrganizations(Long tenantId, Span parentSpan, Map<String, Object> searchParams) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_ALL", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_ALL", parentSpan, (span) -> {
             PaginatedResults<OrganizationDb> paginatedResults = organizationsDao.filterOrganizations(tenantId, searchParams);
             List<Organization> orgs = paginatedResults.getResults().stream()
                     .map(organizationsInfraConverter::convertOrganizationDbToOrganization)
                     .toList();
-            return new PaginatedResults<>(
+            return new PaginatedResults<Organization>(
                     paginatedResults.getNbResults(),
                     paginatedResults.getNbPages(),
                     orgs,
@@ -61,7 +61,7 @@ public class OrganizationsInfraService extends AbstractInfraService implements I
 
     @Override
     public Optional<Organization> findOrganizationByUid(Long tenantId, String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_BY_UID", parentSpan, () -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_BY_UID", parentSpan, (span) -> {
             OrganizationDb orgDb = organizationsDao.findOrganizationByTenantAndUid(tenantId, uid);
             return Optional.ofNullable(organizationsInfraConverter.convertOrganizationDbToOrganization(orgDb));
         });
@@ -75,7 +75,7 @@ public class OrganizationsInfraService extends AbstractInfraService implements I
 
     @Override
     public Optional<Long> codeAlreadyUsed(String code, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CODE_ALREADY_USED", parentSpan, () -> organizationsDao.existsByCode(code));
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CODE_ALREADY_USED", parentSpan, (span) -> organizationsDao.existsByCode(code));
     }
 
     @Override

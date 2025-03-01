@@ -7,7 +7,7 @@ import io.opentelemetry.api.trace.Span;
 import java.util.Optional;
 
 public interface ISectorsInfraService {
-    Sector fetchSectorsWithHierarchy(Long tenantId, Long organizationId);
+    Sector fetchSectorsWithHierarchy(Long tenantId, Long organizationId, Span parentSpan);
 
     CompositeId createSector(Long tenantId, Long organizationId, Sector sector, Span parentSpan);
 

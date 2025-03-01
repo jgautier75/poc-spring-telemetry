@@ -8,6 +8,7 @@ import com.acme.jga.jdbc.dql.WhereClause;
 import com.acme.jga.jdbc.dql.WhereOperator;
 import com.acme.jga.jdbc.spring.AbstractJdbcDaoSupport;
 import com.acme.jga.jdbc.utils.DaoConstants;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,8 +28,8 @@ public class TenantsDao extends AbstractJdbcDaoSupport implements ITenantsDao {
 
     private static final String BASE_SELECT = "tenant_sel_base";
 
-    public TenantsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(ds, namedParameterJdbcTemplate);
+    public TenantsDao(DataSource ds, NamedParameterJdbcTemplate namedParameterJdbcTemplate, OpenTelemetryWrapper openTelemetryWrapper) {
+        super(ds, namedParameterJdbcTemplate, openTelemetryWrapper);
         super.loadQueryFilePath(TenantsDao.class.getClassLoader(), new String[]{"tenants.properties"});
     }
 

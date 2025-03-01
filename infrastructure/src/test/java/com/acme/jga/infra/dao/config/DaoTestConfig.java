@@ -12,11 +12,25 @@ import com.acme.jga.infra.dao.impl.sectors.SectorsDao;
 import com.acme.jga.infra.dao.impl.tenants.TenantsDao;
 import com.acme.jga.infra.dao.impl.users.UsersDao;
 import com.acme.jga.infra.dao.processors.ExpressionsProcessor;
+import com.acme.jga.infra.utils.DummyMessageSource;
+import com.acme.jga.logging.services.api.ILogService;
+import com.acme.jga.logging.services.api.ILoggingFacade;
+import com.acme.jga.logging.services.api.IOtelLogService;
+import com.acme.jga.logging.services.impl.LogService;
+import com.acme.jga.logging.services.impl.LoggingFacade;
+import com.acme.jga.logging.services.impl.OtelLogService;
+import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.opentelemetry.api.incubator.logs.ExtendedDefaultLoggerProvider;
+import io.opentelemetry.api.incubator.metrics.ExtendedDefaultMeterProvider;
+import io.opentelemetry.api.incubator.trace.ExtendedDefaultTracerProvider;
+import io.opentelemetry.api.incubator.trace.ExtendedTracer;
+import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.api.trace.TracerProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,34 +44,40 @@ import java.util.TimeZone;
 public class DaoTestConfig {
 
     @Bean
-    public ExpressionsProcessor expressionsProcessor(){
+    public ExpressionsProcessor expressionsProcessor() {
         return new ExpressionsProcessor();
     }
 
     @Bean
     public ITenantsDao tenantsDao(@Autowired DataSource dataSource,
-                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new TenantsDao(dataSource, namedParameterJdbcTemplate);
+                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                  @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new TenantsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
     }
 
     @Bean
     public IOrganizationsDao organizationsDao(@Autowired DataSource dataSource,
                                               @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                              @Autowired ExpressionsProcessor expressionsProcessor) {
-        return new OrganizationsDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor);
+                                              @Autowired ExpressionsProcessor expressionsProcessor,
+                                              @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new OrganizationsDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper);
     }
 
     @Bean
     public IUsersDao usersDao(@Autowired DataSource dataSource,
                               @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                              @Autowired ExpressionsProcessor expressionsProcessor) {
-        return new UsersDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor);
+                              @Autowired ExpressionsProcessor expressionsProcessor,
+                              @Autowired OpenTelemetryWrapper openTelemetryWrapper,
+                              @Autowired ILoggingFacade loggingFacade) {
+        return new UsersDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper, loggingFacade);
     }
 
     @Bean
     public ISectorsDao sectorsDao(@Autowired DataSource dataSource,
-                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new SectorsDao(dataSource, namedParameterJdbcTemplate);
+                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                  @Autowired OpenTelemetryWrapper openTelemetryWrapper,
+                                  @Autowired ILoggingFacade loggingFacade) {
+        return new SectorsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper, loggingFacade);
     }
 
     @Bean
@@ -67,8 +87,9 @@ public class DaoTestConfig {
 
     @Bean
     public IEventsDao eventsDao(@Autowired DataSource dataSource,
-                                @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new EventsDao(dataSource, namedParameterJdbcTemplate);
+                                @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new EventsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
     }
 
     @Bean
@@ -81,4 +102,35 @@ public class DaoTestConfig {
         objectMapper.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
         return objectMapper;
     }
+
+    @Bean
+    public OpenTelemetryWrapper openTelemetryWrapper() {
+        return new OpenTelemetryWrapper();
+    }
+
+    @Bean
+    public ILogService logService() {
+        return new LogService(new DummyMessageSource());
+    }
+
+    @Bean
+    public IOtelLogService otelLogService() {
+        return new OtelLogService(ExtendedDefaultLoggerProvider.getNoop());
+    }
+
+    @Bean
+    public ILoggingFacade loggingFacade(@Autowired ILogService logService, @Autowired IOtelLogService otelLogService) {
+        return new LoggingFacade(logService, otelLogService);
+    }
+
+    @Bean
+    public TracerProvider tracerProvider(){
+        return ExtendedDefaultTracerProvider.getNoop();
+    }
+
+    @Bean
+    public MeterProvider meterProvider(){
+        return ExtendedDefaultMeterProvider.getNoop();
+    }
+
 }

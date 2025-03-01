@@ -2,6 +2,8 @@ package com.acme.jga.domain.services.sectors.impl;
 
 import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
 import com.acme.jga.domain.functions.sectors.api.SectorCreate;
+import com.acme.jga.domain.functions.sectors.impl.SectorCreateImpl;
+import com.acme.jga.domain.functions.sectors.impl.SectorFindImpl;
 import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
@@ -46,8 +48,10 @@ public class SectorsDomainServiceTest {
     BundleFactory bundleFactory;
     @Mock
     PublishSubscribeChannel eventAuditChannel;
+    @Mock
+    SectorFindImpl sectorFind;
     @InjectMocks
-    SectorCreate sectorCreate;
+    SectorCreateImpl sectorCreate;
 
     @Test
     public void createSectorNominal() throws FunctionalException {
@@ -55,15 +59,19 @@ public class SectorsDomainServiceTest {
         Tenant tenant = mockTenant();
         Organization organization = mockOrganization(tenant);
         CompositeId compositeId = CompositeId.builder().id(1L).uid(UUID.randomUUID().toString()).build();
+        String parentUUID = UUID.randomUUID().toString();
+        Sector parentSector = Sector.builder().code("pscode").id(2L).label("pslabel").orgId(organization.getId())
+                .root(true).tenantId(tenant.getId()).uid(parentUUID).build();
+
         Sector sector = Sector.builder().code("scode").id(1L).label("slabel").orgId(organization.getId())
-                .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
+                .root(false).tenantId(tenant.getId()).parentUid(parentUUID).build();
 
         // WHEN
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
         Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
                 .thenReturn(organization);
         Mockito.when(sectorsInfraService.existsByCode(Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(sectorsInfraService.findSectorByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(sector));
+        Mockito.when(sectorFind.byTenantOrgAndUid(Mockito.anyString(), Mockito.any(), Mockito.eq(parentUUID), Mockito.any())).thenReturn(parentSector);
         Mockito.when(sectorsInfraService.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
         Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
