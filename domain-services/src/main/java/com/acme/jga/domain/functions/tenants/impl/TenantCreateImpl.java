@@ -9,10 +9,9 @@ import com.acme.jga.domain.model.events.v1.AuditOperation;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
-import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -24,12 +23,12 @@ import java.util.List;
 @Service
 public class TenantCreateImpl extends AbstractTenantFunction implements TenantCreate {
     private static final String INSTRUMENTATION_NAME = TenantCreateImpl.class.getCanonicalName();
-    private final ITenantInfraService tenantInfraService;
+    private final TenantInfraService tenantInfraService;
     private final ILoggingFacade loggingFacade;
 
     public TenantCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                            ITenantInfraService tenantInfraService, ILoggingFacade loggingFacade,
-                            IEventsInfraService eventsInfraService) {
+                            TenantInfraService tenantInfraService, ILoggingFacade loggingFacade,
+                            EventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantInfraService = tenantInfraService;
         this.loggingFacade = loggingFacade;

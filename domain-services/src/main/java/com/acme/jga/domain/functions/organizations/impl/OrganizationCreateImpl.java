@@ -12,9 +12,9 @@ import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
-import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
+import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
+import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -29,15 +29,15 @@ import java.util.Optional;
 public class OrganizationCreateImpl extends AbstractOrganizationFunction implements OrganizationCreate {
     private static final String INSTRUMENTATION_NAME = OrganizationCreateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
-    private final IOrganizationsInfraService organizationsInfraService;
-    private final ISectorsInfraService sectorsInfraService;
+    private final OrganizationsInfraService organizationsInfraService;
+    private final SectorsInfraService sectorsInfraService;
     private final ILoggingFacade loggingFacade;
 
     public OrganizationCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                                  EventsInfraService eventsInfraService, TenantFind tenantFind,
-                                  IOrganizationsInfraService organizationsInfraService,
-                                  ISectorsInfraService sectorsInfraService, ILoggingFacade loggingFacade) {
-        super(openTelemetryWrapper, bundleFactory, eventsInfraService);
+                                  EventsInfraServiceImpl eventsInfraServiceImpl, TenantFind tenantFind,
+                                  OrganizationsInfraService organizationsInfraService,
+                                  SectorsInfraService sectorsInfraService, ILoggingFacade loggingFacade) {
+        super(openTelemetryWrapper, bundleFactory, eventsInfraServiceImpl);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
         this.sectorsInfraService = sectorsInfraService;

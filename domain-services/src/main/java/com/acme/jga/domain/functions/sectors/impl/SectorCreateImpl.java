@@ -14,8 +14,8 @@ import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -30,12 +30,12 @@ public class SectorCreateImpl extends AbstractSectorFunction implements SectorCr
     private static final String INSTRUMENTATION_NAME = SectorCreateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
-    private final ISectorsInfraService sectorsInfraService;
+    private final SectorsInfraService sectorsInfraService;
     private final SectorFind sectorFind;
 
     public SectorCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, TenantFind tenantFind,
-                            OrganizationFind organizationFind, ISectorsInfraService sectorsInfraService,
-                            SectorFind sectorFind, IEventsInfraService eventsInfraService) {
+                            OrganizationFind organizationFind, SectorsInfraService sectorsInfraService,
+                            SectorFind sectorFind, EventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

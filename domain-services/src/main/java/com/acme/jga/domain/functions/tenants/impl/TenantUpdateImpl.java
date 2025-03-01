@@ -7,8 +7,8 @@ import com.acme.jga.domain.functions.tenants.api.TenantUpdate;
 import com.acme.jga.domain.model.events.v1.AuditAction;
 import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -20,14 +20,14 @@ import java.util.List;
 @Service
 public class TenantUpdateImpl extends AbstractTenantFunction implements TenantUpdate {
     private static final String INSTRUMENTATION_NAME = TenantUpdateImpl.class.getCanonicalName();
-    private final ITenantInfraService tenantInfraService;
+    private final TenantInfraService tenantInfraService;
     private final ILoggingFacade loggingFacade;
     private final TenantFind tenantFind;
     private final EventBuilderTenant eventBuilderTenant;
 
     public TenantUpdateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                            ITenantInfraService tenantInfraService, ILoggingFacade loggingFacade,
-                            IEventsInfraService eventsInfraService, EventBuilderTenant eventBuilderTenant,
+                            TenantInfraService tenantInfraService, ILoggingFacade loggingFacade,
+                            EventsInfraService eventsInfraService, EventBuilderTenant eventBuilderTenant,
                             TenantFind tenantFind) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantInfraService = tenantInfraService;

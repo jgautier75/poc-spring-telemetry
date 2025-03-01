@@ -1,7 +1,6 @@
 package com.acme.jga.domain.services.sectors.impl;
 
 import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
-import com.acme.jga.domain.functions.sectors.api.SectorCreate;
 import com.acme.jga.domain.functions.sectors.impl.SectorCreateImpl;
 import com.acme.jga.domain.functions.sectors.impl.SectorFindImpl;
 import com.acme.jga.domain.functions.tenants.api.TenantFind;
@@ -11,8 +10,8 @@ import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.*;
 import com.acme.jga.domain.services.utils.VoidSpan;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
-import com.acme.jga.infra.services.impl.sectors.SectorsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
+import com.acme.jga.infra.services.impl.sectors.SectorsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import org.junit.Test;
@@ -37,11 +36,11 @@ public class SectorsDomainServiceTest {
     @Mock
     OrganizationFind organizationFind;
     @Mock
-    SectorsInfraService sectorsInfraService;
+    SectorsInfraServiceImpl sectorsInfraServiceImpl;
     @Mock
     MessageSource messageSource;
     @Mock
-    EventsInfraService eventsInfraService;
+    EventsInfraServiceImpl eventsInfraServiceImpl;
     @Mock
     OpenTelemetryWrapper openTelemetryWrapper;
     @Mock
@@ -70,11 +69,11 @@ public class SectorsDomainServiceTest {
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
         Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
                 .thenReturn(organization);
-        Mockito.when(sectorsInfraService.existsByCode(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(sectorsInfraServiceImpl.existsByCode(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(sectorFind.byTenantOrgAndUid(Mockito.anyString(), Mockito.any(), Mockito.eq(parentUUID), Mockito.any())).thenReturn(parentSector);
-        Mockito.when(sectorsInfraService.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(sectorsInfraServiceImpl.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
-        Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN

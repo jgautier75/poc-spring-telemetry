@@ -6,8 +6,8 @@ import com.acme.jga.domain.functions.tenants.api.TenantDelete;
 import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.events.v1.AuditAction;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.tenants.ITenantInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -22,11 +22,11 @@ public class TenantDeleteImpl extends AbstractTenantFunction implements TenantDe
     private static final String INSTRUMENTATION_NAME = TenantDeleteImpl.class.getCanonicalName();
     private final ILoggingFacade loggingFacade;
     private final TenantFind tenantFind;
-    private final ITenantInfraService tenantInfraService;
+    private final TenantInfraService tenantInfraService;
 
     public TenantDeleteImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                            IEventsInfraService eventsInfraService, ILoggingFacade loggingFacade,
-                            TenantFind tenantFind, ITenantInfraService tenantInfraService) {
+                            EventsInfraService eventsInfraService, ILoggingFacade loggingFacade,
+                            TenantFind tenantFind, TenantInfraService tenantInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.loggingFacade = loggingFacade;
         this.tenantFind = tenantFind;

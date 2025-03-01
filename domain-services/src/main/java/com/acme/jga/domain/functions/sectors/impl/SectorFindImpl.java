@@ -8,7 +8,7 @@ import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
+import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -21,9 +21,9 @@ public class SectorFindImpl extends DomainFunction implements SectorFind {
     private static final String INSTRUMENTATION_NAME = SectorFindImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
-    private final ISectorsInfraService sectorsInfraService;
+    private final SectorsInfraService sectorsInfraService;
 
-    public SectorFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, TenantFind tenantFind, OrganizationFind organizationFind, ISectorsInfraService sectorsInfraService) {
+    public SectorFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, TenantFind tenantFind, OrganizationFind organizationFind, SectorsInfraService sectorsInfraService) {
         super(openTelemetryWrapper, bundleFactory);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

@@ -10,8 +10,8 @@ import com.acme.jga.domain.model.events.v1.AuditAction;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -26,10 +26,10 @@ public class UserDeleteImpl extends AbstractUserFunction implements UserDelete {
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
     private final UserFind userFind;
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
 
-    public UserDeleteImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService,
-                          TenantFind tenantFind, OrganizationFind organizationFind, UserFind userFind, IUsersInfraService usersInfraService) {
+    public UserDeleteImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService,
+                          TenantFind tenantFind, OrganizationFind organizationFind, UserFind userFind, UsersInfraService usersInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

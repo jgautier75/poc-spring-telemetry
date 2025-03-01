@@ -15,8 +15,8 @@ import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -36,11 +36,11 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
     private final OrganizationFind organizationFind;
     private final ILoggingFacade loggingFacade;
     private final CryptoEngine cryptoEngine;
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
 
-    protected UserCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService,
+    protected UserCreateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService,
                              TenantFind tenantFind, OrganizationFind organizationFind, ILoggingFacade loggingFacade,
-                             CryptoEngine cryptoEngine, IUsersInfraService usersInfraService) {
+                             CryptoEngine cryptoEngine, UsersInfraService usersInfraService) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

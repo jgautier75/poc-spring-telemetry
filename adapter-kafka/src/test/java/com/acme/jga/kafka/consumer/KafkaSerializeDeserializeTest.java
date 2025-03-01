@@ -89,7 +89,6 @@ class KafkaSerializeDeserializeTest {
             Assertions.assertNotNull(auditEventMessage);
             Assertions.assertEquals(producerEvent.getObjectUid(), auditEventMessage.getObjectUid(), "Object uid match");
             listSchemaRegistry(schemaRegistryBaseUrl);
-
         }
     }
 

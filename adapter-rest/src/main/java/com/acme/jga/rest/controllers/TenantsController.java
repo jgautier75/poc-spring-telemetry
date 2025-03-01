@@ -7,7 +7,7 @@ import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDisplayDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantListDisplayDto;
-import com.acme.jga.ports.services.api.tenant.ITenantPortService;
+import com.acme.jga.ports.services.api.tenant.TenantPortService;
 import com.acme.jga.rest.annotations.MetricPoint;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import com.acme.jga.utils.otel.OtelContext;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TenantsController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = TenantsController.class.getCanonicalName();
-    private ITenantPortService tenantPortService;
+    private TenantPortService tenantPortService;
     private ILoggingFacade loggingFacade;
 
-    public TenantsController(ITenantPortService tenantPortService, OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
+    public TenantsController(TenantPortService tenantPortService, OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper);
         this.tenantPortService = tenantPortService;
         this.loggingFacade = loggingFacade;

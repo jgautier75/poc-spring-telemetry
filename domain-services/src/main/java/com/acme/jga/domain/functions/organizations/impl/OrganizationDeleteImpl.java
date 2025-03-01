@@ -8,8 +8,8 @@ import com.acme.jga.domain.model.events.v1.AuditAction;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
+import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -24,13 +24,13 @@ import java.util.Optional;
 public class OrganizationDeleteImpl extends AbstractOrganizationFunction implements OrganizationDelete {
     private static final String INSTRUMENTATION_NAME = OrganizationDeleteImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
-    private final IOrganizationsInfraService organizationsInfraService;
+    private final OrganizationsInfraService organizationsInfraService;
     private final ILoggingFacade loggingFacade;
 
     public OrganizationDeleteImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                                  EventsInfraService eventsInfraService, TenantFind tenantFind,
-                                  IOrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade) {
-        super(openTelemetryWrapper, bundleFactory, eventsInfraService);
+                                  EventsInfraServiceImpl eventsInfraServiceImpl, TenantFind tenantFind,
+                                  OrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade) {
+        super(openTelemetryWrapper, bundleFactory, eventsInfraServiceImpl);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
         this.loggingFacade = loggingFacade;

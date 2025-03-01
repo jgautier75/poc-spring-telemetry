@@ -12,8 +12,8 @@ import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -29,12 +29,12 @@ public class SectorUpdateImpl extends AbstractSectorFunction implements SectorUp
     private final SectorFind sectorFind;
     private final OrganizationFind organizationFind;
     private final EventBuilderSector eventBuilderSector;
-    private final ISectorsInfraService sectorsInfraService;
+    private final SectorsInfraService sectorsInfraService;
 
     public SectorUpdateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                            IEventsInfraService eventsInfraService, TenantFind tenantFind,
+                            EventsInfraService eventsInfraService, TenantFind tenantFind,
                             SectorFind sectorFind, EventBuilderSector eventBuilderSector,
-                            ISectorsInfraService sectorsInfraService, OrganizationFind organizationFind) {
+                            SectorsInfraService sectorsInfraService, OrganizationFind organizationFind) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.sectorFind = sectorFind;

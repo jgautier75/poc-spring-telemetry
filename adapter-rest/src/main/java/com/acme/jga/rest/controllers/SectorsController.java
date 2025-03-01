@@ -6,7 +6,7 @@ import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.dtos.sectors.v1.SectorDisplayDto;
 import com.acme.jga.ports.dtos.sectors.v1.SectorDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
-import com.acme.jga.ports.services.api.sectors.ISectorsPortService;
+import com.acme.jga.ports.services.api.sectors.SectorsPortService;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import com.acme.jga.utils.otel.OtelContext;
 import org.springframework.http.HttpStatus;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class SectorsController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = SectorsController.class.getCanonicalName();
-    private final ISectorsPortService sectorsPortService;
+    private final SectorsPortService sectorsPortService;
     private final ILoggingFacade loggingFacade;
 
-    public SectorsController(ISectorsPortService sectorsPortService, OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
+    public SectorsController(SectorsPortService sectorsPortService, OpenTelemetryWrapper openTelemetryWrapper, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper);
         this.sectorsPortService = sectorsPortService;
         this.loggingFacade = loggingFacade;

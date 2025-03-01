@@ -7,7 +7,7 @@ import com.acme.jga.infra.config.KafkaProducerConfig;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.dtos.dependencies.v1.DependencyListDto;
 import com.acme.jga.ports.dtos.system.v1.*;
-import com.acme.jga.ports.services.api.system.ISystemPortService;
+import com.acme.jga.ports.services.api.system.SystemPortService;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.versioning.WebApiVersions;
@@ -23,10 +23,10 @@ public class SystemController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = SystemController.class.getCanonicalName();
     private final PublishSubscribeChannel eventAuditChannel;
     private final MicrometerPrometheus micrometerPrometheus;
-    private final ISystemPortService systemPortService;
+    private final SystemPortService systemPortService;
     private final AppGenericConfig appGenericConfig;
 
-    public SystemController(OpenTelemetryWrapper openTelemetryWrapper, PublishSubscribeChannel eventAuditChannel, MicrometerPrometheus micrometerPrometheus, ISystemPortService systemPortService, AppGenericConfig appGenericConfig) {
+    public SystemController(OpenTelemetryWrapper openTelemetryWrapper, PublishSubscribeChannel eventAuditChannel, MicrometerPrometheus micrometerPrometheus, SystemPortService systemPortService, AppGenericConfig appGenericConfig) {
         super(openTelemetryWrapper);
         this.eventAuditChannel = eventAuditChannel;
         this.micrometerPrometheus = micrometerPrometheus;

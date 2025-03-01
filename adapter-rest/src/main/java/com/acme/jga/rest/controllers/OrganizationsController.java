@@ -6,7 +6,7 @@ import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationListLightDto;
 import com.acme.jga.ports.dtos.search.v1.SearchFilterDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
-import com.acme.jga.ports.services.api.organization.IOrganizationPortService;
+import com.acme.jga.ports.services.api.organization.OrganizationPortService;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class OrganizationsController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = OrganizationsController.class.getCanonicalName();
-    private IOrganizationPortService organizationPortService;
+    private OrganizationPortService organizationPortService;
 
-    public OrganizationsController(OpenTelemetryWrapper openTelemetryWrapper, IOrganizationPortService organizationPortService) {
+    public OrganizationsController(OpenTelemetryWrapper openTelemetryWrapper, OrganizationPortService organizationPortService) {
         super(openTelemetryWrapper);
         this.organizationPortService = organizationPortService;
     }

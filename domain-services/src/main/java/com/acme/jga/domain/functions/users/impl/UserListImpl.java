@@ -8,8 +8,8 @@ import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.lambdas.StreamUtil;
@@ -24,10 +24,10 @@ public class UserListImpl extends DomainFunction implements UserList {
     private static final String INSTRUMENTATION_NAME = UserListImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
 
-    public UserListImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService,
-                        TenantFind tenantFind, OrganizationFind organizationFind, IUsersInfraService usersInfraService) {
+    public UserListImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService,
+                        TenantFind tenantFind, OrganizationFind organizationFind, UsersInfraService usersInfraService) {
         super(openTelemetryWrapper, bundleFactory);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

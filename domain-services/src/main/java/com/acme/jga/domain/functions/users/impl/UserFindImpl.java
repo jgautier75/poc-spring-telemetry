@@ -10,7 +10,7 @@ import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -21,11 +21,11 @@ import java.util.Optional;
 @Service
 public class UserFindImpl extends DomainFunction implements UserFind {
     private static final String INSTRUMENTATION_NAME = UserFindImpl.class.getCanonicalName();
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
 
-    public UserFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IUsersInfraService usersInfraService, TenantFind tenantFind, OrganizationFind organizationFind) {
+    public UserFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, UsersInfraService usersInfraService, TenantFind tenantFind, OrganizationFind organizationFind) {
         super(openTelemetryWrapper, bundleFactory);
         this.usersInfraService = usersInfraService;
         this.tenantFind = tenantFind;

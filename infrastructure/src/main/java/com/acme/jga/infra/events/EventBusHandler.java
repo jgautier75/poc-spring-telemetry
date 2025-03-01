@@ -4,7 +4,7 @@ import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.events.v1.AuditEvent;
 import com.acme.jga.domain.model.events.v1.EventStatus;
 import com.acme.jga.infra.config.KafkaProducerConfig;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.users.mgt.events.protobuf.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +33,7 @@ import static com.acme.jga.utils.lambdas.StreamUtil.ofNullableList;
 public class EventBusHandler implements MessageHandler, InitializingBean {
     private final KafkaProducerConfig kafkaProducerConfig;
     private final KafkaTemplate<String, Event.AuditEventMessage> kakaTemplateAudit;
-    private final IEventsInfraService eventsInfraService;
+    private final EventsInfraService eventsInfraService;
     private final ILoggingFacade loggingFacade;
     private final PublishSubscribeChannel eventAuditChannel;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);

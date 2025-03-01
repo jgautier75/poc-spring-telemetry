@@ -7,7 +7,7 @@ import com.acme.jga.domain.model.events.v1.AuditEvent;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -18,11 +18,11 @@ import static com.acme.jga.domain.model.utils.AuditEventFactory.createOrganizati
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createSectorAuditEvent;
 
 public class AbstractOrganizationFunction extends DomainFunction {
-    private final EventsInfraService eventsInfraService;
+    private final EventsInfraServiceImpl eventsInfraServiceImpl;
 
-    public AbstractOrganizationFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService) {
+    public AbstractOrganizationFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraServiceImpl eventsInfraServiceImpl) {
         super(openTelemetryWrapper, bundleFactory);
-        this.eventsInfraService = eventsInfraService;
+        this.eventsInfraServiceImpl = eventsInfraServiceImpl;
     }
 
     /**
@@ -36,7 +36,7 @@ public class AbstractOrganizationFunction extends DomainFunction {
      */
     protected void generateOrgAuditEventAndPush(Organization org, Tenant tenant, Span span, AuditAction auditAction, List<AuditChange> auditChanges) {
         AuditEvent orgAuditEvent = createOrganizationAuditEvent(org, tenant, auditAction, auditChanges);
-        eventsInfraService.createEvent(orgAuditEvent, span);
+        eventsInfraServiceImpl.createEvent(orgAuditEvent, span);
     }
 
     /**
@@ -51,7 +51,7 @@ public class AbstractOrganizationFunction extends DomainFunction {
      */
     protected void generateSectorAuditEventAndPush(Organization org, Tenant tenant, Sector sector, Span span, AuditAction auditAction, List<AuditChange> auditChanges) {
         AuditEvent sectorAuditEvent = createSectorAuditEvent(sector.getUid(), org, tenant, auditAction, auditChanges);
-        eventsInfraService.createEvent(sectorAuditEvent, span);
+        eventsInfraServiceImpl.createEvent(sectorAuditEvent, span);
     }
 
 }

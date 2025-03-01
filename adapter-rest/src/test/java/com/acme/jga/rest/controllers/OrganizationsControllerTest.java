@@ -6,7 +6,7 @@ import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationCommonsDto;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
-import com.acme.jga.ports.services.api.organization.IOrganizationPortService;
+import com.acme.jga.ports.services.api.organization.OrganizationPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrganizationsControllerTest {
     private static final String TENANT_UID = UUID.randomUUID().toString();
     @MockitoBean
-    private IOrganizationPortService organizationPortService;
+    private OrganizationPortService organizationPortService;
     @MockitoBean
     private ILoggingFacade loggingFacade;
     @MockitoBean

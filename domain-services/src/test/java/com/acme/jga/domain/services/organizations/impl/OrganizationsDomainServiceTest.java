@@ -1,9 +1,6 @@
 package com.acme.jga.domain.services.organizations.impl;
 
 import com.acme.jga.domain.events.EventBuilderOrganization;
-import com.acme.jga.domain.functions.organizations.api.OrganizationCreate;
-import com.acme.jga.domain.functions.organizations.api.OrganizationDelete;
-import com.acme.jga.domain.functions.organizations.api.OrganizationUpdate;
 import com.acme.jga.domain.functions.organizations.impl.OrganizationCreateImpl;
 import com.acme.jga.domain.functions.organizations.impl.OrganizationDeleteImpl;
 import com.acme.jga.domain.functions.organizations.impl.OrganizationUpdateImpl;
@@ -14,9 +11,9 @@ import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.*;
 import com.acme.jga.domain.services.utils.VoidSpan;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
-import com.acme.jga.infra.services.impl.organizations.OrganizationsInfraService;
-import com.acme.jga.infra.services.impl.sectors.SectorsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
+import com.acme.jga.infra.services.impl.organizations.OrganizationsInfraServiceImpl;
+import com.acme.jga.infra.services.impl.sectors.SectorsInfraServiceImpl;
 import com.acme.jga.logging.services.impl.LogService;
 import com.acme.jga.logging.services.impl.LoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -43,7 +40,7 @@ public class OrganizationsDomainServiceTest {
     @RegisterExtension
     static final OpenTelemetryExtension otelTesting = OpenTelemetryExtension.create();
     @Mock
-    OrganizationsInfraService organizationsInfraService;
+    OrganizationsInfraServiceImpl organizationsInfraServiceImpl;
     @Mock
     TenantFind tenantFind;
     @Mock
@@ -53,9 +50,9 @@ public class OrganizationsDomainServiceTest {
     @Mock
     LogService logService;
     @Mock
-    SectorsInfraService sectorsInfraService;
+    SectorsInfraServiceImpl sectorsInfraServiceImpl;
     @Mock
-    EventsInfraService eventsInfraService;
+    EventsInfraServiceImpl eventsInfraServiceImpl;
     @Mock
     PublishSubscribeChannel eventAuditChannel;
     @Mock
@@ -88,12 +85,12 @@ public class OrganizationsDomainServiceTest {
 
         // WHEN
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationsInfraService.codeAlreadyUsed(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(organizationsInfraService.createOrganization(Mockito.any(), Mockito.any())).thenReturn(compositeId);
-        Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(sectorsInfraService.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(organizationsInfraServiceImpl.codeAlreadyUsed(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(organizationsInfraServiceImpl.createOrganization(Mockito.any(), Mockito.any())).thenReturn(compositeId);
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(sectorsInfraServiceImpl.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
-        Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
         Span rootSpan = otelTesting.getOpenTelemetry().getTracer("test").spanBuilder("test").startSpan();
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         // THEN
@@ -129,7 +126,7 @@ public class OrganizationsDomainServiceTest {
 
         // WHEN
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationsInfraService.findOrganizationByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(organization));
+        Mockito.when(organizationsInfraServiceImpl.findOrganizationByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(organization));
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         // THEN
         Integer nbUpdated = organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, new VoidSpan());
@@ -162,11 +159,11 @@ public class OrganizationsDomainServiceTest {
 
         // WHEN
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationsInfraService.findOrganizationByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(organization));
-        Mockito.when(organizationsInfraService.deleteUsersByOrganization(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(organizationsInfraService.deleteSectors(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(organizationsInfraService.deleteById(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(eventsInfraService.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(organizationsInfraServiceImpl.findOrganizationByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(organization));
+        Mockito.when(organizationsInfraServiceImpl.deleteUsersByOrganization(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(organizationsInfraServiceImpl.deleteSectors(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(organizationsInfraServiceImpl.deleteById(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN

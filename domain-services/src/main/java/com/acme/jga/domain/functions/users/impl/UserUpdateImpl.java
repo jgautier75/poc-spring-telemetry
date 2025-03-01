@@ -14,8 +14,8 @@ import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -31,12 +31,12 @@ public class UserUpdateImpl extends AbstractUserFunction implements UserUpdate {
     private static final String INSTRUMENTATION_NAME = UserUpdateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
     private final OrganizationFind organizationFind;
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
     private final EventBuilderUser eventBuilderUser;
 
     public UserUpdateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                          IEventsInfraService eventsInfraService, TenantFind tenantFind, OrganizationFind organizationFind,
-                          IUsersInfraService usersInfraService, EventBuilderUser eventBuilderUser) {
+                          EventsInfraService eventsInfraService, TenantFind tenantFind, OrganizationFind organizationFind,
+                          UsersInfraService usersInfraService, EventBuilderUser eventBuilderUser) {
         super(openTelemetryWrapper, bundleFactory, eventsInfraService);
         this.tenantFind = tenantFind;
         this.organizationFind = organizationFind;

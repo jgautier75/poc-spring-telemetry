@@ -8,7 +8,7 @@ import com.acme.jga.domain.model.events.v1.AuditOperation;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
-import com.acme.jga.infra.services.api.events.IEventsInfraService;
+import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -19,9 +19,9 @@ import java.util.List;
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createUserAuditEvent;
 
 public abstract class AbstractUserFunction extends DomainFunction {
-    private IEventsInfraService eventsInfraService;
+    private EventsInfraService eventsInfraService;
 
-    protected AbstractUserFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IEventsInfraService eventsInfraService) {
+    protected AbstractUserFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory);
         this.eventsInfraService = eventsInfraService;
     }

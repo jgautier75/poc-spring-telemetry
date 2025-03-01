@@ -10,8 +10,8 @@ import com.acme.jga.domain.model.events.v1.AuditChange;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Tenant;
-import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
-import com.acme.jga.infra.services.impl.events.EventsInfraService;
+import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
+import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -26,15 +26,15 @@ import java.util.Optional;
 public class OrganizationUpdateImpl extends AbstractOrganizationFunction implements OrganizationUpdate {
     private static final String INSTRUMENTATION_NAME = OrganizationUpdateImpl.class.getCanonicalName();
     private final TenantFind tenantFind;
-    private final IOrganizationsInfraService organizationsInfraService;
+    private final OrganizationsInfraService organizationsInfraService;
     private final ILoggingFacade loggingFacade;
     private final EventBuilderOrganization eventBuilderOrganization;
 
     public OrganizationUpdateImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                                  EventsInfraService eventsInfraService, TenantFind tenantFind,
-                                  IOrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade,
+                                  EventsInfraServiceImpl eventsInfraServiceImpl, TenantFind tenantFind,
+                                  OrganizationsInfraService organizationsInfraService, ILoggingFacade loggingFacade,
                                   EventBuilderOrganization eventBuilderOrganization) {
-        super(openTelemetryWrapper, bundleFactory, eventsInfraService);
+        super(openTelemetryWrapper, bundleFactory, eventsInfraServiceImpl);
         this.tenantFind = tenantFind;
         this.organizationsInfraService = organizationsInfraService;
         this.loggingFacade = loggingFacade;

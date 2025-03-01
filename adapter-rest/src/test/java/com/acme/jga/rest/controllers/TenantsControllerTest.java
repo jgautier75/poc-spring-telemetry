@@ -3,7 +3,7 @@ package com.acme.jga.rest.controllers;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
-import com.acme.jga.ports.services.api.tenant.ITenantPortService;
+import com.acme.jga.ports.services.api.tenant.TenantPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(value = {OpenTelemetryTestConfig.class})
 class TenantsControllerTest {
     @MockitoBean
-    private ITenantPortService tenantPortService;
+    private TenantPortService tenantPortService;
     @MockitoBean
     private ILoggingFacade loggingFacade;
     @MockitoBean

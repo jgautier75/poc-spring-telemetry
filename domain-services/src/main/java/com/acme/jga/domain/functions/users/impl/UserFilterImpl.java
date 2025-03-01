@@ -3,7 +3,7 @@ package com.acme.jga.domain.functions.users.impl;
 import com.acme.jga.domain.functions.DomainFunction;
 import com.acme.jga.domain.functions.users.api.UserFilter;
 import com.acme.jga.domain.model.v1.UserDisplay;
-import com.acme.jga.infra.services.api.users.IUsersInfraService;
+import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
@@ -15,9 +15,9 @@ import java.util.Map;
 @Service
 public class UserFilterImpl extends DomainFunction implements UserFilter {
     private static final String INSTRUMENTATION_NAME = UserFilterImpl.class.getCanonicalName();
-    private final IUsersInfraService usersInfraService;
+    private final UsersInfraService usersInfraService;
 
-    public UserFilterImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, IUsersInfraService usersInfraService) {
+    public UserFilterImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, UsersInfraService usersInfraService) {
         super(openTelemetryWrapper, bundleFactory);
         this.usersInfraService = usersInfraService;
     }

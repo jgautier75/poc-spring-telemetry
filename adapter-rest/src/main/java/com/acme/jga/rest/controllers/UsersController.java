@@ -8,7 +8,7 @@ import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.users.v1.UserDisplayDto;
 import com.acme.jga.ports.dtos.users.v1.UserDto;
 import com.acme.jga.ports.dtos.users.v1.UsersDisplayListDto;
-import com.acme.jga.ports.services.api.users.IUserPortService;
+import com.acme.jga.ports.services.api.users.UserPortService;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import com.acme.jga.utils.otel.OtelContext;
 import com.acme.jga.utils.string.StringUtils;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class UsersController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = UsersController.class.getCanonicalName();
     private final ILoggingFacade loggingFacade;
-    private final IUserPortService userPortService;
+    private final UserPortService userPortService;
 
-    protected UsersController(OpenTelemetryWrapper openTelemetryWrapper, IUserPortService userPortService, ILoggingFacade loggingFacade) {
+    protected UsersController(OpenTelemetryWrapper openTelemetryWrapper, UserPortService userPortService, ILoggingFacade loggingFacade) {
         super(openTelemetryWrapper);
         this.userPortService = userPortService;
         this.loggingFacade = loggingFacade;

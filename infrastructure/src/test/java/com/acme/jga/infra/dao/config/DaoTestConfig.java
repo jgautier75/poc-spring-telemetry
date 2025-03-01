@@ -1,16 +1,16 @@
 package com.acme.jga.infra.dao.config;
 
 import com.acme.jga.infra.converters.AuditEventsInfraConverter;
-import com.acme.jga.infra.dao.api.events.IEventsDao;
-import com.acme.jga.infra.dao.api.organizations.IOrganizationsDao;
-import com.acme.jga.infra.dao.api.sectors.ISectorsDao;
-import com.acme.jga.infra.dao.api.tenants.ITenantsDao;
-import com.acme.jga.infra.dao.api.users.IUsersDao;
-import com.acme.jga.infra.dao.impl.events.EventsDao;
-import com.acme.jga.infra.dao.impl.organizations.OrganizationsDao;
-import com.acme.jga.infra.dao.impl.sectors.SectorsDao;
-import com.acme.jga.infra.dao.impl.tenants.TenantsDao;
-import com.acme.jga.infra.dao.impl.users.UsersDao;
+import com.acme.jga.infra.dao.api.events.EventsDao;
+import com.acme.jga.infra.dao.api.organizations.OrganizationsDao;
+import com.acme.jga.infra.dao.api.sectors.SectorsDao;
+import com.acme.jga.infra.dao.api.tenants.TenantsDao;
+import com.acme.jga.infra.dao.api.users.UsersDao;
+import com.acme.jga.infra.dao.impl.events.EventsDaoImpl;
+import com.acme.jga.infra.dao.impl.organizations.OrganizationsDaoImpl;
+import com.acme.jga.infra.dao.impl.sectors.SectorsDaoImpl;
+import com.acme.jga.infra.dao.impl.tenants.TenantsDaoImpl;
+import com.acme.jga.infra.dao.impl.users.UsersDaoImpl;
 import com.acme.jga.infra.dao.processors.ExpressionsProcessor;
 import com.acme.jga.infra.utils.DummyMessageSource;
 import com.acme.jga.logging.services.api.ILogService;
@@ -28,7 +28,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.opentelemetry.api.incubator.logs.ExtendedDefaultLoggerProvider;
 import io.opentelemetry.api.incubator.metrics.ExtendedDefaultMeterProvider;
 import io.opentelemetry.api.incubator.trace.ExtendedDefaultTracerProvider;
-import io.opentelemetry.api.incubator.trace.ExtendedTracer;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.TracerProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,35 +48,35 @@ public class DaoTestConfig {
     }
 
     @Bean
-    public ITenantsDao tenantsDao(@Autowired DataSource dataSource,
-                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                  @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
-        return new TenantsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
+    public TenantsDao tenantsDao(@Autowired DataSource dataSource,
+                                 @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                 @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new TenantsDaoImpl(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
     }
 
     @Bean
-    public IOrganizationsDao organizationsDao(@Autowired DataSource dataSource,
-                                              @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                              @Autowired ExpressionsProcessor expressionsProcessor,
-                                              @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
-        return new OrganizationsDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper);
+    public OrganizationsDao organizationsDao(@Autowired DataSource dataSource,
+                                             @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                             @Autowired ExpressionsProcessor expressionsProcessor,
+                                             @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new OrganizationsDaoImpl(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper);
     }
 
     @Bean
-    public IUsersDao usersDao(@Autowired DataSource dataSource,
-                              @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                              @Autowired ExpressionsProcessor expressionsProcessor,
-                              @Autowired OpenTelemetryWrapper openTelemetryWrapper,
-                              @Autowired ILoggingFacade loggingFacade) {
-        return new UsersDao(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper, loggingFacade);
+    public UsersDao usersDao(@Autowired DataSource dataSource,
+                             @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                             @Autowired ExpressionsProcessor expressionsProcessor,
+                             @Autowired OpenTelemetryWrapper openTelemetryWrapper,
+                             @Autowired ILoggingFacade loggingFacade) {
+        return new UsersDaoImpl(dataSource, namedParameterJdbcTemplate, expressionsProcessor, openTelemetryWrapper, loggingFacade);
     }
 
     @Bean
-    public ISectorsDao sectorsDao(@Autowired DataSource dataSource,
-                                  @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                  @Autowired OpenTelemetryWrapper openTelemetryWrapper,
-                                  @Autowired ILoggingFacade loggingFacade) {
-        return new SectorsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper, loggingFacade);
+    public SectorsDao sectorsDao(@Autowired DataSource dataSource,
+                                 @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                                 @Autowired OpenTelemetryWrapper openTelemetryWrapper,
+                                 @Autowired ILoggingFacade loggingFacade) {
+        return new SectorsDaoImpl(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper, loggingFacade);
     }
 
     @Bean
@@ -86,10 +85,10 @@ public class DaoTestConfig {
     }
 
     @Bean
-    public IEventsDao eventsDao(@Autowired DataSource dataSource,
-                                @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
-        return new EventsDao(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
+    public EventsDao eventsDao(@Autowired DataSource dataSource,
+                               @Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                               @Autowired OpenTelemetryWrapper openTelemetryWrapper) {
+        return new EventsDaoImpl(dataSource, namedParameterJdbcTemplate, openTelemetryWrapper);
     }
 
     @Bean

@@ -1,13 +1,9 @@
 package com.acme.jga.rest.controllers;
 
-import com.acme.jga.domain.model.v1.OrganizationKind;
-import com.acme.jga.domain.model.v1.OrganizationStatus;
-import com.acme.jga.logging.services.api.ILogService;
 import com.acme.jga.logging.services.api.ILoggingFacade;
-import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.users.v1.*;
-import com.acme.jga.ports.services.api.users.IUserPortService;
+import com.acme.jga.ports.services.api.users.UserPortService;
 import com.acme.jga.rest.config.AppDebuggingConfig;
 import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
@@ -39,7 +35,7 @@ class UsersControllerTest {
     private static final String TENANT_UID = UUID.randomUUID().toString();
     private static final String ORG_UID = UUID.randomUUID().toString();
     @MockitoBean
-    private IUserPortService userPortService;
+    private UserPortService userPortService;
     @MockitoBean
     private ILoggingFacade loggingFacade;
     @MockitoBean

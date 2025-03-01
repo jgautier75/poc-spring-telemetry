@@ -3,7 +3,7 @@ package com.acme.jga.rest.controllers;
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
-import com.acme.jga.ports.services.api.spi.ISpiService;
+import com.acme.jga.ports.services.api.spi.SpiService;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +14,9 @@ import java.util.Optional;
 
 @RestController
 public class SpiController extends AbstractController {
-    private final ISpiService spiService;
+    private final SpiService spiService;
 
-    protected SpiController(OpenTelemetryWrapper openTelemetryWrapper, ISpiService spiService) {
+    protected SpiController(OpenTelemetryWrapper openTelemetryWrapper, SpiService spiService) {
         super(openTelemetryWrapper);
         this.spiService = spiService;
     }

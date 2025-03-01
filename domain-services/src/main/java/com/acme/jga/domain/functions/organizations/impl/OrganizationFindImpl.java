@@ -5,8 +5,8 @@ import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
-import com.acme.jga.infra.services.api.organizations.IOrganizationsInfraService;
-import com.acme.jga.infra.services.api.sectors.ISectorsInfraService;
+import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
+import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
@@ -18,11 +18,11 @@ import java.util.Optional;
 @Service
 public class OrganizationFindImpl extends DomainFunction implements OrganizationFind {
     private static final String INSTRUMENTATION_NAME = OrganizationFindImpl.class.getCanonicalName();
-    private final IOrganizationsInfraService organizationsInfraService;
-    private final ISectorsInfraService sectorsInfraService;
+    private final OrganizationsInfraService organizationsInfraService;
+    private final SectorsInfraService sectorsInfraService;
 
     public OrganizationFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                                IOrganizationsInfraService organizationsInfraService, ISectorsInfraService sectorsInfraService) {
+                                OrganizationsInfraService organizationsInfraService, SectorsInfraService sectorsInfraService) {
         super(openTelemetryWrapper, bundleFactory);
         this.organizationsInfraService = organizationsInfraService;
         this.sectorsInfraService = sectorsInfraService;
