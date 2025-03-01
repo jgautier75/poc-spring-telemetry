@@ -438,8 +438,9 @@ public class KafkaSimpleConsumer {
     private final ILogService logService;
 
     @KafkaListener(topics = "${app.kafka.producer.topicNameAuditEvents}", groupId = "${app.kafka.consumer.auditEventsGroupId}")
-    public void consume(ConsumerRecord<String, AuditEventMessage> messageRecord) {
-        logService.infoS(this.getClass().getName(), "Received message: [%s]", new Object[] { messageRecord.value() });
+    public void consume(ConsumerRecord<String, DynamicMessage> messageRecord) throws InvalidProtocolBufferException {
+        Event.AuditEventMessage auditEventMessage = Event.AuditEventMessage.newBuilder().build().getParserForType().parseFrom(messageRecord.value().toByteArray());
+        loggingFacade.infoS(this.getClass().getName(), "Received message with key [%s] and content : [%s]", new Object[]{messageRecord.key(), auditEventMessage.toString()});
     }
 
 }
@@ -528,33 +529,36 @@ Plugin configuration example in webapi/pom.xml file
 
 ```xml
 <profile>
-      <id>native</id>
-      <build>
+    <id>native</id>
+    <build>
         <plugins>
-          <plugin>
-            <groupId>org.graalvm.buildtools</groupId>
-            <artifactId>native-maven-plugin</artifactId>
-            <version>0.9.28</version>
-            <executions>
-              <execution>
-                <id>build-native</id>
-                <goals>
-                  <goal>compile-no-fork</goal>
-                </goals>
-                <configuration>
-                  <buildArgs>
-                    <arg>-H:+UnlockExperimentalVMOptions</arg>
-                    <arg>-H:IncludeResources=.*properties$</arg>
-                    <arg>-H:ReflectionConfigurationFiles=../spring-native/reflect-config.json</arg>
-                  </buildArgs>
-                </configuration>
-                <phase>package</phase>
-              </execution>
-            </executions>
-          </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>0.10.4</version>
+                <executions>
+                    <execution>
+                        <id>build-native</id>
+                        <goals>
+                            <goal>compile-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <buildArgs>
+                                <arg>-H:+UnlockExperimentalVMOptions</arg>
+                                <arg>-H:IncludeResources=.*properties$</arg>
+                                <arg>-H:ReflectionConfigurationFiles=./spring-native/reflect-config.json</arg>
+                                <arg>
+                                    --trace-class-initialization=org.apache.commons.logging.LogFactoryService,org.apache.commons.logging.LogFactory
+                                </arg>
+                            </buildArgs>
+                        </configuration>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
+    </build>
+</profile>
 ```
 
 **TIPS**
@@ -821,11 +825,6 @@ public class OpenTelemetryWrapper implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     this.counterTest = sdkMeterProvider.meterBuilder("meter-builder").build().counterBuilder("counter-test").setDescription("A test counter").build();
   }
-  
-  // Log something
-  public void log(Severity severity, String message) {
-    this.sdkLoggerProvider.loggerBuilder("logger-builder").build().logRecordBuilder().setSeverity(severity).setObservedTimestamp(Instant.now()).setBody(message).emit();
-  }
 
   // Increment test counter
   public void incrementCounter() {
@@ -835,17 +834,22 @@ public class OpenTelemetryWrapper implements InitializingBean {
 }
 ```
 
-Usage in :
+Sample usage in UsersController:
 ```java
-    @GetMapping(value = TenantsResourceVersion.WITH_UID)
-    @MetricPoint(alias = "TENANT_FIND_UID", method = "GET", version = WebApiVersions.V1, regex = "^/(.*)/api/v1/tenants/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-    public ResponseEntity<TenantDisplayDto> findTenantByUid(@PathVariable(name = "uid", required = true) String uid)
-            throws FunctionalException {
-        TenantDisplayDto tenantDisplayDto = tenantPortService.findTenantByUid(uid);
-        openTelemetryWrapper.log(Severity.INFO, "Find tenant with uid [" + uid + "]");
-        openTelemetryWrapper.incrementCounter();
-        return new ResponseEntity<>(tenantDisplayDto, HttpStatus.OK);
-    }
+@GetMapping(WebApiVersions.UsersResourceVersion.ROOT)
+public ResponseEntity<UsersDisplayListDto> filterUsers(@PathVariable("tenantUid") String tenantUid,
+                                                       @PathVariable("orgUid") String orgUid,
+                                                       @RequestParam(value = "filter", required = false) String searchFilter,
+                                                       @RequestParam(value = "index", required = false, defaultValue = "1") Integer pageIndex,
+                                                       @RequestParam(value = "size", required = false, defaultValue = "10") Integer pageSize,
+                                                       @RequestParam(value = "orderBy", required = false, defaultValue = "label") String orderBy) throws FunctionalException {
+    SearchFilterDto searchFilterDto = new SearchFilterDto(searchFilter, pageSize, pageIndex, orderBy);
+    UsersDisplayListDto users = withSpan(INSTRUMENTATION_NAME, "API_USERS_LIST", (span) -> {
+        loggingFacade.infoS(INSTRUMENTATION_NAME, "Find users for tenant [%s], organization [%s], filter [%s]", new Object[]{tenantUid, orgUid, StringUtils.nvl(searchFilter)}, OtelContext.fromSpan(span));
+        return userPortService.filterUsers(tenantUid, orgUid, searchFilterDto, span);
+    });
+    return new ResponseEntity<>(users, HttpStatus.OK);
+}
 ```
 
 To visualize logs in grafana from Loki datasource, navigate to "Explore -> Logs":
