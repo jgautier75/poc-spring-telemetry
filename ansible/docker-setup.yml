@@ -31,7 +31,7 @@
           X-Vault-Token: "{{ hostvars[inventory_hostname]['openbao_token'] }}"
         body: "{\"type\":\"kv-v2\"}"
         body_format: json
-        status_code: [200,400]
+        status_code: [200,204,400]
       register: response
     - name: "OpenBao - Key Value Storage - Fail if not 200 or 400 with error 'path is already in use'"
       fail:
