@@ -20,6 +20,7 @@ import com.acme.jga.infra.services.api.users.IUsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.micrometer.common.util.StringUtils;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
                 Tenant tenant = tenantFind.byUid(tenantUid, span);
                 Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
                 loggingFacade.infoS(callerName, "Create user with login [%s] for tenant [%s] and organization [%s]",
-                        new Object[]{user.getCredentials().getLogin(), tenant.getCode(), org.getCommons().getCode()});
+                        new Object[]{user.getCredentials().getLogin(), tenant.getCode(), org.getCommons().getCode()}, OtelContext.fromSpan(span));
 
                 user.setTenantId(tenant.getId());
                 user.setOrganizationId(org.getId());

@@ -10,6 +10,7 @@ import com.acme.jga.ports.dtos.tenants.v1.TenantListDisplayDto;
 import com.acme.jga.ports.services.api.tenant.ITenantPortService;
 import com.acme.jga.rest.annotations.MetricPoint;
 import com.acme.jga.rest.versioning.WebApiVersions;
+import com.acme.jga.utils.otel.OtelContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,10 @@ public class TenantsController extends AbstractController {
     @MetricPoint(alias = "TENANT_FIND_UID", method = "GET", version = WebApiVersions.V1, regex = "^/(.*)/api/v1/tenants/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
     public ResponseEntity<TenantDisplayDto> findTenantByUid(@PathVariable(name = "uid", required = true) String uid)
             throws FunctionalException {
-        loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant with uid [%s]", new Object[]{uid});
-        TenantDisplayDto tenantDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_TENANTS_FIND", (span) -> tenantPortService.findTenantByUid(uid, span));
+        TenantDisplayDto tenantDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_TENANTS_FIND", (span) -> {
+            loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant with uid [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
+            return tenantPortService.findTenantByUid(uid, span);
+        });
         return new ResponseEntity<>(tenantDisplayDto, HttpStatus.OK);
     }
 
