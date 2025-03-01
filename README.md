@@ -44,85 +44,13 @@ Standard REST application relying on:
 - Kafka stack (Kafka + Zookeeper + Schema registry + AKHQ)
 - Junit/Mockito/Testcontainers for testing
 
-## OpenBao
+## Docker
 
-OpenBao is a fork of HashiCorp vault.
+Start using the following order:
 
-By default OpenBao is started id dev mode, "dev-root-token" is used in configuration.
-
-Use Bruno collection to add/list secrets.
-
-```bash
-export VAULT_ADDR='http://127.0.0.1:8200'
-vault login
-vault kv get -mount=dev-secrets creds
-vault kv put -mount=dev-secrets creds foo=bar
-```
-
-Api call example:
-
-```bash
-curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds
-```
-
-Config HTTP status:
-
-```bash
-HTTP_STATUS=$(curl -H "X-Vault-Token: dev-root-token" -w "%{http_code}" -o >(cat >&3) 'http://192.168.1.15:8200/v1/dev-secrets/config' ); 
-echo "HTTP_STATUS: $HTTP_STATUS"
-```
-
-Inserting a secret:
-
-```bash
-curl -H "X-Vault-Token: dev-root-token" --request POST --data @vault_data.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
-```
-
-Delete secret version:
-
-```bash
-curl -v -H "X-Vault-Token: dev-root-token" --request PUT --data @vault_versions_delete.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
-```
-
-Example:
-
-```json
-{
-  "request_id": "cfbe37cc-a076-000c-5911-b23cd8c213a1",
-  "lease_id": "",
-  "renewable": false,
-  "lease_duration": 0,
-  "data": {
-    "data": {
-      "cipherKey": "1c9e1cfbe63844b1a0772aea4cba5gg6"
-    },
-    "metadata": {
-      "created_time": "2025-02-21T13:13:26.902464695Z",
-      "custom_metadata": null,
-      "deletion_time": "",
-      "destroyed": false,
-      "version": 1
-    }
-  },
-  "wrap_info": null,
-  "warnings": null,
-  "auth": null
-}
-```
-
-If jq is intalled, secret values can be extracted using a command like:
-
-```bash
-curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds | jq '.data.data'
-```
-
-## OpenTelemetry
-
-Quote from OpenTelemetry website: "OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces)"
-
-OpenTelemetry main component is called the collector which collects metrics,logs and traces and uses various exporters like prometheus, grafana loki, grafana tempo, jaeger, ...
-
-Different docker configurations are provided in this project, jaeger or grafana loki (for logs) and tempo (e.g for counter, gauges, ...)
+* [Docker - Base] to start base containers
+* Either [Docker - Jaeger] or [Docker - Grafana Loki - Grafana Tempo]
+* [OpenBao & Kafka setup] to initialize OpenBao secrets and to create kafka topics
 
 ## Docker - Base
 
@@ -219,6 +147,86 @@ docker build . -t db-migration:1.2.0 --build-arg="JAR_FILE=target/db-migration.j
 docker run -it --env P_PGHOST=192.168.1.15 --env P_PGPORT=5432 --env P_PGUSER=postgres --env P_PGPASS=posgres --env P_DBNAME=orm-test --env P_DBAUSER=orm_dba --env P_DBAPASS=dba_pass --env P_APPUSER=orm_app --env P_APPPASS=pass_app ec29fd57abd9
 ```
 
+## OpenBao
+
+OpenBao is a fork of HashiCorp vault.
+
+By default OpenBao is started id dev mode, "dev-root-token" is used in configuration.
+
+Use Bruno collection to add/list secrets.
+
+```bash
+export VAULT_ADDR='http://127.0.0.1:8200'
+vault login
+vault kv get -mount=dev-secrets creds
+vault kv put -mount=dev-secrets creds foo=bar
+```
+
+Api call example:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds
+```
+
+Config HTTP status:
+
+```bash
+HTTP_STATUS=$(curl -H "X-Vault-Token: dev-root-token" -w "%{http_code}" -o >(cat >&3) 'http://192.168.1.15:8200/v1/dev-secrets/config' ); 
+echo "HTTP_STATUS: $HTTP_STATUS"
+```
+
+Inserting a secret:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" --request POST --data @vault_data.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
+```
+
+Delete secret version:
+
+```bash
+curl -v -H "X-Vault-Token: dev-root-token" --request PUT --data @vault_versions_delete.json http://192.168.1.15:8200/v1/dev-secrets/data/creds
+```
+
+Example:
+
+```json
+{
+  "request_id": "cfbe37cc-a076-000c-5911-b23cd8c213a1",
+  "lease_id": "",
+  "renewable": false,
+  "lease_duration": 0,
+  "data": {
+    "data": {
+      "cipherKey": "1c9e1cfbe63844b1a0772aea4cba5gg6"
+    },
+    "metadata": {
+      "created_time": "2025-02-21T13:13:26.902464695Z",
+      "custom_metadata": null,
+      "deletion_time": "",
+      "destroyed": false,
+      "version": 1
+    }
+  },
+  "wrap_info": null,
+  "warnings": null,
+  "auth": null
+}
+```
+
+If jq is intalled, secret values can be extracted using a command like:
+
+```bash
+curl -H "X-Vault-Token: dev-root-token" -X GET http://192.168.1.13:8200/v1/dev-secrets/data/creds | jq '.data.data'
+```
+
+## OpenTelemetry
+
+Quote from OpenTelemetry website: "OpenTelemetry is a collection of APIs, SDKs, and tools. Use it to instrument, generate, collect, and export telemetry data (metrics, logs, and traces)"
+
+OpenTelemetry main component is called the collector which collects metrics,logs and traces and uses various exporters like prometheus, grafana loki, grafana tempo, jaeger, ...
+
+Different docker configurations are provided in this project, jaeger or grafana loki (for logs) and tempo (e.g for counter, gauges, ...)
+
 ## Entities
 
 - **Tenant**:
@@ -266,7 +274,7 @@ docker run -it --env P_PGHOST=192.168.1.15 --env P_PGPORT=5432 --env P_PGUSER=po
         - notif_email: Email for notifications (non unique, e.g: a diffusion list)
 - **Events**:
     - Storage of audit events.
-    - An audit event is always recorded when an entity is created (tenant, organization, sector), updated or deleted
+    - An audit event is always recorded when an entity is created (tenant, organization, sector, user), updated or deleted
     - Properties:
         - uid: A unique identifier (uuid)
         - created_at: Creation timestamp (UTC/ISO-8601)
@@ -281,9 +289,8 @@ docker run -it --env P_PGHOST=192.168.1.15 --env P_PGPORT=5432 --env P_PGUSER=po
 
 REST endpoints OpenApi specifications: docs/poc_st_openapi.yml
 
-Transform OpenAPI spec to html
+Transform OpenAPI spec to html with redocly:
 
-Install redocly:
 ```bash
 npm install @redocly/cli -g
 ```
