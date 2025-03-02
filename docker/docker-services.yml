@@ -32,7 +32,7 @@ services:
       - 5433:5433
   poc-st-keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
-    #image: keycloak-with-spi:1.0.0
+    # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
     environment:
@@ -48,8 +48,8 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
       KC_METRICS_ENABLED: "true"
-      #DEBUG: 'true'
-      #DEBUG_PORT: '*:8787'
+      # DEBUG: 'true'
+      # DEBUG_PORT: '*:8787'
       federation_endpoint: http://MYIPADDRESS:8080/poc-st/api/v1/spi/user
       federation_user: admin
       federation_pass: admin
@@ -65,15 +65,15 @@ services:
       - ./poc-realms:/opt/keycloak/data/import
       - ./poc-providers:/opt/keycloak/providers
       - ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
-    #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG","-Djdk.httpclient.HttpClient.log=all"]
-    command: ["start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443"]
+    # command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG","-Djdk.httpclient.HttpClient.log=all"]
+    command: ["start-dev", "--import-realm", "--http-port", "7080", "--https-port", "7443"]
     ports:
       - "7080:7080"
       - "7443:7443"
       - "9000:9000"
       - "8787:8787"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:7080/health/ready" ]
+      test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
       interval: 15s
       timeout: 2s
       retries: 15
@@ -88,7 +88,7 @@ services:
               properties:
                 bootstrap.servers: "poc-st-kafka:19092"
               schema-registry:
-                url: "http://poc-st-schema-registry:8085"              
+                url: "http://poc-st-schema-registry:8085"
     ports:
       - 8086:8080
     links:
@@ -134,7 +134,7 @@ services:
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     healthcheck:
-      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server=localhost:9092", "--list" ]
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server=localhost:9092", "--list"]
       interval: 10s
       retries: 20
     links:
