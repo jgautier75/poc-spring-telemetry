@@ -15,6 +15,7 @@ import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ public class OrganizationUpdateImpl extends AbstractOrganizationFunction impleme
     public Integer execute(String tenantUid, String orgUid, Organization organization, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_UPDATE", parentSpan, (span) -> {
             String callerName = this.getClass().getName() + "-updateOrganization";
-            loggingFacade.infoS(callerName, "Update organization [%s] of tenant [%s]", new Object[]{tenantUid, orgUid});
+            loggingFacade.infoS(callerName, "Update organization [%s] of tenant [%s]", new Object[]{tenantUid, orgUid}, OtelContext.fromSpan(span));
             Tenant tenant = tenantFind.byUid(tenantUid, span);
             Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid, span);
             if (org.isEmpty()) {

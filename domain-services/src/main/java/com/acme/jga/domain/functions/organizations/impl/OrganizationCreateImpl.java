@@ -18,6 +18,7 @@ import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +71,7 @@ public class OrganizationCreateImpl extends AbstractOrganizationFunction impleme
             // Generate audit event for sector
             List<AuditChange> sectorAuditChanges = List.of(new AuditChange("label", AuditOperation.ADD, null, organization.getCommons().getLabel()));
             generateSectorAuditEventAndPush(organization, tenant, sector, span, AuditAction.CREATE, sectorAuditChanges);
-            loggingFacade.debugS(this.getClass().getName() + "-createOrganization", "Sector composite id [%s]", new Object[]{sectorCompositeId.getUid()});
+            loggingFacade.debugS(this.getClass().getName() + "-createOrganization", "Sector composite id [%s]", new Object[]{sectorCompositeId.getUid()}, OtelContext.fromSpan(span));
 
             // Generate audit event for organization
             List<AuditChange> auditChanges = List.of(new AuditChange("label", AuditOperation.ADD, null, organization.getCommons().getLabel()));

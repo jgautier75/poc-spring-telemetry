@@ -13,6 +13,7 @@ import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,19 +53,18 @@ public class OrganizationDeleteImpl extends AbstractOrganizationFunction impleme
             // Delete users
             Integer nbUsersDeleted = organizationsInfraService.deleteUsersByOrganization(tenant.getId(), org.get().getId());
             totalDeleted += nbUsersDeleted;
-            loggingFacade.debugS(callerName, "Nb of users deleted: [%s]", new Object[]{nbUsersDeleted});
+            loggingFacade.debugS(callerName, "Nb of users deleted: [%s]", new Object[]{nbUsersDeleted}, OtelContext.fromSpan(span));
 
             // Delete sectors
             Integer nbSectorsDeleted = organizationsInfraService.deleteSectors(tenant.getId(), org.get().getId());
             totalDeleted += nbSectorsDeleted;
-            loggingFacade.debugS(callerName, "Nb of sectors deleted: [%s]", new Object[]{nbSectorsDeleted});
+            loggingFacade.debugS(callerName, "Nb of sectors deleted: [%s]", new Object[]{nbSectorsDeleted}, OtelContext.fromSpan(span));
 
             // Delete organization
             Integer nbOrgDeleted = organizationsInfraService.deleteById(tenant.getId(), org.get().getId());
             totalDeleted += nbOrgDeleted;
-            loggingFacade.debugS(callerName, "Nb of organizations deleted: [%s]", new Object[]{nbOrgDeleted});
-
-            loggingFacade.debugS(callerName, "Total nb of records deleted: [%s]", new Object[]{totalDeleted});
+            loggingFacade.debugS(callerName, "Nb of organizations deleted: [%s]", new Object[]{nbOrgDeleted}, OtelContext.fromSpan(span));
+            loggingFacade.debugS(callerName, "Total nb of records deleted: [%s]", new Object[]{totalDeleted}, OtelContext.fromSpan(span));
 
             // Create audit event
             generateOrgAuditEventAndPush(org.get(), tenant, span, AuditAction.DELETE, Collections.emptyList());

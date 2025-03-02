@@ -276,7 +276,7 @@ public class UsersDaoImpl extends AbstractJdbcDaoSupport implements UsersDao {
                 countQuery += DaoConstants.AND + compositeQuery.query();
             }
 
-            loggingFacade.debugS(INSTRUMENTATION_NAME, "Count query: [%s]", new Object[]{countQuery}, OtelContext.fromSpan(span));
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Total count query: [%s]", new Object[]{countQuery}, OtelContext.fromSpan(span));
             Integer nbResults = super.getNamedParameterJdbcTemplate().query(countQuery, params, resultSet -> {
                 if (resultSet.next()) {
                     return resultSet.getInt(1);
@@ -284,7 +284,7 @@ public class UsersDaoImpl extends AbstractJdbcDaoSupport implements UsersDao {
                     return null;
                 }
             });
-            loggingFacade.debugS(INSTRUMENTATION_NAME, "Count result: [%s]", new Object[]{nbResults}, OtelContext.fromSpan(span));
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Total count result: [%s]", new Object[]{nbResults}, OtelContext.fromSpan(span));
 
             // Select query
             String fullQuery = baseQuery + whereClause + compositeQuery.orderBy() + compositeQuery.pagination();
@@ -297,7 +297,7 @@ public class UsersDaoImpl extends AbstractJdbcDaoSupport implements UsersDao {
                     return UsersDisplayDbExtractor.extractUser(rs, false);
                 }
             });
-            loggingFacade.debugS(INSTRUMENTATION_NAME, "Search result: [%s]", new Object[]{results.size()}, OtelContext.fromSpan(span));
+            loggingFacade.debugS(INSTRUMENTATION_NAME, "Search count result: [%s]", new Object[]{results.size()}, OtelContext.fromSpan(span));
 
             return new PaginatedResults<>(nbResults,
                     nbResults != null ? (nbResults / (Integer) searchParams.get(FilteringConstants.PAGE_SIZE) + 1) : 0,

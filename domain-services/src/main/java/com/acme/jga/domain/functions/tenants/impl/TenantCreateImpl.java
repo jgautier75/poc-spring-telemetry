@@ -14,6 +14,7 @@ import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.otel.OtelContext;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class TenantCreateImpl extends AbstractTenantFunction implements TenantCr
             }
             CompositeId compositeId = tenantInfraService.createTenant(tenant, span);
             tenant.setUid(compositeId.getUid());
-            loggingFacade.infoS(callerName, "Created tenant [%s]", new Object[]{compositeId.getUid()});
+            loggingFacade.infoS(callerName, "Created tenant [%s]", new Object[]{compositeId.getUid()}, OtelContext.fromSpan(span));
 
             // Create audit event and send
             List<AuditChange> auditChanges = List.of(AuditChange.builder().to(tenant.getLabel()).object("label").operation(AuditOperation.ADD).build());
