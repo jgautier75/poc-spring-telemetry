@@ -13,4 +13,4 @@ echo "Substitute ip address in prometheus-template.yml"
 sed -e "s/MYIPADDRESS/${MYIP}/g" prometheus-template.yml > prometheus.yml
 
 echo "Start 'base' docker services"
-docker-compose -f docker-services-base.yml up -d
+docker-compose -f docker-services-base.yml up -d --force-recreate

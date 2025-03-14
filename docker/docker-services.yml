@@ -10,7 +10,7 @@ services:
     ports:
       - 8200:8200
   poc-st-app-storage:
-    image: postgres:17.3
+    image: postgres:17.4
     volumes:
       - "poc-st-app-pg-data:/var/lib/postgresql/data/pgdata"
     restart: always
@@ -20,7 +20,7 @@ services:
     ports:
       - 5432:5432
   poc-st-keycloak-storage:
-    image: postgres:17.3
+    image: postgres:17.4
     volumes:
       - "poc-st-keycloak-pg-data:/var/lib/postgresql/data"
     environment:
@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.1.2
+    image: quay.io/keycloak/keycloak:26.1.4
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage

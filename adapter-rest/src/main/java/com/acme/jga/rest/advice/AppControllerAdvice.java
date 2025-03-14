@@ -12,8 +12,12 @@ import com.acme.jga.rest.config.AppGenericConfig;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.search.filtering.exceptions.ParsingException;
 import com.acme.jga.validation.ValidationException;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.LongCounterBuilder;
+import io.opentelemetry.api.metrics.MeterProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +37,13 @@ import static com.acme.jga.utils.lambdas.StreamUtil.ofNullableList;
 
 @RequiredArgsConstructor
 @ControllerAdvice
-public class AppControllerAdvice {
+public class AppControllerAdvice implements InitializingBean {
+    private static final String INSTRUMENTATION_NAME = AppControllerAdvice.class.getCanonicalName();
     private final ILoggingFacade loggingFacade;
     private final AppGenericConfig appGenericConfig;
     private final MicrometerPrometheus micrometerPrometheus;
+    private final MeterProvider meterProvider;
+    private LongCounter otelErrorsCounter;
 
     private static final Set<String> NOT_FOUND_EXCEPTIONS = Set.of(
             FunctionalErrorsTypes.TENANT_NOT_FOUND.name(),
@@ -52,6 +59,7 @@ public class AppControllerAdvice {
             FunctionalErrorsTypes.USER_EMAIL_ALREADY_USED.name(),
             FunctionalErrorsTypes.USER_LOGIN_ALREADY_USED.name(),
             FunctionalErrorsTypes.SECTOR_ROOT_DELETE_NOT_ALLOWED.name());
+
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFound(NoResourceFoundException exception) {
@@ -83,7 +91,7 @@ public class AppControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleInternal(Exception exception, HttpServletRequest request) throws IOException {
-        if (exception.getCause()!=null) {
+        if (exception.getCause() != null) {
             if (FunctionalException.class.isAssignableFrom(exception.getCause().getClass())) {
                 return handleFunctionalException((Exception) exception.getCause());
             } else if (ValidationException.class.isAssignableFrom(exception.getCause().getClass())) {
@@ -97,6 +105,7 @@ public class AppControllerAdvice {
 
         // Increment tech errors gauge exported to prometheus format
         micrometerPrometheus.getTechErrorsCounter().incrementAndGet();
+        this.otelErrorsCounter.add(1);
 
         ApiError apiError = null;
         try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
@@ -168,4 +177,8 @@ public class AppControllerAdvice {
         return NOT_FOUND_EXCEPTIONS.contains(exception.getCode());
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.otelErrorsCounter = meterProvider.get(INSTRUMENTATION_NAME).counterBuilder("technical-errors").build();
+    }
 }

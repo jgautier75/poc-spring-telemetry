@@ -10,7 +10,6 @@ import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-import io.opentelemetry.semconv.ResourceAttributes;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +23,8 @@ public class OpenTelemetryTestConfig {
     @Qualifier("otelResourceTest")
     public Resource otelResourceTest() {
         return Resource.getDefault().toBuilder()
-                .put(ResourceAttributes.SERVICE_NAME, "TEST")
-                .put(ResourceAttributes.SERVICE_VERSION, "1.0.0").build();
+                .put("service.name", "TEST")
+                .put("service.version", "1.0.0").build();
     }
 
     @Bean

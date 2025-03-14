@@ -16,7 +16,6 @@ import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
-import io.opentelemetry.semconv.ResourceAttributes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +32,8 @@ public class OpenTelemetryConfig {
     @Bean
     public Resource otelResource() {
         return Resource.getDefault().toBuilder()
-                .put(ResourceAttributes.SERVICE_NAME, appGenericConfig.getModuleName())
-                .put(ResourceAttributes.SERVICE_VERSION, "1.0.0").build();
+                .put("service.name", appGenericConfig.getModuleName())
+                .put("service.version", "1.0.0").build();
     }
 
     @Bean
