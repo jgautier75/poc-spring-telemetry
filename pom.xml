@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>3.4.4</version>
 		<relativePath />
 	</parent>
 
@@ -92,19 +92,19 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.12.0</version>
+				<version>5.12.1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>5.16.0</version>
+				<version>5.16.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>5.16.0</version>
+				<version>5.16.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -114,7 +114,7 @@
 			<dependency>
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
-				<version>6.2.1</version>
+				<version>6.3.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
