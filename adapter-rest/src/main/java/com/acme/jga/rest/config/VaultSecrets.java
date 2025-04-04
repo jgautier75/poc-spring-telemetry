@@ -11,6 +11,7 @@ import org.springframework.vault.annotation.VaultPropertySource;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 @Configuration
 @VaultPropertySource("dev-secrets/creds")
@@ -22,7 +23,7 @@ public class VaultSecrets {
     @Bean
     public CryptoEngine cryptoEngine() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         CryptoEngine cryptoEngine = new CryptoEngine();
-        cryptoEngine.initCrypto(env.getProperty("cipherKey"));
+        cryptoEngine.initCrypto(Objects.requireNonNull(env.getProperty("cipherKey")));
         return cryptoEngine;
     }
 }
