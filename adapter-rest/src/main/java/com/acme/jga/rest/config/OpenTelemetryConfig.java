@@ -70,9 +70,7 @@ public class OpenTelemetryConfig {
     }
 
     @Bean
-    public OpenTelemetry openTelemetry(SdkTracerProvider tracerProvider, SdkMeterProvider sdkMeterProvider,
-                                       SdkLoggerProvider sdkLoggerProvider) {
-        // OpenTelemetry
+    public OpenTelemetry openTelemetry(SdkTracerProvider tracerProvider, SdkMeterProvider sdkMeterProvider, SdkLoggerProvider sdkLoggerProvider) {
         return OpenTelemetrySdk.builder()
                 .setTracerProvider(tracerProvider)
                 .setMeterProvider(sdkMeterProvider)

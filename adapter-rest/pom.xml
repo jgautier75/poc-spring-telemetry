@@ -14,7 +14,7 @@
     <name>Adapter - REST</name>
     <properties>
         <spring-boot-plugin-version>3.4.0</spring-boot-plugin-version>
-        <otel-version>1.48.0</otel-version>
+        <otel-version>1.49.0</otel-version>
     </properties>
 
     <build>
