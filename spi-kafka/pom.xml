@@ -21,7 +21,7 @@
                     <artifactSet>
                         <includes>
                             <include>com.acme.jga.keycloak.spi:*</include>
-                            <!--<include>org.apache.kafka:kafka-clients</include>-->
+                            <include>org.apache.kafka:kafka-clients</include>
                             <include>com.google.protobuf:protobuf-java</include>
                             <include>io.confluent:kafka-schema-serializer</include>
                             <include>io.confluent:kafka-protobuf-serializer</include>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>3.9.0</version>
+            <version>4.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

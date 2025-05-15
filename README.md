@@ -32,7 +32,7 @@ Other modules:
 
 Standard REST application relying on:
 
-- Java 21 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
+- Java 23 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
 - Sprint boot (3.4.x)
 - PostgreSQL (17.x) for persistence
 - Liquibase for rdbms schema versions management
@@ -58,10 +58,10 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
-| postgreSQL          | 17.3    | 5432    | Spring app storage                        |
-| keycloak            | 26.1.2  | 7080    | Keycloak dev instance                     |
-| keycloak-postgreSQL | 17.3    | 5433    | Keycloak app storage                      |
-| openbao             | 2.2     | 8200    | OpenBao port                              |
+| postgreSQL          | 17.5    | 5432    | Spring app storage                        |
+| keycloak            | 26.2.4  | 7080    | Keycloak dev instance                     |
+| keycloak-postgreSQL | 17.5    | 5433    | Keycloak app storage                      |
+| openbao             | 2.2.1   | 8200    | OpenBao port                              |
 | akhq                | 0.25.1  | 8086    | GUI for kafka (topics, consumers, ...)    | 
 | zookeeper           | 7.9.0   | 2181    | Centralized service for kafka management  |
 | kafka               | 7.9.0   | 9092    | Kafka broker                              |
@@ -77,10 +77,10 @@ docker-compose -f docker-services-jaeger.yml up -d
 
 | Service                         | Version | Port              |
 |---------------------------------|---------|-------------------|
-| jaeger-all-in-one               | 1.66.0  | 16686             |
-| prometheus                      | v3.2.0  | 9090              |
-| grafana                         | 11.6.0  | 3000              |
-| opentelemetry-collector-contrib | 0.122.1 | 4317, 4318, 55679 |
+| jaeger-all-in-one               | 1.69.0  | 16686             |
+| prometheus                      | v3.3.1  | 9090              |
+| grafana                         | 12.0.0  | 3000              |
+| opentelemetry-collector-contrib | 0.126.0 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
