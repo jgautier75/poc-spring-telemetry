@@ -300,6 +300,34 @@ Transform to HTML:
 redocly build-docs ../poc_st_openapi.yml
 ```
 
+Generating java code from openapi specification, first download the latest version of openapi-generator-cli on mvnrepository.com site
+
+Then create a json config file:
+
+```json
+{
+  "basePackage": "com.tutorial.codegen",
+  "configPackage": "com.tutorial.codegen.config",
+  "apiPackage": "com.tutorial.codegen.controllers",
+  "modelPackage": "com.tutorial.codegen.model",
+  "groupId": "com.tutorial",
+  "artifactId": "spring-boot-codegenerator"
+}
+
+```
+
+Http client generation:
+
+```
+java -jar openapi-generator-cli-7.13.0.jar generate -g java -i poc_st_openapi.yml -c openapi-gen-config.json -o spring-boot-codegenerator
+```
+
+Server side generation:
+
+```
+java -jar openapi-generator-cli-7.13.0.jar generate -g client -i poc_st_openapi.yml -c openapi-gen-config.json -o spring-boot-codegenerator
+```
+
 ## Audit events
 
 Everytime an entity (tenant, organization, user, sector) is created, updated or deleted, an audit event is persisted in rdbms.
