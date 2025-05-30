@@ -11,7 +11,7 @@
 		<lombok-version>1.18.38</lombok-version>
 		<spring-cloud-vault-version>4.2.0</spring-cloud-vault-version>
 		<spring-value-version>3.1.2</spring-value-version>
-		<keycloak-version>26.2.4</keycloak-version>
+		<keycloak-version>26.2.5</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>3.25.5</protobuf-version>
 		<kafka-main-version>7.8.0</kafka-main-version>

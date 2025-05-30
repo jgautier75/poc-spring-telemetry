@@ -59,7 +59,7 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
 | postgreSQL          | 17.5    | 5432    | Spring app storage                        |
-| keycloak            | 26.2.4  | 7080    | Keycloak dev instance                     |
+| keycloak            | 26.2.5  | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.5    | 5433    | Keycloak app storage                      |
 | openbao             | 2.2.1   | 8200    | OpenBao port                              |
 | akhq                | 0.25.1  | 8086    | GUI for kafka (topics, consumers, ...)    | 
@@ -79,8 +79,8 @@ docker-compose -f docker-services-jaeger.yml up -d
 |---------------------------------|---------|-------------------|
 | jaeger-all-in-one               | 1.69.0  | 16686             |
 | prometheus                      | v3.3.1  | 9090              |
-| grafana                         | 12.0.0  | 3000              |
-| opentelemetry-collector-contrib | 0.126.0 | 4317, 4318, 55679 |
+| grafana                         | 12.0.1  | 3000              |
+| opentelemetry-collector-contrib | 0.127.0 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
