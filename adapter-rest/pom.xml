@@ -14,7 +14,6 @@
     <name>Adapter - REST</name>
     <properties>
         <spring-boot-plugin-version>3.4.5</spring-boot-plugin-version>
-        <otel-version>1.50.0</otel-version>
     </properties>
 
     <build>
@@ -221,11 +220,6 @@
             <groupId>com.acme.jga</groupId>
             <artifactId>adapter-kafka</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry.semconv</groupId>
-            <artifactId>opentelemetry-semconv</artifactId>
-            <version>1.32.0</version>
         </dependency>
         <!-- TESTS -->
         <dependency>

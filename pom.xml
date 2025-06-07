@@ -14,6 +14,7 @@
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>3.25.5</protobuf-version>
 		<kafka-main-version>7.8.0</kafka-main-version>
+		<otel-version>1.51.0</otel-version>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -84,7 +85,7 @@
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-bom</artifactId>
-				<version>1.50.0</version>
+				<version>${otel-version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -123,7 +124,7 @@
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-sdk</artifactId>
-				<version>1.50.0</version>
+				<version>${otel-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
