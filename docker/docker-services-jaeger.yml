@@ -9,7 +9,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
   poc-st-prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.3.1
+    image: prom/prometheus:v3.4.1
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
