@@ -4,6 +4,8 @@ spring:
   config:
     import: vault://
   cloud:
+    compatibility-verifier:
+      enabled: false
     vault:
       uri: http://localhost:8200
       connection-timeout: 5000
