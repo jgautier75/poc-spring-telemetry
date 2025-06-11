@@ -34,7 +34,7 @@ public abstract class DomainFunction {
      * @return Function result
      */
     protected <T> T processWithSpan(String instrumentationName, String operation, Span parentSpan, Function<Span, T> operationFunction) {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, operation + "-" + correlationKey(), parentSpan);
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, operation, correlationKey(), parentSpan);
         try {
             span.setAttribute(AttributeKey.stringKey(LogHttpUtils.OTEL_CORRELATION_KEY), RequestCorrelationId.correlationKey());
             return operationFunction.apply(span);

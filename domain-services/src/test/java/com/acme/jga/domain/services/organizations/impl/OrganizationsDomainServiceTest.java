@@ -92,7 +92,7 @@ public class OrganizationsDomainServiceTest {
                 .thenReturn(compositeId);
         Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
         Span rootSpan = otelTesting.getOpenTelemetry().getTracer("test").spanBuilder("test").startSpan();
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         // THEN
         CompositeId orgCompositeId = organizationCreate.execute(tenant.getUid(),
                 organization, rootSpan);
@@ -109,7 +109,7 @@ public class OrganizationsDomainServiceTest {
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenThrow(new WrappedFunctionalException(new FunctionalException(
                 FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                 FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         assertThrows(WrappedFunctionalException.class,
@@ -127,7 +127,7 @@ public class OrganizationsDomainServiceTest {
         // WHEN
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
         Mockito.when(organizationsInfraServiceImpl.findOrganizationByUid(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Optional.of(organization));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         // THEN
         Integer nbUpdated = organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, new VoidSpan());
         assertEquals(Integer.valueOf(0), nbUpdated);
@@ -145,7 +145,7 @@ public class OrganizationsDomainServiceTest {
                         new FunctionalException(
                                 FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                                 FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         assertThrows(WrappedFunctionalException.class, () -> organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, null));
@@ -164,7 +164,7 @@ public class OrganizationsDomainServiceTest {
         Mockito.when(organizationsInfraServiceImpl.deleteSectors(Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(organizationsInfraServiceImpl.deleteById(Mockito.any(), Mockito.any())).thenReturn(1);
         Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         Integer nbDeleted = organizationDelete.execute(tenant.getUid(), organization.getUid(), null);

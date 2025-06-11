@@ -74,7 +74,7 @@ public class SectorsDomainServiceTest {
         Mockito.when(sectorsInfraServiceImpl.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
         Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         CompositeId sectorCompId = sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null);
@@ -93,7 +93,7 @@ public class SectorsDomainServiceTest {
         Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
@@ -112,7 +112,7 @@ public class SectorsDomainServiceTest {
         Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));

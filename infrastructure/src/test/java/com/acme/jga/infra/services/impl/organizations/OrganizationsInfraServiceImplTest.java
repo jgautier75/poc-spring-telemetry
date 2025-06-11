@@ -58,7 +58,7 @@ public class OrganizationsInfraServiceImplTest {
         // WHEN
         Mockito.when(organizationsInfraConverter.convertOrganizationToOrganizationDb(Mockito.any())).thenReturn(orgDb);
         Mockito.when(organizationsDao.createOrganization(Mockito.any())).thenReturn(compositeId);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         CompositeId id = organizationsInfraServiceImpl.createOrganization(org, null);
@@ -76,7 +76,7 @@ public class OrganizationsInfraServiceImplTest {
         // WHEN
         Mockito.when(organizationsDao.filterOrganizations(Mockito.any(), Mockito.any())).thenReturn(paginatedResults);
         Mockito.when(organizationsInfraConverter.convertOrganizationDbToOrganization(Mockito.any())).thenReturn(org);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
         PaginatedResults<Organization> orgs = organizationsInfraServiceImpl.filterOrganizations(TENANT_ID, Span.current(), Collections.emptyMap());

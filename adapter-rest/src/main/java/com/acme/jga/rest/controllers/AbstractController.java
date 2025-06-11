@@ -2,6 +2,7 @@ package com.acme.jga.rest.controllers;
 
 import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
+import com.acme.jga.utils.http.RequestCorrelationId;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 
@@ -13,7 +14,7 @@ public abstract class AbstractController {
     }
 
     protected <T> T withSpan(String instrumentationName, String operationName, SpanOperation<T> operation) throws FunctionalException {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, operationName, null);
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, operationName, RequestCorrelationId.correlationKey(), null);
         try {
             return operation.execute(span);
         } catch (Exception e) {

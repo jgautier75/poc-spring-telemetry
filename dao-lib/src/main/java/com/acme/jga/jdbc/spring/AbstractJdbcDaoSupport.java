@@ -29,7 +29,8 @@ public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
     public record PaginationResult(String pagination, String orderBy) {
     }
 
-    public record CompositeQuery(Boolean notEmpty, String query, Map<String, Object> parameters, String pagination, String orderBy) {
+    public record CompositeQuery(Boolean notEmpty, String query, Map<String, Object> parameters, String pagination,
+                                 String orderBy) {
     }
 
     protected final Properties queries = new Properties();
@@ -271,7 +272,7 @@ public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
     }
 
     protected <T> T processWithSpan(String instrumentationName, String action, Span parentSpan, Function<Span, T> operation) {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey(), parentSpan);
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, action, correlationKey(), parentSpan);
         try {
             return operation.apply(span);
         } catch (Exception e) {

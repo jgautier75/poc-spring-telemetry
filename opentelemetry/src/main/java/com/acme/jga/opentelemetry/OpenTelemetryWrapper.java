@@ -24,7 +24,8 @@ public class OpenTelemetryWrapper implements InitializingBean {
         this.sdkTracerProvider = provider;
     }
 
-    public Span withSpan(String instrumentationName, String spanName, Span parentSpan) {
+    public Span withSpan(String instrumentationName, String action, String correlationKey, Span parentSpan) {
+        String spanName = action + "-" + correlationKey;
         Tracer tracer = sdkTracerProvider.get(instrumentationName);
         Span span;
         if (parentSpan != null) {
@@ -34,7 +35,6 @@ public class OpenTelemetryWrapper implements InitializingBean {
         }
         return span;
     }
-
 
     @Override
     public void afterPropertiesSet() throws Exception {
