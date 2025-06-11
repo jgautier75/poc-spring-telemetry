@@ -33,7 +33,7 @@ Other modules:
 Standard REST application relying on:
 
 - Java 23 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
-- Sprint boot (3.4.x)
+- Sprint boot (3.5.x)
 - PostgreSQL (17.x) for persistence
 - Liquibase for rdbms schema versions management
 - Spring JDBC for persistence (No f****** ORM)
@@ -61,11 +61,11 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | postgreSQL          | 17.5    | 5432    | Spring app storage                        |
 | keycloak            | 26.2.5  | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.5    | 5433    | Keycloak app storage                      |
-| openbao             | 2.2.1   | 8200    | OpenBao port                              |
+| openbao             | 2.2.2   | 8200    | OpenBao port                              |
 | akhq                | 0.25.1  | 8086    | GUI for kafka (topics, consumers, ...)    | 
-| zookeeper           | 7.9.0   | 2181    | Centralized service for kafka management  |
-| kafka               | 7.9.0   | 9092    | Kafka broker                              |
-| schema-registry     | 7.9.0   | 8085    | Schema registry (protobuf schemas storage |
+| zookeeper           | 7.9.1   | 2181    | Centralized service for kafka management  |
+| kafka               | 7.9.1   | 9092    | Kafka broker                              |
+| schema-registry     | 7.9.1   | 8085    | Schema registry (protobuf schemas storage |
 
 ## Docker - Jaeger
 
@@ -241,7 +241,7 @@ Different docker configurations are provided in this project, jaeger or grafana 
     - Properties:
         - id: internal identifier
         - uid: external identifier (UUID)
-        - tenant: Refererce on tenant
+        - tenant: Reference on tenant
         - label: Organization's label
         - code: functional code (unique)
         - kind: Organization's code (Enumeration: TENANT,BU,COMMUNITY,ENTERPRISE)
@@ -515,12 +515,12 @@ Once project bas been compiled, run scripts/get-spring-boot-modules.sh:
 Parameters:
 
 - 1: Full path to spring-boot fat jar
-- 2: Jdk version (21)
+- 2: Jdk version (23)
 - 3: Temp directory for spring-boot app extraction
 - 4: Automatic modules: list of automatic modules, typically legacy libraries (multiple values separator is the comma)
 
 ```sh
-./get-springboot-modules.sh adapter-rest/target/adapter-rest-1.0.0-SNAPSHOT.jar 21 adapter-rest/target/tmp ""
+./get-springboot-modules.sh adapter-rest/target/adapter-rest-1.0.0-SNAPSHOT.jar 23 adapter-rest/target/tmp ""
 ```
 
 Update adapter-rest/Dockerfile accordingly in jlinks section
@@ -902,7 +902,7 @@ Keycloak endpoints: http://localhost:7080/realms/myrealm/.well-known/openid-conf
 
 Administration: admin/admin
 
-If client is **confidential** **client_secret is required**
+If client is **confidential**, **client_secret is required**
 ```shell
 curl --location 'http://localhost:7080/realms/myrealm/protocol/openid-connect/token' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'username=myuser' --data-urlencode 'password=mypass' --data-urlencode 'grant_type=password' --data-urlencode 'client_id=myclient' --data-urlencode 'client_secret=2RTndlQDptvof5fINkrWe7SkDawy1q5I' --data-urlencode 'scope=openid'
 ```
