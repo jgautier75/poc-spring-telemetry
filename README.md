@@ -78,7 +78,7 @@ docker-compose -f docker-services-jaeger.yml up -d
 | Service                         | Version | Port              |
 |---------------------------------|---------|-------------------|
 | jaeger-all-in-one               | 1.69.0  | 16686             |
-| prometheus                      | v3.3.1  | 9090              |
+| prometheus                      | v3.4.1  | 9090              |
 | grafana                         | 12.0.1  | 3000              |
 | opentelemetry-collector-contrib | 0.127.0 | 4317, 4318, 55679 |
 
@@ -248,7 +248,7 @@ Different docker configurations are provided in this project, jaeger or grafana 
         - country: Country code (ISO 3166-1 Alpha2)
         - status: status (Enumeration: DRAFT, ACTIVE, INACTIVE)
 - **Sector**:
-    - A sector is a logical sub-division of an organization.
+    - A sector is a logical subdivision of an organization.
     - An organization always have a root sector.
     - A root sector cannot be deleted.
     - Properties:
