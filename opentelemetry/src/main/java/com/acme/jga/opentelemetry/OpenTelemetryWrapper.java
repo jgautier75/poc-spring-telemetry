@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OpenTelemetryWrapper implements InitializingBean {
+
     @Autowired
     private TracerProvider sdkTracerProvider;
 

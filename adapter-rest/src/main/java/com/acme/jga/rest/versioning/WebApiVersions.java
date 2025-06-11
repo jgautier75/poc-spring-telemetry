@@ -23,10 +23,10 @@ public class WebApiVersions {
             UPDATE(CATEGORY, "update", WITH_UID, V1),
             DELETE(CATEGORY, "delete", WITH_UID, V1),
             GET_DETAILS(CATEGORY, "details", WITH_UID, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;
@@ -50,10 +50,10 @@ public class WebApiVersions {
             UPDATE(CATEGORY, "update", WITH_UID, V1),
             DELETE(CATEGORY, "delete", WITH_UID, V1),
             GET_DETAILS(CATEGORY, "details", WITH_UID, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;
@@ -77,10 +77,10 @@ public class WebApiVersions {
             UPDATE(CATEGORY, "update", WITH_UID, V1),
             DELETE(CATEGORY, "delete", WITH_UID, V1),
             GET_DETAILS(CATEGORY, "details", WITH_UID, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;
@@ -104,10 +104,10 @@ public class WebApiVersions {
             UPDATE(CATEGORY, "update", WITH_UID, V1),
             DELETE(CATEGORY, "delete", WITH_UID, V1),
             GET_DETAILS(CATEGORY, "details", WITH_UID, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;
@@ -142,10 +142,10 @@ public class WebApiVersions {
             VAULT_READ(CATEGORY, "vault_read", SystemResourceVersion.VAULT_READ, V1),
             VAULT_LIST(CATEGORY, "vault_list", SystemResourceVersion.VAULT_LIST, V1),
             DEPENDENCIES_LIST(CATEGORY, "dependencies_list", SystemResourceVersion.DEPS_LIST, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;
@@ -164,10 +164,10 @@ public class WebApiVersions {
         @Getter
         public enum Endpoints {
             USER(CATEGORY, "user_find", FIND_USER, V1);
-            String category;
-            String code;
-            String uri;
-            String version;
+            final String category;
+            final String code;
+            final String uri;
+            final String version;
 
             Endpoints(String category, String code, String uri, String version) {
                 this.category = category;

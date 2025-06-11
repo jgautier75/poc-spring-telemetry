@@ -8,7 +8,6 @@ import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
 import com.acme.jga.ports.dtos.users.v1.UserDisplayDto;
 import com.acme.jga.ports.dtos.users.v1.UserDto;
-import com.acme.jga.ports.dtos.users.v1.UsersDisplayListDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

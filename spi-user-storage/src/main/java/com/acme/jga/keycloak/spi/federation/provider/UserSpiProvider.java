@@ -45,8 +45,6 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
     private final ComponentModel storageProviderModel;
     private final KeycloakSession keycloakSession;
     private CryptoEngine cryptoEngine;
-    private VaultConfig vaultConfig;
-    private Vault vault;
 
     public UserSpiProvider(ComponentModel storageProviderModel, KeycloakSession keycloakSession) {
         this.storageProviderModel = storageProviderModel;
@@ -65,11 +63,11 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
     private void initVault() {
         LOGGER.infof("Initialize Vault : [%s]=[%s]", FederationConstants.VAULT_ADDRESS, getEnvVariable(FederationConstants.VAULT_ADDRESS));
         try {
-            this.vaultConfig = new VaultConfig()
+            VaultConfig vaultConfig = new VaultConfig()
                     .address(getEnvVariable(FederationConstants.VAULT_ADDRESS))
                     .token(getEnvVariable(FederationConstants.VAULT_TOKEN))
                     .build();
-            this.vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
+            Vault vault = Vault.create(vaultConfig, FederationConstants.VAULT_VERSION);
             this.cryptoEngine = new CryptoEngine();
             String secretPath = getEnvVariable(FederationConstants.VAULT_PATH) + "/" + getEnvVariable(FederationConstants.VAULT_SECRETS);
             LogicalResponse logicalResponse = vault.logical().read(secretPath);
@@ -169,7 +167,7 @@ public class UserSpiProvider implements UserLookupProvider, UserStorageProvider,
      * @return User infos
      */
     private Optional<UserInfosDto> fetchUser(FederationConstants.SearchFilterField searchField, String searchValue) {
-        try (HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(30)).build();) {
+        try (HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(30)).build()) {
             HttpRequest byUserIdReq = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(buildSearchFilterURI(searchField, searchValue)))

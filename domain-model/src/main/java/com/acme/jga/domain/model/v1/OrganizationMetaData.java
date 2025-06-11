@@ -15,9 +15,9 @@ public enum OrganizationMetaData {
     COUNTRY("country", "country", DataType.STRING),
     KIND("kind", "kind", DataType.ENUM_NUMBER);
 
-    private String alias;
-    private String columnName;
-    private DataType dataType;
+    private final String alias;
+    private final String columnName;
+    private final DataType dataType;
 
     OrganizationMetaData(String alias, String columnName, DataType dataType) {
         this.alias = alias;

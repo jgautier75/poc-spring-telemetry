@@ -33,15 +33,15 @@ import java.util.Map;
 @Service
 public class OrganizationPortServiceImpl extends AbstractPortService implements OrganizationPortService {
     private static final String INSTRUMENTATION_NAME = OrganizationPortServiceImpl.class.getCanonicalName();
-    private TenantFind tenantFind;
-    private OrganizationCreate organizationCreate;
-    private OrganizationsPortConverter organizationsConverter;
-    private OrganizationsValidationEngine organizationsValidationEngine;
+    private final TenantFind tenantFind;
+    private final OrganizationCreate organizationCreate;
+    private final OrganizationsPortConverter organizationsConverter;
+    private final OrganizationsValidationEngine organizationsValidationEngine;
     private final QueryParser queryParser = new QueryParser();
-    private OrganizationFilter organizationFilter;
-    private OrganizationFind organizationFind;
-    private OrganizationUpdate organizationUpdate;
-    private OrganizationDelete organizationDelete;
+    private final OrganizationFilter organizationFilter;
+    private final OrganizationFind organizationFind;
+    private final OrganizationUpdate organizationUpdate;
+    private final OrganizationDelete organizationDelete;
 
     @Autowired
     public OrganizationPortServiceImpl(TenantFind tenantFind, OrganizationCreate organizationCreate, OrganizationsPortConverter organizationsConverter,
@@ -56,6 +56,7 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
         this.organizationFilter = organizationFilter;
         this.organizationFind = organizationFind;
         this.organizationUpdate = organizationUpdate;
+        this.organizationDelete = organizationDelete;
     }
 
     /**

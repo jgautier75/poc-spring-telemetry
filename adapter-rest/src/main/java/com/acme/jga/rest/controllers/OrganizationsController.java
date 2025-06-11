@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class OrganizationsController extends AbstractController {
     private static final String INSTRUMENTATION_NAME = OrganizationsController.class.getCanonicalName();
-    private OrganizationPortService organizationPortService;
+    private final OrganizationPortService organizationPortService;
 
     public OrganizationsController(OpenTelemetryWrapper openTelemetryWrapper, OrganizationPortService organizationPortService) {
         super(openTelemetryWrapper);

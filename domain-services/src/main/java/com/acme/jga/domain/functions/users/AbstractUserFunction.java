@@ -19,7 +19,7 @@ import java.util.List;
 import static com.acme.jga.domain.model.utils.AuditEventFactory.createUserAuditEvent;
 
 public abstract class AbstractUserFunction extends DomainFunction {
-    private EventsInfraService eventsInfraService;
+    private final EventsInfraService eventsInfraService;
 
     protected AbstractUserFunction(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory, EventsInfraService eventsInfraService) {
         super(openTelemetryWrapper, bundleFactory);

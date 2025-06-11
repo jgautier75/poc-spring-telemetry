@@ -15,9 +15,9 @@ public enum UserMetaData {
     LOGIN("login", "login", DataType.STRING),
     EMAIL("email", "email", DataType.STRING);
 
-    private String alias;
-    private String columnName;
-    private DataType dataType;
+    private final String alias;
+    private final String columnName;
+    private final DataType dataType;
 
     UserMetaData(String alias, String columnName, DataType dataType) {
         this.alias = alias;

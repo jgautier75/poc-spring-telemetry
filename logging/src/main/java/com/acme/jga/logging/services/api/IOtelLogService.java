@@ -1,7 +1,6 @@
 package com.acme.jga.logging.services.api;
 
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 
 public interface IOtelLogService {
     void info(String msg);
