@@ -1233,11 +1233,21 @@ paths:
             - le: lower or equals
             - lk: like
             
+            Allowed properties:
+            
+            - firstName
+            - lastName
+            - email
+            - login
+            - uid or uuid
+            
             Value must be enclosed with single quotes
             
             For more complex queries enclose with parenthesis and use standard operands (and, or, not)
             
             Example: (firstName eq 'Charles') and ( (lastName eq 'BABBAGE') or (lastName eq 'DARWIN'))
+            
+            Note: URL length must not exceed 2083 otherwise a 414-URI Too Long is returned
           required: false
           schema:
             type: string
