@@ -1,7 +1,7 @@
 package com.acme.jga.ports.dtos.organizations.v1;
 
-import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.api.IVersioned;
+import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.v1.OrganizationKind;
 import com.acme.jga.domain.model.v1.OrganizationStatus;
 import lombok.AllArgsConstructor;

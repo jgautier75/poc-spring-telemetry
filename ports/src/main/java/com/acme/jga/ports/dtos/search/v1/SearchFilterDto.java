@@ -1,7 +1,7 @@
 package com.acme.jga.ports.dtos.search.v1;
 
-import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.api.IVersioned;
+import com.acme.jga.domain.model.api.MainApiVersion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

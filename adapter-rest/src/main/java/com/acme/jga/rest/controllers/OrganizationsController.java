@@ -25,7 +25,7 @@ public class OrganizationsController extends AbstractController {
     @PostMapping(value = WebApiVersions.OrganizationsResourceVersion.ROOT)
     public ResponseEntity<UidDto> createOrganization(@PathVariable("tenantUid") String tenantUid,
                                                      @RequestBody OrganizationDto organizationDto) throws FunctionalException {
-        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_ORGS_CREATE", (span) -> organizationPortService.createOrganization(tenantUid, organizationDto, span));
+        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_ORGS_CREATE", (span) -> organizationPortService.createOrganization(tenantUid, organizationDto));
         return new ResponseEntity<>(uidDto, HttpStatus.CREATED);
     }
 
@@ -37,7 +37,7 @@ public class OrganizationsController extends AbstractController {
                                                                      @RequestParam(value = "orderBy", required = false, defaultValue = "label") String orderBy)
             throws FunctionalException {
         SearchFilterDto searchFilterDto = new SearchFilterDto(searchFilter, pageSize, pageIndex, orderBy);
-        OrganizationListLightDto lightList = withSpan(INSTRUMENTATION_NAME, "API_ORGS_LIST", (span) -> organizationPortService.filterOrganizations(tenantUid, searchFilterDto, span));
+        OrganizationListLightDto lightList = withSpan(INSTRUMENTATION_NAME, "API_ORGS_LIST", (span) -> organizationPortService.filterOrganizations(tenantUid, searchFilterDto));
         return new ResponseEntity<>(lightList, HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class OrganizationsController extends AbstractController {
                                                           @PathVariable("orgUid") String orgUid,
                                                           @RequestParam(name = "fetchSectors", defaultValue = "true") boolean fecthSectors)
             throws FunctionalException {
-        OrganizationDto orgDto = withSpan(INSTRUMENTATION_NAME, "API_ORGS_FIND", (span) -> organizationPortService.findOrganizationByUid(tenantUid, orgUid, fecthSectors, span));
+        OrganizationDto orgDto = withSpan(INSTRUMENTATION_NAME, "API_ORGS_FIND", (span) -> organizationPortService.findOrganizationByUid(tenantUid, orgUid, fecthSectors));
         return new ResponseEntity<>(orgDto, HttpStatus.OK);
     }
 
@@ -55,7 +55,7 @@ public class OrganizationsController extends AbstractController {
                                                    @PathVariable("orgUid") String orgUid,
                                                    @RequestBody OrganizationDto organizationDto)
             throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_ORGS_UPDATE", (span) -> organizationPortService.updateOrganization(tenantUid, orgUid, organizationDto, span));
+        withSpan(INSTRUMENTATION_NAME, "API_ORGS_UPDATE", (span) -> organizationPortService.updateOrganization(tenantUid, orgUid, organizationDto));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -63,7 +63,7 @@ public class OrganizationsController extends AbstractController {
     public ResponseEntity<Void> deleteOrganization(@PathVariable("tenantUid") String tenantUid,
                                                    @PathVariable("orgUid") String orgUid)
             throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_ORGS_DELETE", (span) -> organizationPortService.deleteOrganization(tenantUid, orgUid, span));
+        withSpan(INSTRUMENTATION_NAME, "API_ORGS_DELETE", (span) -> organizationPortService.deleteOrganization(tenantUid, orgUid));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

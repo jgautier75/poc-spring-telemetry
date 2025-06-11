@@ -13,7 +13,6 @@ import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.lambdas.StreamUtil;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -35,23 +34,23 @@ public class UserListImpl extends DomainFunction implements UserList {
     }
 
     @Override
-    public List<User> execute(String tenantUid, String orgUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND", parentSpan, (span) -> {
+    public List<User> execute(String tenantUid, String orgUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND", (span) -> {
             Long tenantId = null;
             Long orgId = null;
             if (!ObjectUtils.isEmpty(tenantUid)) {
-                Tenant tenant = tenantFind.byUid(tenantUid, span);
+                Tenant tenant = tenantFind.byUid(tenantUid);
                 tenantId = tenant.getId();
             }
             if (!ObjectUtils.isEmpty(orgUid)) {
-                Organization organization = organizationFind.byTenantIdAndUid(tenantId, orgUid, false, span);
+                Organization organization = organizationFind.byTenantIdAndUid(tenantId, orgUid, false);
                 orgId = organization.getId();
             } else {
                 if (ObjectUtils.isEmpty(tenantUid)) {
                     throwWrappedException(FunctionalErrorsTypes.TENANT_ORG_EXPECTED.name(), "tenant_org_filter_expected", null);
                 }
             }
-            List<User> users = usersInfraService.findUsers(tenantId, orgId, span);
+            List<User> users = usersInfraService.findUsers(tenantId, orgId);
             List<Long> orgIds = StreamUtil.ofNullableList(users).map(User::getOrganizationId).distinct().toList();
             if (!orgIds.isEmpty()) {
                 List<Organization> organizations = organizationFind.byIdList(orgIds);

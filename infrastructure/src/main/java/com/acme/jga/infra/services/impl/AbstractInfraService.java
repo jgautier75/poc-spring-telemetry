@@ -5,7 +5,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.acme.jga.utils.http.RequestCorrelationId.correlationKey;
 
@@ -22,13 +21,12 @@ public abstract class AbstractInfraService {
      *
      * @param instrumentationName Instrumentation name
      * @param action              Action
-     * @param parentSpan          Parent span (nullable)
      * @param operation            Function
      * @param <T>                 Typed property
      * @return Supplier result
      */
-    protected <T> T processWithSpan(String instrumentationName, String action, Span parentSpan, Function<Span, T> operation) {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey(), parentSpan);
+    protected <T> T processWithSpan(String instrumentationName, String action, Function<Span, T> operation) {
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey());
         try {
             return operation.apply(span);
         } catch (Exception e) {

@@ -12,7 +12,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,28 +36,28 @@ public class TenantDeleteImpl extends AbstractTenantFunction implements TenantDe
     @Override
     @Transactional
     @Audited
-    public Integer execute(String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_DELETE", parentSpan, (span) -> {
+    public Integer execute(String uid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_DELETE", (span) -> {
             String callerName = this.getClass().getName() + "-deleteTenant";
             loggingFacade.infoS(callerName, "Delete tenant [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
             // Find tenant
-            Tenant tenant = tenantFind.byUid(uid, span);
+            Tenant tenant = tenantFind.byUid(uid);
 
             // Delete users by tenantId
             loggingFacade.debugS(callerName, "Delete users for tenant [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
-            tenantInfraService.deleteUsersByTenantId(tenant.getId(), span);
+            tenantInfraService.deleteUsersByTenantId(tenant.getId());
 
             // Delete sectors by tenant id
             loggingFacade.debugS(callerName, "Delete sectors for tenant [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
-            tenantInfraService.deleteSectorsByTenantId(tenant.getId(), span);
+            tenantInfraService.deleteSectorsByTenantId(tenant.getId());
 
             // Delete organizations by tenant id
             loggingFacade.debugS(callerName, "Delete organizations for tenant [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
-            tenantInfraService.deleteOrganizationsByTenantId(tenant.getId(), span);
+            tenantInfraService.deleteOrganizationsByTenantId(tenant.getId());
 
             // Delete tenant
             loggingFacade.debugS(callerName, "Delete tenant [%s] itself", new Object[]{uid}, OtelContext.fromSpan(span));
-            Integer nbDeleted = tenantInfraService.deleteTenant(tenant.getId(), span);
+            Integer nbDeleted = tenantInfraService.deleteTenant(tenant.getId());
 
             // Create audit event
             generateTenantAuditEventAndPush(tenant, AuditAction.DELETE, Collections.emptyList());

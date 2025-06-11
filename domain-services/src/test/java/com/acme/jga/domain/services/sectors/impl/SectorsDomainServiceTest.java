@@ -66,18 +66,18 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).parentUid(parentUUID).build();
 
         // WHEN
-        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any())).thenReturn(tenant);
+        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean()))
                 .thenReturn(organization);
         Mockito.when(sectorsInfraServiceImpl.existsByCode(Mockito.any())).thenReturn(Optional.empty());
-        Mockito.when(sectorFind.byTenantOrgAndUid(Mockito.anyString(), Mockito.any(), Mockito.eq(parentUUID), Mockito.any())).thenReturn(parentSector);
-        Mockito.when(sectorsInfraServiceImpl.createSector(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(sectorFind.byTenantOrgAndUid(Mockito.anyString(), Mockito.any(), Mockito.eq(parentUUID))).thenReturn(parentSector);
+        Mockito.when(sectorsInfraServiceImpl.createSector(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(compositeId);
-        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        CompositeId sectorCompId = sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null);
+        CompositeId sectorCompId = sectorCreate.execute(tenant.getUid(), organization.getUid(), sector);
         assertNotNull(sectorCompId);
     }
 
@@ -90,13 +90,13 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
+        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector));
     }
 
     @Test
@@ -108,14 +108,14 @@ public class SectorsDomainServiceTest {
                 .root(false).tenantId(tenant.getId()).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any()))
+        Mockito.when(tenantFind.byUid(Mockito.any())).thenReturn(tenant);
+        Mockito.when(organizationFind.byTenantIdAndUid(Mockito.any(), Mockito.any(), Mockito.anyBoolean()))
                 .thenThrow(new WrappedFunctionalException(new FunctionalException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), null,
                         FunctionalErrorsTypes.TENANT_NOT_FOUND.name())));
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
+        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector));
     }
 
     private Tenant mockTenant() {

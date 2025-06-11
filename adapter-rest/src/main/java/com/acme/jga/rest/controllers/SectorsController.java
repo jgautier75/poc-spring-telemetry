@@ -29,7 +29,7 @@ public class SectorsController extends AbstractController {
     public ResponseEntity<UidDto> createSector(@PathVariable("tenantUid") String tenantUid,
                                                @PathVariable("orgUid") String orgUid,
                                                @RequestBody SectorDto sectorDto) throws FunctionalException {
-        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_SECTORS_CREATE", (span) -> sectorsPortService.createSector(tenantUid, orgUid, sectorDto, span));
+        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_SECTORS_CREATE", (span) -> sectorsPortService.createSector(tenantUid, orgUid, sectorDto));
         return new ResponseEntity<>(uidDto, HttpStatus.CREATED);
     }
 
@@ -38,7 +38,7 @@ public class SectorsController extends AbstractController {
                                                         @PathVariable("orgUid") String orgUid) throws FunctionalException {
         SectorDisplayDto sectorDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_SECTORS_LIST", (span) -> {
             loggingFacade.infoS(INSTRUMENTATION_NAME, "Find sectors for tenant [%s] and org [%s]", new Object[]{tenantUid, orgUid}, OtelContext.fromSpan(span));
-            return sectorsPortService.findSectors(tenantUid, orgUid, span);
+            return sectorsPortService.findSectors(tenantUid, orgUid);
         });
         return new ResponseEntity<>(sectorDisplayDto, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class SectorsController extends AbstractController {
                                              @PathVariable("orgUid") String orgUid,
                                              @PathVariable("sectorUid") String sectorUid,
                                              @RequestBody SectorDto sector) throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_SECTORS_UPDATE", (span) -> sectorsPortService.updateSector(tenantUid, orgUid, sectorUid, sector, span));
+        withSpan(INSTRUMENTATION_NAME, "API_SECTORS_UPDATE", (span) -> sectorsPortService.updateSector(tenantUid, orgUid, sectorUid, sector));
         return ResponseEntity.noContent().build();
     }
 
@@ -56,7 +56,7 @@ public class SectorsController extends AbstractController {
     public ResponseEntity<Void> deleteSector(@PathVariable("tenantUid") String tenantUid,
                                              @PathVariable("orgUid") String orgUid,
                                              @PathVariable("sectorUid") String sectorUid) throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_SECTORS_DELETE", (span) -> sectorsPortService.deleteSector(tenantUid, orgUid, sectorUid, span));
+        withSpan(INSTRUMENTATION_NAME, "API_SECTORS_DELETE", (span) -> sectorsPortService.deleteSector(tenantUid, orgUid, sectorUid));
         return ResponseEntity.noContent().build();
     }
 

@@ -9,7 +9,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,10 +27,10 @@ public class TenantFindImpl extends DomainFunction implements TenantFind {
     }
 
     @Override
-    public Tenant byUid(String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_FIND_UID", parentSpan, (span) -> {
+    public Tenant byUid(String uid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_FIND_UID", (span) -> {
             loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant by uid [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
-            Optional<Tenant> tenant = tenantInfraService.findTenantByUid(uid, span);
+            Optional<Tenant> tenant = tenantInfraService.findTenantByUid(uid);
             if (tenant.isEmpty()) {
                 throwWrappedException(FunctionalErrorsTypes.TENANT_NOT_FOUND.name(), "tenant_not_found_by_uid", new Object[]{uid});
             }

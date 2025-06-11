@@ -2,27 +2,26 @@ package com.acme.jga.infra.services.api.tenants;
 
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Tenant;
-import io.opentelemetry.api.trace.Span;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TenantInfraService {
-    CompositeId createTenant(Tenant tenant, Span parentSpan);
+    CompositeId createTenant(Tenant tenant);
 
-    Optional<Tenant> findTenantByUid(String uid, Span parentSpan);
+    Optional<Tenant> findTenantByUid(String uid);
 
-    boolean tenantExistsByCode(String code, Span parentSpan);
+    boolean tenantExistsByCode(String code);
 
-    List<Tenant> findAllTenants(Span parentSpan);
+    List<Tenant> findAllTenants();
 
-    Integer updateTenant(Tenant tenant, Span parentSpan);
+    Integer updateTenant(Tenant tenant);
 
-    Integer deleteUsersByTenantId(Long tenantId, Span parentSpan);
+    Integer deleteUsersByTenantId(Long tenantId);
 
-    Integer deleteOrganizationsByTenantId(Long tenantId, Span parentSpan);
+    Integer deleteOrganizationsByTenantId(Long tenantId);
 
-    Integer deleteTenant(Long tenantId, Span parentSpan);
+    Integer deleteTenant(Long tenantId);
 
-    Integer deleteSectorsByTenantId(Long tenantId, Span parentSpan);
+    Integer deleteSectorsByTenantId(Long tenantId);
 }

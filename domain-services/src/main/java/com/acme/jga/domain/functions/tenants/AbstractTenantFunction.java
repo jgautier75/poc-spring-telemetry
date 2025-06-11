@@ -24,6 +24,6 @@ public abstract class AbstractTenantFunction extends DomainFunction {
     protected String generateTenantAuditEventAndPush(Tenant tenant, AuditAction action, List<AuditChange> auditChanges) {
         AuditEvent auditEvent = createTenantAuditEvent(tenant.getUid(), tenant, action);
         auditEvent.setChanges(auditChanges);
-        return eventsInfraService.createEvent(auditEvent, null);
+        return eventsInfraService.createEvent(auditEvent);
     }
 }

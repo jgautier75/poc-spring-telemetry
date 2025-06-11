@@ -35,7 +35,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Base64;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TimeZone;
 
 public class UserSpiProvider implements UserLookupProvider, UserStorageProvider, CredentialInputValidator {
     private static final String AUTH_HEADER = "Authorization";

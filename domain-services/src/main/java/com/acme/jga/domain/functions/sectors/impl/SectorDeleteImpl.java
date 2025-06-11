@@ -15,7 +15,6 @@ import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,15 +42,15 @@ public class SectorDeleteImpl extends AbstractSectorFunction implements SectorDe
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String organizationUid, String sectorUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_DELETE", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
-            Sector rdbmsSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid, span);
+    public Integer execute(String tenantUid, String organizationUid, String sectorUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_DELETE", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false);
+            Sector rdbmsSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid);
             if (rdbmsSector.isRoot()) {
                 throwWrappedException(FunctionalErrorsTypes.SECTOR_ROOT_DELETE_NOT_ALLOWED.name(), "sector_root_delete_deny", new Object[]{sectorUid});
             }
-            generateSectorAuditEventAndPush(rdbmsSector, organization, tenant, AuditAction.DELETE, span, Collections.emptyList());
+            generateSectorAuditEventAndPush(rdbmsSector, organization, tenant, AuditAction.DELETE, Collections.emptyList());
             return sectorsInfraService.deleteSector(tenant.getId(), organization.getId(), rdbmsSector.getId());
         });
     }

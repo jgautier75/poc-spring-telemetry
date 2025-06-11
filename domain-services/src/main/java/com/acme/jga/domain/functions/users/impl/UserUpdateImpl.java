@@ -47,27 +47,27 @@ public class UserUpdateImpl extends AbstractUserFunction implements UserUpdate {
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String orgUid, User user, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_UPDATE", parentSpan, (span) -> {
+    public Integer execute(String tenantUid, String orgUid, User user) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_UPDATE", (span) -> {
             try {
-                Tenant tenant = tenantFind.byUid(tenantUid, span);
-                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
+                Tenant tenant = tenantFind.byUid(tenantUid);
+                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false);
                 Optional<User> rdbmsUser = ensureUserExists(user, span, tenant, org);
 
                 // Ensure email is not already in use
-                validateEmail(usersInfraService.emailUsed(user.getCredentials().getEmail(), span), rdbmsUser, FunctionalErrorsTypes.USER_EMAIL_ALREADY_USED, "user_email_used", user);
+                validateEmail(usersInfraService.emailUsed(user.getCredentials().getEmail()), rdbmsUser, FunctionalErrorsTypes.USER_EMAIL_ALREADY_USED, "user_email_used", user);
 
                 // Ensure login is not already in use
-                validateLogin(usersInfraService.loginUsed(user.getCredentials().getLogin(), span), rdbmsUser, FunctionalErrorsTypes.USER_LOGIN_ALREADY_USED, "user_login_used", user);
+                validateLogin(usersInfraService.loginUsed(user.getCredentials().getLogin()), rdbmsUser, FunctionalErrorsTypes.USER_LOGIN_ALREADY_USED, "user_login_used", user);
                 user.setId(rdbmsUser.get().getId());
                 user.setOrganizationId(rdbmsUser.get().getOrganizationId());
                 user.setTenantId(rdbmsUser.get().getTenantId());
 
                 // Update user
-                Integer nbUpdated = usersInfraService.updateUser(user, span);
+                Integer nbUpdated = usersInfraService.updateUser(user);
                 // Create user audit event
                 List<AuditChange> auditChanges = eventBuilderUser.buildAuditsChange(rdbmsUser.get(), user);
-                generateUserAuditEventAndPush(user, tenant, org, AuditAction.UPDATE, span, auditChanges);
+                generateUserAuditEventAndPush(user, tenant, org, AuditAction.UPDATE, auditChanges);
                 return nbUpdated;
             } catch (FunctionalException e) {
                 throw new WrappedFunctionalException(e);
@@ -90,7 +90,7 @@ public class UserUpdateImpl extends AbstractUserFunction implements UserUpdate {
     }
 
     private @NotNull Optional<User> ensureUserExists(User user, Span span, Tenant tenant, Organization org) throws FunctionalException {
-        Optional<User> rdbmsUser = usersInfraService.findByUid(tenant.getId(), org.getId(), user.getUid(), span);
+        Optional<User> rdbmsUser = usersInfraService.findByUid(tenant.getId(), org.getId(), user.getUid());
         if (rdbmsUser.isEmpty()) {
             throwWrappedException(FunctionalErrorsTypes.USER_NOT_FOUND.name(), "user_not_found", new Object[]{user.getUid()});
         }

@@ -13,7 +13,6 @@ import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.search.filtering.exceptions.ParsingException;
 import com.acme.jga.validation.ValidationException;
 import io.opentelemetry.api.metrics.LongCounter;
-import io.opentelemetry.api.metrics.LongCounterBuilder;
 import io.opentelemetry.api.metrics.MeterProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

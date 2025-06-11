@@ -6,7 +6,6 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class TenantListImpl extends DomainFunction implements TenantList {
     }
 
     @Override
-    public List<Tenant> execute(Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_FIND_ALL", parentSpan, tenantInfraService::findAllTenants);
+    public List<Tenant> execute() {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_FIND_ALL",(span) ->  tenantInfraService.findAllTenants());
     }
 }

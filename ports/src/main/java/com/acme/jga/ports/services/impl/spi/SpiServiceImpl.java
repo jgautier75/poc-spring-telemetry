@@ -8,7 +8,6 @@ import com.acme.jga.ports.dtos.spi.v1.UserInfosDto;
 import com.acme.jga.ports.services.api.spi.SpiService;
 import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.services.impl.user.UserPortServiceImpl;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +27,15 @@ public class SpiServiceImpl extends AbstractPortService implements SpiService {
     }
 
     @Override
-    public Optional<UserInfosDto> findByCriteria(String field, String value, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "PORT_SPI_FIND", parentSpan, (span) -> {
+    public Optional<UserInfosDto> findByCriteria(String field, String value) {
+        return processWithSpan(INSTRUMENTATION_NAME, "PORT_SPI_FIND", (span) -> {
             Optional<User> optDomainUser = Optional.empty();
             if ("email".equalsIgnoreCase(field)) {
-                optDomainUser = userFind.byEmail(value, null);
+                optDomainUser = userFind.byEmail(value);
             } else if ("uid".equalsIgnoreCase(field)) {
-                optDomainUser = userFind.byUid(value, null);
+                optDomainUser = userFind.byUid(value);
             } else if ("login".equalsIgnoreCase(field)) {
-                optDomainUser = userFind.byLogin(value, null);
+                optDomainUser = userFind.byLogin(value);
             }
             Optional<UserInfosDto> userInfosDto = Optional.empty();
             if (optDomainUser.isPresent()) {

@@ -11,7 +11,6 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,17 +30,17 @@ public class SectorFindImpl extends DomainFunction implements SectorFind {
     }
 
     @Override
-    public Sector byTenantOrgAndUid(String tenantUid, String organizationUid, String sectorUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_UID", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
-            return byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid, span);
+    public Sector byTenantOrgAndUid(String tenantUid, String organizationUid, String sectorUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_UID", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false);
+            return byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid);
         });
     }
 
     @Override
-    public Sector byTenantOrgAndUid(Long tenantId, Long organizationId, String sectorUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_ID", parentSpan, (span) -> {
+    public Sector byTenantOrgAndUid(Long tenantId, Long organizationId, String sectorUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_ID", (span) -> {
             Optional<Sector> sector = sectorsInfraService.findSectorByUid(tenantId, organizationId, sectorUid);
             if (sector.isEmpty()) {
                 throwWrappedException(FunctionalErrorsTypes.SECTOR_NOT_FOUND.name(), "sector_not_found", new Object[]{sectorUid});

@@ -7,7 +7,6 @@ import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public class OrganizationFilterImpl extends DomainFunction implements Organizati
     }
 
     @Override
-    public PaginatedResults<Organization> execute(Long tenantId, Span parentSpan, Map<String, Object> searchParams) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_FIND_ALL", parentSpan, (span) -> organizationsInfraService.filterOrganizations(tenantId, span, searchParams));
+    public PaginatedResults<Organization> execute(Long tenantId,Map<String, Object> searchParams) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_FIND_ALL", (span) -> organizationsInfraService.filterOrganizations(tenantId, searchParams));
     }
 }

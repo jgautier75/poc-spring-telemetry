@@ -10,7 +10,6 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 
 import java.util.List;
 
@@ -30,13 +29,12 @@ public class AbstractOrganizationFunction extends DomainFunction {
      *
      * @param org          Organization
      * @param tenant       Tenant
-     * @param span         Span
      * @param auditAction  Action
      * @param auditChanges Changes
      */
-    protected void generateOrgAuditEventAndPush(Organization org, Tenant tenant, Span span, AuditAction auditAction, List<AuditChange> auditChanges) {
+    protected void generateOrgAuditEventAndPush(Organization org, Tenant tenant, AuditAction auditAction, List<AuditChange> auditChanges) {
         AuditEvent orgAuditEvent = createOrganizationAuditEvent(org, tenant, auditAction, auditChanges);
-        eventsInfraServiceImpl.createEvent(orgAuditEvent, span);
+        eventsInfraServiceImpl.createEvent(orgAuditEvent);
     }
 
     /**
@@ -49,9 +47,9 @@ public class AbstractOrganizationFunction extends DomainFunction {
      * @param auditAction  Audit action
      * @param auditChanges Audit changes
      */
-    protected void generateSectorAuditEventAndPush(Organization org, Tenant tenant, Sector sector, Span span, AuditAction auditAction, List<AuditChange> auditChanges) {
+    protected void generateSectorAuditEventAndPush(Organization org, Tenant tenant, Sector sector, AuditAction auditAction, List<AuditChange> auditChanges) {
         AuditEvent sectorAuditEvent = createSectorAuditEvent(sector.getUid(), org, tenant, auditAction, auditChanges);
-        eventsInfraServiceImpl.createEvent(sectorAuditEvent, span);
+        eventsInfraServiceImpl.createEvent(sectorAuditEvent);
     }
 
 }

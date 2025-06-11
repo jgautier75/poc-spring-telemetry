@@ -24,7 +24,7 @@ public class SpiController extends AbstractController {
     @GetMapping(value = WebApiVersions.SpiResourceVersion.FIND_USER)
     public ResponseEntity<UserInfosDto> fetchUser(@RequestParam(value = "field", required = false) String field,
                                                   @RequestParam(value = "value", required = false) String value) throws FunctionalException {
-        Optional<UserInfosDto> optUser = withSpan(SpiController.class.getCanonicalName(), "SPI_FILTER", (span) -> spiService.findByCriteria(field, value, span));
+        Optional<UserInfosDto> optUser = withSpan(SpiController.class.getCanonicalName(), "SPI_FILTER", (span) -> spiService.findByCriteria(field, value));
         return optUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 

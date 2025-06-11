@@ -67,13 +67,13 @@ public class TenantDomainServiceTest {
         CompositeId cid = CompositeId.builder().id(1L).uid(UUID.randomUUID().toString()).build();
 
         // WHEN
-        Mockito.when(tenantInfraServiceImpl.tenantExistsByCode(Mockito.anyString(), Mockito.any())).thenReturn(false);
-        Mockito.when(tenantInfraServiceImpl.createTenant(Mockito.any(), Mockito.any())).thenReturn(cid);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
-        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(tenantInfraServiceImpl.tenantExistsByCode(Mockito.anyString())).thenReturn(false);
+        Mockito.when(tenantInfraServiceImpl.createTenant(Mockito.any())).thenReturn(cid);
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any())).thenReturn(UUID.randomUUID().toString());
 
         // THEN
-        CompositeId compositeId = tenantCreate.execute(tenant, null);
+        CompositeId compositeId = tenantCreate.execute(tenant);
         assertNotNull("Composite id not null", compositeId);
     }
 
@@ -83,11 +83,11 @@ public class TenantDomainServiceTest {
         Tenant tenant = mockTenant();
 
         // WHEN
-        Mockito.when(tenantInfraServiceImpl.tenantExistsByCode(Mockito.anyString(), Mockito.any())).thenReturn(true);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(tenantInfraServiceImpl.tenantExistsByCode(Mockito.anyString())).thenReturn(true);
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> tenantCreate.execute(tenant, null));
+        assertThrows(WrappedFunctionalException.class, () -> tenantCreate.execute(tenant));
     }
 
     @Test
@@ -96,13 +96,13 @@ public class TenantDomainServiceTest {
         Tenant tenant = mockTenant();
 
         // WHEN
-        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(tenantInfraServiceImpl.updateTenant(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(tenantFind.byUid(Mockito.any())).thenReturn(tenant);
+        Mockito.when(tenantInfraServiceImpl.updateTenant(Mockito.any())).thenReturn(1);
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        Integer nbUpdated = tenantUpdate.execute(tenant, null);
+        Integer nbUpdated = tenantUpdate.execute(tenant);
         assertEquals(1L, nbUpdated.longValue());
     }
 
@@ -112,16 +112,16 @@ public class TenantDomainServiceTest {
         Tenant tenant = mockTenant();
 
         // WHEN
-        Mockito.when(tenantFind.byUid(Mockito.any(), Mockito.any())).thenReturn(tenant);
-        Mockito.when(tenantInfraServiceImpl.deleteUsersByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(tenantInfraServiceImpl.deleteSectorsByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(tenantInfraServiceImpl.deleteOrganizationsByTenantId(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(tenantInfraServiceImpl.deleteTenant(Mockito.any(), Mockito.any())).thenReturn(1);
-        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any(), Mockito.any())).thenReturn(UUID.randomUUID().toString());
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(tenantFind.byUid(Mockito.any())).thenReturn(tenant);
+        Mockito.when(tenantInfraServiceImpl.deleteUsersByTenantId(Mockito.any())).thenReturn(1);
+        Mockito.when(tenantInfraServiceImpl.deleteSectorsByTenantId(Mockito.any())).thenReturn(1);
+        Mockito.when(tenantInfraServiceImpl.deleteOrganizationsByTenantId(Mockito.any())).thenReturn(1);
+        Mockito.when(tenantInfraServiceImpl.deleteTenant(Mockito.any())).thenReturn(1);
+        Mockito.when(eventsInfraServiceImpl.createEvent(Mockito.any())).thenReturn(UUID.randomUUID().toString());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        Integer nbDeleted = tenantDelete.execute(tenant.getUid(), null);
+        Integer nbDeleted = tenantDelete.execute(tenant.getUid());
         assertEquals(1L, nbDeleted.longValue());
     }
 

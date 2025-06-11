@@ -16,7 +16,6 @@ import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,18 +45,18 @@ public class SectorUpdateImpl extends AbstractSectorFunction implements SectorUp
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String organizationUid, String sectorUid, Sector sector, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_UPDATE", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
-            Sector rdbmsSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid, span);
+    public Integer execute(String tenantUid, String organizationUid, String sectorUid, Sector sector) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_UPDATE", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false);
+            Sector rdbmsSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sectorUid);
             sector.withId(rdbmsSector.getId()).withUid(rdbmsSector.getUid()).withTenantId(rdbmsSector.getTenantId()).withOrgId(rdbmsSector.getOrgId());
             if (sector.getParentUid() != null) {
-                Sector parentSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sector.getParentUid(), span);
+                Sector parentSector = sectorFind.byTenantOrgAndUid(tenant.getId(), organization.getId(), sector.getParentUid());
                 sector.setParentId(parentSector.getId());
             }
             List<AuditChange> auditChanges = eventBuilderSector.buildAuditsChange(rdbmsSector, sector);
-            generateSectorAuditEventAndPush(sector, organization, tenant, AuditAction.UPDATE, span, auditChanges);
+            generateSectorAuditEventAndPush(sector, organization, tenant, AuditAction.UPDATE, auditChanges);
             return sectorsInfraService.updateSector(tenant.getId(), organization.getId(), sector);
         });
     }

@@ -52,8 +52,8 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
     @Override
     @Transactional
     @Audited
-    public CompositeId execute(String tenantUid, String orgUid, User user, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_CREATE", parentSpan, (span) -> {
+    public CompositeId execute(String tenantUid, String orgUid, User user) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_CREATE", (span) -> {
             try {
                 String callerName = this.getClass().getName() + "-createUser";
                 // Ensure email is not already in use
@@ -63,8 +63,8 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
                 validateLogin(user, span, callerName);
 
                 // Find tenant and organization
-                Tenant tenant = tenantFind.byUid(tenantUid, span);
-                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
+                Tenant tenant = tenantFind.byUid(tenantUid);
+                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false);
                 loggingFacade.infoS(callerName, "Create user with login [%s] for tenant [%s] and organization [%s]",
                         new Object[]{user.getCredentials().getLogin(), tenant.getCode(), org.getCommons().getCode()}, OtelContext.fromSpan(span));
 
@@ -78,11 +78,11 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
 
                 List<AuditChange> auditChanges = createAuditChanges(user);
 
-                CompositeId userCompositeId = usersInfraService.createUser(user, span);
+                CompositeId userCompositeId = usersInfraService.createUser(user);
                 user.setUid(userCompositeId.getUid());
 
                 // Create user audit event
-                generateUserAuditEventAndPush(user, tenant, org, AuditAction.CREATE, span, auditChanges);
+                generateUserAuditEventAndPush(user, tenant, org, AuditAction.CREATE, auditChanges);
 
                 return userCompositeId;
             } catch (FunctionalException e) {
@@ -93,7 +93,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
 
     private void validateLogin(User user, Span span, String callerName) {
         loggingFacade.debugS(callerName, "Check if login [%s] is not already in use", new Object[]{user.getCredentials().getLogin()});
-        Optional<Long> loginAlreadyExist = usersInfraService.loginUsed(user.getCredentials().getLogin(), span);
+        Optional<Long> loginAlreadyExist = usersInfraService.loginUsed(user.getCredentials().getLogin());
         if (loginAlreadyExist.isPresent()) {
             throwWrappedException(FunctionalErrorsTypes.USER_LOGIN_ALREADY_USED.name(), "user_login_used", new Object[]{user.getCredentials().getEmail()});
         }
@@ -101,7 +101,7 @@ public class UserCreateImpl extends AbstractUserFunction implements UserCreate {
 
     private void validateEmail(User user, Span span, String callerName) {
         loggingFacade.debugS(callerName, "Check if email [%s] is not already in use", new Object[]{user.getCredentials().getEmail()});
-        Optional<Long> emailAlreadyExist = usersInfraService.emailUsed(user.getCredentials().getEmail(), span);
+        Optional<Long> emailAlreadyExist = usersInfraService.emailUsed(user.getCredentials().getEmail());
         if (emailAlreadyExist.isPresent()) {
             throwWrappedException(FunctionalErrorsTypes.USER_EMAIL_ALREADY_USED.name(), "user_email_used", new Object[]{user.getCredentials().getEmail()});
         }

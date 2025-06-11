@@ -1,7 +1,6 @@
 package com.acme.jga.domain.functions.sectors.api;
 
 import com.acme.jga.domain.model.v1.Sector;
-import io.opentelemetry.api.trace.Span;
 
 public interface SectorFind {
     /**
@@ -12,7 +11,7 @@ public interface SectorFind {
      * @param sectorUid       Sector uid
      * @return SEctor
      */
-    Sector byTenantOrgAndUid(String tenantUid, String organizationUid, String sectorUid, Span parentSpan);
+    Sector byTenantOrgAndUid(String tenantUid, String organizationUid, String sectorUid);
 
     /**
      * Find sector.
@@ -22,5 +21,5 @@ public interface SectorFind {
      * @param sectorUid      Sector external id
      * @return Sector
      */
-    Sector byTenantOrgAndUid(Long tenantId, Long organizationId, String sectorUid, Span parentSpan);
+    Sector byTenantOrgAndUid(Long tenantId, Long organizationId, String sectorUid);
 }

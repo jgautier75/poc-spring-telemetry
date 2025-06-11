@@ -4,7 +4,6 @@ import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDisplayDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantListDisplayDto;
-import io.opentelemetry.api.trace.Span;
 
 public interface TenantPortService {
 
@@ -14,7 +13,7 @@ public interface TenantPortService {
      * @param tenantDto Tenant payload
      * @return Generated uid
      */
-    UidDto createTenant(TenantDto tenantDto, Span parentSpan);
+    UidDto createTenant(TenantDto tenantDto);
 
     /**
      * Find tenant by uid.
@@ -22,14 +21,14 @@ public interface TenantPortService {
      * @param uid Tenant uid
      * @return Tenant
      */
-    TenantDisplayDto findTenantByUid(String uid, Span parentSpan);
+    TenantDisplayDto findTenantByUid(String uid);
 
     /**
      * List all tenants for diaplay.
      *
      * @return Tenants list
      */
-    TenantListDisplayDto findAllTenants(Span parentSpan);
+    TenantListDisplayDto findAllTenants();
 
     /**
      * Update tenant.
@@ -37,12 +36,12 @@ public interface TenantPortService {
      * @param uid       Tenant uid
      * @param tenantDto Tenant payload
      */
-    Integer updateTenant(String uid, TenantDto tenantDto, Span parentSpan);
+    Integer updateTenant(String uid, TenantDto tenantDto);
 
     /**
      * Delete tenant and related data.
      *
      * @param tenantUid Tenant uid
      */
-    Integer deleteTenant(String tenantUid, Span parentSpan);
+    Integer deleteTenant(String tenantUid);
 }

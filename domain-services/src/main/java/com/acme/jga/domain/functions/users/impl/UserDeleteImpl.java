@@ -14,7 +14,6 @@ import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,13 +39,13 @@ public class UserDeleteImpl extends AbstractUserFunction implements UserDelete {
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String orgUid, String userUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_DELETE", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
-            User user = userFind.byUid(tenantUid, orgUid, userUid, span);
-            Integer nbRowsDeleted = usersInfraService.deleteUser(tenant.getId(), org.getId(), user.getId(), span);
-            generateUserAuditEventAndPush(user, tenant, org, AuditAction.DELETE, span, Collections.emptyList());
+    public Integer execute(String tenantUid, String orgUid, String userUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_DELETE", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false);
+            User user = userFind.byUid(tenantUid, orgUid, userUid);
+            Integer nbRowsDeleted = usersInfraService.deleteUser(tenant.getId(), org.getId(), user.getId());
+            generateUserAuditEventAndPush(user, tenant, org, AuditAction.DELETE, Collections.emptyList());
             return nbRowsDeleted;
         });
     }

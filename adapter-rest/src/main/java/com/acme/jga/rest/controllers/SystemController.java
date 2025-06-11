@@ -59,7 +59,7 @@ public class SystemController extends AbstractController {
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.ERRORS_LIST)
     public ResponseEntity<SystemErrorList> listSystemErrors() throws FunctionalException {
-        SystemErrorList systemErrorList = withSpan(INSTRUMENTATION_NAME, "API_ERRORS_LIST", (span) -> systemPortService.listErrorFiles(appGenericConfig.getErrorPath(), span));
+        SystemErrorList systemErrorList = withSpan(INSTRUMENTATION_NAME, "API_ERRORS_LIST", (span) -> systemPortService.listErrorFiles(appGenericConfig.getErrorPath()));
         return ResponseEntity.ok(systemErrorList);
     }
 

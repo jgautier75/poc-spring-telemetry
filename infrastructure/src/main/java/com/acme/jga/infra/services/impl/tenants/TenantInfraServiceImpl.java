@@ -9,7 +9,6 @@ import com.acme.jga.infra.services.api.tenants.TenantInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,64 +31,64 @@ public class TenantInfraServiceImpl extends AbstractInfraService implements Tena
     }
 
     @Override
-    public CompositeId createTenant(Tenant tenant, Span parentSpan) {
+    public CompositeId createTenant(Tenant tenant) {
         return tenantsDao.createTenant(tenant.getCode(), tenant.getLabel());
     }
 
     @Override
-    public Optional<Tenant> findTenantByUid(String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_BY_UID", parentSpan, (span) -> {
+    public Optional<Tenant> findTenantByUid(String uid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_BY_UID", (span) -> {
             Optional<TenantDb> tenantDb = tenantsDao.findByUid(uid);
             return tenantDb.map(tenantsInfraConverter::tenantDbToTenantDomain);
         });
     }
 
     @Override
-    public boolean tenantExistsByCode(String code, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_EXISTS_BY_CODE", parentSpan,
+    public boolean tenantExistsByCode(String code) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_EXISTS_BY_CODE",
                 (span) -> tenantsDao.existsByCode(code));
     }
 
     @Override
-    public List<Tenant> findAllTenants(Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_ALL", parentSpan, (span) -> {
+    public List<Tenant> findAllTenants() {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_FIND_ALL", (span) -> {
             List<TenantDb> tenantDbs = tenantsDao.findAllTenants();
             return tenantDbs.stream().map(tenantsInfraConverter::tenantDbToTenantDomain).toList();
         });
     }
 
     @Override
-    public Integer updateTenant(Tenant tenant, Span parentSpan) {
+    public Integer updateTenant(Tenant tenant) {
         loggingFacade.debugS(this.getClass().getCanonicalName() + "-updateTenant", "tenant " + tenant.getCode() + " updated", null);
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_UPDATE", parentSpan, (span) ->
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_UPDATE", (span) ->
                 tenantsDao.updateTenant(tenant.getId(), tenant.getCode(), tenant.getLabel())
         );
     }
 
     @Override
-    public Integer deleteUsersByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_USERS", parentSpan, (span) ->
+    public Integer deleteUsersByTenantId(Long tenantId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_USERS", (span) ->
                 tenantsDao.deleteUsersByTenantId(tenantId)
         );
     }
 
     @Override
-    public Integer deleteOrganizationsByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_ORG", parentSpan, (span) ->
+    public Integer deleteOrganizationsByTenantId(Long tenantId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_ORG", (span) ->
                 tenantsDao.deleteOrganizationsByTenantId(tenantId)
         );
     }
 
     @Override
-    public Integer deleteTenant(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_TENANT", parentSpan, (span) ->
+    public Integer deleteTenant(Long tenantId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_TENANT", (span) ->
                 tenantsDao.deleteTenant(tenantId)
         );
     }
 
     @Override
-    public Integer deleteSectorsByTenantId(Long tenantId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_SECTORS", parentSpan, (span) ->
+    public Integer deleteSectorsByTenantId(Long tenantId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_TENANT_DELETE_SECTORS", (span) ->
                 tenantsDao.deleteSectorsByTenantId(tenantId)
         );
     }

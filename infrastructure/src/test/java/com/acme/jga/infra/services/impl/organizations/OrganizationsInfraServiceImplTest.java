@@ -11,7 +11,6 @@ import com.acme.jga.infra.dto.organizations.v1.OrganizationDb;
 import com.acme.jga.infra.utils.VoidSpan;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -58,10 +57,10 @@ public class OrganizationsInfraServiceImplTest {
         // WHEN
         Mockito.when(organizationsInfraConverter.convertOrganizationToOrganizationDb(Mockito.any())).thenReturn(orgDb);
         Mockito.when(organizationsDao.createOrganization(Mockito.any())).thenReturn(compositeId);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        CompositeId id = organizationsInfraServiceImpl.createOrganization(org, null);
+        CompositeId id = organizationsInfraServiceImpl.createOrganization(org);
         assertNotNull(id, "CompositeId not null");
     }
 
@@ -76,10 +75,10 @@ public class OrganizationsInfraServiceImplTest {
         // WHEN
         Mockito.when(organizationsDao.filterOrganizations(Mockito.any(), Mockito.any())).thenReturn(paginatedResults);
         Mockito.when(organizationsInfraConverter.convertOrganizationDbToOrganization(Mockito.any())).thenReturn(org);
-        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
+        Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        PaginatedResults<Organization> orgs = organizationsInfraServiceImpl.filterOrganizations(TENANT_ID, Span.current(), Collections.emptyMap());
+        PaginatedResults<Organization> orgs = organizationsInfraServiceImpl.filterOrganizations(TENANT_ID, Collections.emptyMap());
         assertNotNull(orgs, "Organizations list");
     }
 

@@ -5,7 +5,6 @@ import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.TracerProvider;
-import io.opentelemetry.context.Context;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,14 +23,17 @@ public class OpenTelemetryWrapper implements InitializingBean {
         this.sdkTracerProvider = provider;
     }
 
-    public Span withSpan(String instrumentationName, String spanName, Span parentSpan) {
+    /**
+     * Root span creation.
+     *
+     * @param instrumentationName
+     * @param spanName
+     * @return
+     */
+    public Span withSpan(String instrumentationName, String spanName) {
         Tracer tracer = sdkTracerProvider.get(instrumentationName);
-        Span span;
-        if (parentSpan != null) {
-            span = tracer.spanBuilder(spanName).setParent(Context.current().with(parentSpan)).startSpan();
-        } else {
-            span = tracer.spanBuilder(spanName).startSpan();
-        }
+        Span span = tracer.spanBuilder(spanName).startSpan();
+        span.makeCurrent();
         return span;
     }
 

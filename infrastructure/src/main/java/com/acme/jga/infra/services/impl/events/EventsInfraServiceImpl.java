@@ -11,7 +11,6 @@ import com.acme.jga.infra.services.impl.AbstractInfraService;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +34,8 @@ public class EventsInfraServiceImpl extends AbstractInfraService implements Even
     }
 
     @Override
-    public String createEvent(AuditEvent auditEvent, Span parentSpan) throws TechnicalException {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_CREATE", parentSpan, (span) -> {
+    public String createEvent(AuditEvent auditEvent) throws TechnicalException {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_CREATE", (span) -> {
             try {
                 AuditEventDb auditEventDb = auditEventsInfraConverter.convertAuditEventToDb(auditEvent, objectMapper);
                 return eventsDao.insertEvent(auditEventDb);
@@ -48,7 +47,7 @@ public class EventsInfraServiceImpl extends AbstractInfraService implements Even
 
     @Override
     public List<AuditEvent> findPendingEvents() {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_FIND_PENDING", null, (span) -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_FIND_PENDING",  (span) -> {
             List<AuditEventDb> auditEventDbs = eventsDao.findPendingEvents();
             return auditEventDbs.stream().map(auditEventsInfraConverter::convertAuditEventDbToDomain).toList();
         });
@@ -57,7 +56,7 @@ public class EventsInfraServiceImpl extends AbstractInfraService implements Even
     @Transactional
     @Override
     public Integer updateEventsStatus(List<String> uids, EventStatus eventStatus) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_UPDATE_STATUS", null, (span) -> eventsDao.updateEvents(uids, eventStatus));
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_EVENTS_UPDATE_STATUS", (span) -> eventsDao.updateEvents(uids, eventStatus));
     }
 
 

@@ -13,7 +13,6 @@ import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,12 +32,12 @@ public class UserFindImpl extends DomainFunction implements UserFind {
     }
 
     @Override
-    public User byUid(String tenantUid, String orgUid, String userUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_UID", parentSpan, (span) -> {
+    public User byUid(String tenantUid, String orgUid, String userUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_UID", (span) -> {
             try {
-                Tenant tenant = tenantFind.byUid(tenantUid, span);
-                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
-                Optional<User> user = usersInfraService.findByUid(tenant.getId(), org.getId(), userUid, span);
+                Tenant tenant = tenantFind.byUid(tenantUid);
+                Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false);
+                Optional<User> user = usersInfraService.findByUid(tenant.getId(), org.getId(), userUid);
                 if (user.isEmpty()) {
                     throwWrappedException(FunctionalErrorsTypes.USER_NOT_FOUND.name(), "user_not_found", new Object[]{userUid});
                 }
@@ -51,17 +50,17 @@ public class UserFindImpl extends DomainFunction implements UserFind {
     }
 
     @Override
-    public Optional<User> byEmail(String email, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_EMAIL", parentSpan, (span) -> usersInfraService.findByEmail(email, span));
+    public Optional<User> byEmail(String email) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_EMAIL", (span) -> usersInfraService.findByEmail(email));
     }
 
     @Override
-    public Optional<User> byLogin(String login, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_LOGIN", parentSpan, (span) -> usersInfraService.findByLogin(login, span));
+    public Optional<User> byLogin(String login) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_LOGIN", (span) -> usersInfraService.findByLogin(login));
     }
 
     @Override
-    public Optional<User> byUid(String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_EMAIL", parentSpan, (span) -> usersInfraService.findByUid(uid, span));
+    public Optional<User> byUid(String uid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FIND_EMAIL", (span) -> usersInfraService.findByUid(uid));
     }
 }

@@ -59,7 +59,7 @@ class TenantsControllerTest {
         String tenantJson = mapper.writeValueAsString(tenantDto);
 
         // WHEN
-        Mockito.when(tenantPortService.createTenant(Mockito.any(), Mockito.any())).thenReturn(uidDto);
+        Mockito.when(tenantPortService.createTenant(Mockito.any())).thenReturn(uidDto);
 
         // THEN
         mockMvc.perform(post("/api/v1/tenants")
@@ -84,7 +84,7 @@ class TenantsControllerTest {
         String tenantJson = mapper.writeValueAsString(tenantDto);
 
         // WHEN
-        Mockito.when(tenantPortService.updateTenant(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(tenantPortService.updateTenant(Mockito.any(), Mockito.any())).thenReturn(1);
 
         // THEN
         String targetUri = "/api/v1/tenants/" + uidDto.getUid();
@@ -105,7 +105,7 @@ class TenantsControllerTest {
         UidDto uidDto = new UidDto(UUID.randomUUID().toString());
 
         // WHEN
-        Mockito.when(tenantPortService.deleteTenant(Mockito.any(), Mockito.any())).thenReturn(1);
+        Mockito.when(tenantPortService.deleteTenant(Mockito.any())).thenReturn(1);
 
         // THEN
         String targetUri = "/api/v1/tenants/" + uidDto.getUid();

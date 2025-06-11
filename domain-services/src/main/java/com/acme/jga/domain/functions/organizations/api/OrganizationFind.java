@@ -1,7 +1,6 @@
 package com.acme.jga.domain.functions.organizations.api;
 
 import com.acme.jga.domain.model.v1.Organization;
-import io.opentelemetry.api.trace.Span;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ public interface OrganizationFind {
      * @param fetchSectors Fetch sectors
      * @return Organization
      */
-    Organization byTenantIdAndUid(Long tenantId, String orgUid, boolean fetchSectors, Span parentSpan);
+    Organization byTenantIdAndUid(Long tenantId, String orgUid, boolean fetchSectors);
 
     /**
      * Find organizations by external id list.

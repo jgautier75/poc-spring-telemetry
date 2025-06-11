@@ -32,7 +32,7 @@ public class TenantsController extends AbstractController {
             MediaType.APPLICATION_JSON_VALUE})
     @MetricPoint(alias = "API_TENANTS_CREATE", method = "POST", version = WebApiVersions.V1, regex = "^/(.*)/api/v1/tenants")
     public ResponseEntity<UidDto> createTenant(@RequestBody TenantDto tenantDto) throws FunctionalException {
-        UidDto uid = withSpan(INSTRUMENTATION_NAME, "TENANTS_CREATE", (span) -> tenantPortService.createTenant(tenantDto, span));
+        UidDto uid = withSpan(INSTRUMENTATION_NAME, "TENANTS_CREATE", (span) -> tenantPortService.createTenant(tenantDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(uid);
     }
 
@@ -42,14 +42,14 @@ public class TenantsController extends AbstractController {
             throws FunctionalException {
         TenantDisplayDto tenantDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_TENANTS_FIND", (span) -> {
             loggingFacade.infoS(INSTRUMENTATION_NAME, "Find tenant with uid [%s]", new Object[]{uid}, OtelContext.fromSpan(span));
-            return tenantPortService.findTenantByUid(uid, span);
+            return tenantPortService.findTenantByUid(uid);
         });
         return new ResponseEntity<>(tenantDisplayDto, HttpStatus.OK);
     }
 
     @GetMapping(value = WebApiVersions.TenantsResourceVersion.ROOT)
     public ResponseEntity<TenantListDisplayDto> listTenants() throws FunctionalException {
-        TenantListDisplayDto tenantListDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_TENANTS_LIST", (span) -> tenantPortService.findAllTenants(span));
+        TenantListDisplayDto tenantListDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_TENANTS_LIST", (span) -> tenantPortService.findAllTenants());
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tenantListDisplayDto);
     }
 
@@ -57,14 +57,14 @@ public class TenantsController extends AbstractController {
     public ResponseEntity<Void> updateTenantByUid(@PathVariable(name = "uid", required = true) String uid,
                                                   @RequestBody TenantDto tenantDto)
             throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_TENANTS_UPDATE", (span) -> tenantPortService.updateTenant(uid, tenantDto, span));
+        withSpan(INSTRUMENTATION_NAME, "API_TENANTS_UPDATE", (span) -> tenantPortService.updateTenant(uid, tenantDto));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(value = WebApiVersions.TenantsResourceVersion.WITH_UID)
     public ResponseEntity<Void> deleteTenantByUid(@PathVariable(name = "uid", required = true) String uid)
             throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_TENANTS_DELETE", (span) -> tenantPortService.deleteTenant(uid, span));
+        withSpan(INSTRUMENTATION_NAME, "API_TENANTS_DELETE", (span) -> tenantPortService.deleteTenant(uid));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

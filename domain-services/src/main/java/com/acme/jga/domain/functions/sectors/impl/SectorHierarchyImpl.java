@@ -10,7 +10,6 @@ import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.impl.sectors.SectorsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,11 +28,11 @@ public class SectorHierarchyImpl extends DomainFunction implements SectorHierarc
     }
 
     @Override
-    public Sector execute(String tenantUid, String organizationUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_HIERARCHY", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
-            return sectorsInfraServiceImpl.fetchSectorsWithHierarchy(tenant.getId(), organization.getId(), span);
+    public Sector execute(String tenantUid, String organizationUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_FIND_HIERARCHY", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false);
+            return sectorsInfraServiceImpl.fetchSectorsWithHierarchy(tenant.getId(), organization.getId());
         });
     }
 }

@@ -16,7 +16,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,12 +44,12 @@ public class OrganizationUpdateImpl extends AbstractOrganizationFunction impleme
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String orgUid, Organization organization, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_UPDATE", parentSpan, (span) -> {
+    public Integer execute(String tenantUid, String orgUid, Organization organization) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_UPDATE", (span) -> {
             String callerName = this.getClass().getName() + "-updateOrganization";
             loggingFacade.infoS(callerName, "Update organization [%s] of tenant [%s]", new Object[]{tenantUid, orgUid}, OtelContext.fromSpan(span));
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid, span);
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid);
             if (org.isEmpty()) {
                 throwWrappedException(FunctionalErrorsTypes.ORG_NOT_FOUND.name(), "org_not_found_by_uid", new Object[]{orgUid});
             }
@@ -70,7 +69,7 @@ public class OrganizationUpdateImpl extends AbstractOrganizationFunction impleme
                         organization.getCommons().getLabel(),
                         organization.getCommons().getCountry(),
                         organization.getCommons().getStatus());
-                generateOrgAuditEventAndPush(organization, tenant, span, AuditAction.UPDATE, auditChanges);
+                generateOrgAuditEventAndPush(organization, tenant, AuditAction.UPDATE, auditChanges);
             }
             return nbUpdated;
         });

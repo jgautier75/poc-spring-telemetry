@@ -15,7 +15,6 @@ import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,58 +40,58 @@ public class UsersInfraServiceImpl extends AbstractInfraService implements Users
 
     @Transactional
     @Override
-    public CompositeId createUser(User user, Span parentSpan) throws FunctionalException {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_CREATE", parentSpan, (span) -> {
+    public CompositeId createUser(User user) throws FunctionalException {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_CREATE", (span) -> {
             UserDb userDb = usersInfraConverter.convertUserToDb(user);
             return usersDao.createUser(userDb);
         });
     }
 
     @Override
-    public Optional<Long> emailUsed(String email, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_EMAIL_USED", parentSpan,
+    public Optional<Long> emailUsed(String email) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_EMAIL_USED",
                 (span) -> usersDao.emailExists(email));
     }
 
     @Override
-    public Optional<Long> loginUsed(String login, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_LOGIN_USED", parentSpan,
+    public Optional<Long> loginUsed(String login) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_LOGIN_USED",
                 (span) -> usersDao.loginExists(login));
     }
 
     @Override
-    public Integer updateUser(User user, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_UPDATE", parentSpan, (span) -> {
+    public Integer updateUser(User user) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_UPDATE", (span) -> {
             UserDb userDb = usersInfraConverter.convertUserToDb(user);
             return usersDao.updateUser(userDb);
         });
     }
 
     @Override
-    public Optional<User> findByUid(Long tenantId, Long orgId, String userUid, Span parentSpan) throws FunctionalException {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_UID", parentSpan, (span) -> {
+    public Optional<User> findByUid(Long tenantId, Long orgId, String userUid) throws FunctionalException {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_UID", (span) -> {
             Optional<UserDb> userDb = usersDao.findByUid(tenantId, orgId, userUid);
             return userDb.map(usersInfraConverter::convertUserDbToUser);
         });
     }
 
     @Override
-    public List<User> findUsers(Long tenantId, Long orgId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_LIST", parentSpan, (span) -> {
+    public List<User> findUsers(Long tenantId, Long orgId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_LIST", (span) -> {
             List<UserDb> users = usersDao.findUsers(tenantId, orgId);
             return users.stream().map(usersInfraConverter::convertUserDbToUser).toList();
         });
     }
 
     @Override
-    public Integer deleteUser(Long tenantId, Long orgId, Long userId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_DELETE", parentSpan, (span) -> usersDao.deleteUser(tenantId, orgId, userId));
+    public Integer deleteUser(Long tenantId, Long orgId, Long userId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_DELETE", (span) -> usersDao.deleteUser(tenantId, orgId, userId));
     }
 
     @Override
-    public PaginatedResults<UserDisplay> filterUsers(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FILTER", parentSpan, (span) -> {
-            PaginatedResults<UserDisplayDb> paginatedResults = usersDao.filterUsers(tenantId, orgId, searchParams, span);
+    public PaginatedResults<UserDisplay> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FILTER",  (span) -> {
+            PaginatedResults<UserDisplayDb> paginatedResults = usersDao.filterUsers(tenantId, orgId, searchParams);
             loggingFacade.infoS(INSTRUMENTATION_NAME, "Found [%s] users", new Object[]{paginatedResults.getNbResults()}, OtelContext.fromSpan(span));
             List<UserDisplay> users = paginatedResults.getResults().stream()
                     .map(usersInfraConverter::convertUserDisplayDbToUserDisplay)
@@ -108,24 +107,24 @@ public class UsersInfraServiceImpl extends AbstractInfraService implements Users
     }
 
     @Override
-    public Optional<User> findByUid(String userUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_UID", parentSpan, (span) -> {
+    public Optional<User> findByUid(String userUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_UID", (span) -> {
             Optional<UserDb> userDb = usersDao.findByUid(userUid);
             return userDb.map(usersInfraConverter::convertUserDbToUser);
         });
     }
 
     @Override
-    public Optional<User> findByEmail(String email, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_EMAIL", parentSpan, (span) -> {
+    public Optional<User> findByEmail(String email) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_EMAIL", (span) -> {
             Optional<UserDb> userDb = usersDao.findByEmail(email);
             return userDb.map(usersInfraConverter::convertUserDbToUser);
         });
     }
 
     @Override
-    public Optional<User> findByLogin(String login, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_LOGIN", parentSpan, (span) -> {
+    public Optional<User> findByLogin(String login) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_USERS_FIND_BY_LOGIN", (span) -> {
             Optional<UserDb> userDb = usersDao.findByLogin(login);
             return userDb.map(usersInfraConverter::convertUserDbToUser);
         });

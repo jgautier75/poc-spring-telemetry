@@ -15,7 +15,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,17 +37,17 @@ public class TenantCreateImpl extends AbstractTenantFunction implements TenantCr
     @Audited
     @Transactional
     @Override
-    public CompositeId execute(Tenant tenant, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_CREATE", parentSpan, (span) -> {
+    public CompositeId execute(Tenant tenant) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_CREATE", (span) -> {
             String callerName = this.getClass().getName() + "-createTenant";
-            boolean alreadyExist = tenantInfraService.tenantExistsByCode(tenant.getCode(), span);
+            boolean alreadyExist = tenantInfraService.tenantExistsByCode(tenant.getCode());
             if (alreadyExist) {
                 throwWrappedException(FunctionalErrorsTypes.TENANT_CODE_ALREADY_USED.name(), "tenant_code_already_used", new Object[]{tenant.getCode()});
             }
             if ("crash".equals(tenant.getCode())) {
                 throw new NullPointerException("Fake error");
             }
-            CompositeId compositeId = tenantInfraService.createTenant(tenant, span);
+            CompositeId compositeId = tenantInfraService.createTenant(tenant);
             tenant.setUid(compositeId.getUid());
             loggingFacade.infoS(callerName, "Created tenant [%s]", new Object[]{compositeId.getUid()}, OtelContext.fromSpan(span));
 

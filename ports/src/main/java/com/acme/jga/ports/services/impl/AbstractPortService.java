@@ -15,8 +15,8 @@ public abstract class AbstractPortService {
         this.openTelemetryWrapper = openTelemetryWrapper;
     }
 
-    protected <T> T processWithSpan(String instrumentationName, String operation, Span parentSpan, Function<Span, T> operationFunction) {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, operation + "-" + correlationKey(), parentSpan);
+    protected <T> T processWithSpan(String instrumentationName, String operation, Function<Span, T> operationFunction) {
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, operation + "-" + correlationKey());
         try {
             return operationFunction.apply(span);
         } catch (Exception e) {

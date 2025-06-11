@@ -1,7 +1,6 @@
 package com.acme.jga.domain.functions.sectors.api;
 
 import com.acme.jga.domain.model.v1.Sector;
-import io.opentelemetry.api.trace.Span;
 
 public interface SectorUpdate {
     /**
@@ -13,6 +12,6 @@ public interface SectorUpdate {
      * @param sector          Sector
      * @return Number of rows update
      */
-    Integer execute(String tenantUid, String organizationUid, String sectorUid, Sector sector, Span parentSpan);
+    Integer execute(String tenantUid, String organizationUid, String sectorUid, Sector sector);
 
 }

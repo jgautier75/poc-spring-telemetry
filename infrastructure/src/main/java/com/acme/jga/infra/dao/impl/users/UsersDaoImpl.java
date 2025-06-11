@@ -18,7 +18,6 @@ import com.acme.jga.jdbc.utils.DaoConstants;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -253,8 +252,8 @@ public class UsersDaoImpl extends AbstractJdbcDaoSupport implements UsersDao {
     }
 
     @Override
-    public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "USERS-DAO-FIND", parentSpan, (span) -> {
+    public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams) {
+        return processWithSpan(INSTRUMENTATION_NAME, "USERS-DAO-FIND", (span) -> {
             String baseQuery = super.getQuery("user_display");
             Map<String, Object> params = new HashMap<>();
             params.put(DaoConstants.P_TENANT_ID, tenantId);

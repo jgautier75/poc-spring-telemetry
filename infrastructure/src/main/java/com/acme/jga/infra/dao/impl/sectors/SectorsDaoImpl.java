@@ -11,7 +11,6 @@ import com.acme.jga.jdbc.utils.DaoConstants;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -41,8 +40,8 @@ public class SectorsDaoImpl extends AbstractJdbcDaoSupport implements SectorsDao
     }
 
     @Override
-    public List<SectorDb> findSectorsByOrgId(Long tenantId, Long orgId, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DAO_SECTORS_FIND_BY_ORG", parentSpan, (span) -> {
+    public List<SectorDb> findSectorsByOrgId(Long tenantId, Long orgId) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DAO_SECTORS_FIND_BY_ORG", (span) -> {
             String baseQuery = super.getQuery("sector_base");
             List<WhereClause> whereClauses = new ArrayList<>();
             whereClauses.add(WhereClause.builder()

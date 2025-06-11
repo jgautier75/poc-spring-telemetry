@@ -1,8 +1,8 @@
 package com.acme.jga.rest.controllers;
 
+import com.acme.jga.rest.annotations.MetricPoint;
 import com.acme.jga.rest.pojo.MetricDefinition;
 import com.acme.jga.rest.pojo.MetricsConfig;
-import com.acme.jga.rest.annotations.MetricPoint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

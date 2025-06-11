@@ -18,7 +18,6 @@ import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,25 +45,25 @@ public class SectorCreateImpl extends AbstractSectorFunction implements SectorCr
     @Override
     @Transactional
     @Audited
-    public CompositeId execute(String tenantUid, String organizationUid, Sector sector, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_CREATE", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false, span);
+    public CompositeId execute(String tenantUid, String organizationUid, Sector sector) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_SECTORS_CREATE", (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Organization organization = organizationFind.byTenantIdAndUid(tenant.getId(), organizationUid, false);
             Optional<Long> optSectorId = sectorsInfraService.existsByCode(sector.getCode());
             if (optSectorId.isPresent()) {
                 throwWrappedException(FunctionalErrorsTypes.SECTOR_CODE_ALREADY_USED.name(), "sector_code_already_used", new Object[]{sector.getCode()});
             }
             // Ensure parent sector exists
-            Sector parentSector = sectorFind.byTenantOrgAndUid(tenantUid, organizationUid, sector.getParentUid(), span);
+            Sector parentSector = sectorFind.byTenantOrgAndUid(tenantUid, organizationUid, sector.getParentUid());
             sector.setParentId(parentSector.getId());
 
             // Create sector
-            CompositeId sectorCompositeId = sectorsInfraService.createSector(tenant.getId(), organization.getId(), sector, span);
+            CompositeId sectorCompositeId = sectorsInfraService.createSector(tenant.getId(), organization.getId(), sector);
             sector.setUid(sectorCompositeId.getUid());
 
             // Create audit event
             List<AuditChange> auditChanges = List.of(new AuditChange("label", AuditOperation.ADD, null, sector.getLabel()));
-            generateSectorAuditEventAndPush(sector, organization, tenant, AuditAction.CREATE, span, auditChanges);
+            generateSectorAuditEventAndPush(sector, organization, tenant, AuditAction.CREATE, auditChanges);
 
             return sectorCompositeId;
         });

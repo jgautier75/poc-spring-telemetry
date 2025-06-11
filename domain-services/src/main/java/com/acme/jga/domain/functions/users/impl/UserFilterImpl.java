@@ -7,7 +7,6 @@ import com.acme.jga.infra.services.api.users.UsersInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public class UserFilterImpl extends DomainFunction implements UserFilter {
     }
 
     @Override
-    public PaginatedResults<UserDisplay> execute(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FILTER", parentSpan, (span) -> usersInfraService.filterUsers(tenantId, orgId, span, searchParams));
+    public PaginatedResults<UserDisplay> execute(Long tenantId, Long orgId, Map<String, Object> searchParams) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_USERS_FILTER", (span) -> usersInfraService.filterUsers(tenantId, orgId, searchParams));
     }
 }

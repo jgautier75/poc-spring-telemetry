@@ -13,7 +13,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,15 +37,15 @@ public class TenantUpdateImpl extends AbstractTenantFunction implements TenantUp
     }
 
     @Override
-    public Integer execute(Tenant tenant, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_UPDATE", parentSpan, (span) -> {
+    public Integer execute(Tenant tenant) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_TENANTS_UPDATE", (span) -> {
             String callerName = this.getClass().getName() + "-updateTenant";
             loggingFacade.infoS(callerName, "Updating tenant [%s] ", new Object[]{tenant.getUid()}, OtelContext.fromSpan(span));
             // Ensure tenant already exists
-            Tenant rbdmsTenant = tenantFind.byUid(tenant.getUid(), span);
+            Tenant rbdmsTenant = tenantFind.byUid(tenant.getUid());
             tenant.setId(rbdmsTenant.getId());
             // Tenant update
-            Integer nbRowsUpdated = tenantInfraService.updateTenant(tenant, span);
+            Integer nbRowsUpdated = tenantInfraService.updateTenant(tenant);
             // Create audit event
             List<AuditChange> auditChanges = eventBuilderTenant.buildAuditsChange(rbdmsTenant, tenant);
             generateTenantAuditEventAndPush(tenant, AuditAction.UPDATE, auditChanges);

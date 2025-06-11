@@ -11,7 +11,6 @@ import com.acme.jga.ports.dtos.system.v1.SystemSecretDto;
 import com.acme.jga.ports.dtos.system.v1.SystemSecretListDto;
 import com.acme.jga.ports.services.api.system.SystemPortService;
 import com.acme.jga.ports.services.impl.AbstractPortService;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,8 +29,8 @@ public class SystemPortServiceImpl extends AbstractPortService implements System
     }
 
     @Override
-    public SystemErrorList listErrorFiles(String path, Span parentSpan) {
-        List<SystemErrorFile> systemErrorFiles = processWithSpan(INSTRUMENTATION_NAME, "PORT_ERRORS_LIST", parentSpan, (span) -> systemService.listErrorFiles(path));
+    public SystemErrorList listErrorFiles(String path) {
+        List<SystemErrorFile> systemErrorFiles = processWithSpan(INSTRUMENTATION_NAME, "PORT_ERRORS_LIST", (span) -> systemService.listErrorFiles(path));
         SystemErrorList systemErrorList = new SystemErrorList();
         systemErrorList.setErrors(ofNullableList(systemErrorFiles).map(SystemConverter::convertSystemErrorFile).toList());
         return systemErrorList;

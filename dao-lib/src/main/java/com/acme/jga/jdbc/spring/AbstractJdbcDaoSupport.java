@@ -270,8 +270,8 @@ public abstract class AbstractJdbcDaoSupport extends JdbcDaoSupport {
         return columnName + " in (:" + paramName + ")";
     }
 
-    protected <T> T processWithSpan(String instrumentationName, String action, Span parentSpan, Function<Span, T> operation) {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey(), parentSpan);
+    protected <T> T processWithSpan(String instrumentationName, String action, Function<Span, T> operation) {
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, action + "-" + correlationKey());
         try {
             return operation.apply(span);
         } catch (Exception e) {

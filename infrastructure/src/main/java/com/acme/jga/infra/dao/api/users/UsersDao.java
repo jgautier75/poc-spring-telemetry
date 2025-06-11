@@ -4,7 +4,6 @@ import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.infra.dto.users.v1.UserDb;
 import com.acme.jga.infra.dto.users.v1.UserDisplayDb;
 import com.acme.jga.jdbc.dql.PaginatedResults;
-import io.opentelemetry.api.trace.Span;
 
 import java.util.List;
 import java.util.Map;
@@ -34,5 +33,5 @@ public interface UsersDao {
 
     List<UserDb> findUsers(Long tenantId, Long orgId);
 
-    PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams, Span parentSpan);
+    PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams);
 }

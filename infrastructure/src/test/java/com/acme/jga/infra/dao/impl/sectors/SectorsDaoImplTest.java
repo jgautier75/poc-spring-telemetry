@@ -113,7 +113,7 @@ class SectorsDaoImplTest {
                 () -> assertEquals(tenantCompositeId.getId(), rdbmsSector.get().getId(), "Tenant id match"));
 
         // Find sectors list
-        List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantCompositeId.getId(), orgCompositeId.getId(), null);
+        List<SectorDb> sectors = sectorsDao.findSectorsByOrgId(tenantCompositeId.getId(), orgCompositeId.getId());
         assertAll("Sectors",
                 () -> assertNotNull(sectors, "Sectors list"),
                 () -> assertEquals(1, sectors.size(), "1 sector in list"),

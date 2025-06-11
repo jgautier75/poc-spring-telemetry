@@ -1,7 +1,6 @@
 package com.acme.jga.ports.dtos.users.v1;
 
 import com.acme.jga.domain.model.v1.UserStatus;
-import com.acme.jga.ports.dtos.organizations.v1.OrganizationLightDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

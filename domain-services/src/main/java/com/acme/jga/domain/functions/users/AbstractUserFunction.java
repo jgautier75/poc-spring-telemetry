@@ -11,7 +11,6 @@ import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.infra.services.api.events.EventsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +31,11 @@ public abstract class AbstractUserFunction extends DomainFunction {
      * @param user   User
      * @param tenant Tenant
      * @param org    Organization
-     * @param span   Span
      */
-    protected void generateUserAuditEventAndPush(User user, Tenant tenant, Organization org, AuditAction auditAction, Span span, List<AuditChange> changes) {
+    protected void generateUserAuditEventAndPush(User user, Tenant tenant, Organization org, AuditAction auditAction, List<AuditChange> changes) {
         AuditEvent userAuditEvent = createUserAuditEvent(user, auditAction, tenant, org);
         userAuditEvent.setChanges(changes);
-        eventsInfraService.createEvent(userAuditEvent, span);
+        eventsInfraService.createEvent(userAuditEvent);
     }
 
     protected List<AuditChange> createAuditChanges(User user) {

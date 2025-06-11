@@ -9,7 +9,6 @@ import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,14 +28,14 @@ public class OrganizationFindImpl extends DomainFunction implements Organization
     }
 
     @Override
-    public Organization byTenantIdAndUid(Long tenantId, String orgUid, boolean fetchSectors, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_FIND_UID", parentSpan, (span) -> {
-            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenantId, orgUid, span);
+    public Organization byTenantIdAndUid(Long tenantId, String orgUid, boolean fetchSectors) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_FIND_UID", (span) -> {
+            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenantId, orgUid);
             if (org.isEmpty()) {
                 throwWrappedException(FunctionalErrorsTypes.ORG_NOT_FOUND.name(), "org_not_found_by_uid", new Object[]{orgUid});
             }
             if (fetchSectors) {
-                Sector sector = sectorsInfraService.fetchSectorsWithHierarchy(tenantId, org.get().getId(), span);
+                Sector sector = sectorsInfraService.fetchSectorsWithHierarchy(tenantId, org.get().getId());
                 org.get().setSector(sector);
             }
             return org.get();

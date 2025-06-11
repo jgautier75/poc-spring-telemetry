@@ -11,7 +11,6 @@ import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
 import com.acme.jga.infra.services.impl.AbstractInfraService;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,16 +34,16 @@ public class OrganizationsInfraServiceImpl extends AbstractInfraService implemen
 
     @Transactional
     @Override
-    public CompositeId createOrganization(Organization organization, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CREATE", parentSpan, (span) -> {
+    public CompositeId createOrganization(Organization organization) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CREATE", (span) -> {
             OrganizationDb orgDb = organizationsInfraConverter.convertOrganizationToOrganizationDb(organization);
             return organizationsDao.createOrganization(orgDb);
         });
     }
 
     @Override
-    public PaginatedResults<Organization> filterOrganizations(Long tenantId, Span parentSpan, Map<String, Object> searchParams) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_ALL", parentSpan, (span) -> {
+    public PaginatedResults<Organization> filterOrganizations(Long tenantId, Map<String, Object> searchParams) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_ALL", (span) -> {
             PaginatedResults<OrganizationDb> paginatedResults = organizationsDao.filterOrganizations(tenantId, searchParams);
             List<Organization> orgs = paginatedResults.getResults().stream()
                     .map(organizationsInfraConverter::convertOrganizationDbToOrganization)
@@ -60,8 +59,8 @@ public class OrganizationsInfraServiceImpl extends AbstractInfraService implemen
     }
 
     @Override
-    public Optional<Organization> findOrganizationByUid(Long tenantId, String uid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_BY_UID", parentSpan, (span) -> {
+    public Optional<Organization> findOrganizationByUid(Long tenantId, String uid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_FIND_BY_UID", (span) -> {
             OrganizationDb orgDb = organizationsDao.findOrganizationByTenantAndUid(tenantId, uid);
             return Optional.ofNullable(organizationsInfraConverter.convertOrganizationDbToOrganization(orgDb));
         });
@@ -74,8 +73,8 @@ public class OrganizationsInfraServiceImpl extends AbstractInfraService implemen
     }
 
     @Override
-    public Optional<Long> codeAlreadyUsed(String code, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CODE_ALREADY_USED", parentSpan, (span) -> organizationsDao.existsByCode(code));
+    public Optional<Long> codeAlreadyUsed(String code) {
+        return processWithSpan(INSTRUMENTATION_NAME, "INFRA_ORG_CODE_ALREADY_USED", (span) -> organizationsDao.existsByCode(code));
     }
 
     @Override

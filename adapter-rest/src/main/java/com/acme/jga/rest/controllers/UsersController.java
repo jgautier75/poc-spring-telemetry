@@ -32,7 +32,7 @@ public class UsersController extends AbstractController {
     public ResponseEntity<UidDto> createUser(@PathVariable("tenantUid") String tenantUid,
                                              @PathVariable(value = "orgUid") String orgUid,
                                              @RequestBody UserDto userDto) throws FunctionalException {
-        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_USERS_CREATE", (span) -> userPortService.createUser(tenantUid, orgUid, userDto, span));
+        UidDto uidDto = withSpan(INSTRUMENTATION_NAME, "API_USERS_CREATE", (span) -> userPortService.createUser(tenantUid, orgUid, userDto));
         return new ResponseEntity<>(uidDto, HttpStatus.CREATED);
     }
 
@@ -40,7 +40,7 @@ public class UsersController extends AbstractController {
     public ResponseEntity<Void> updateUser(@PathVariable("tenantUid") String tenantUid,
                                            @PathVariable("orgUid") String orgUid, @PathVariable("userUid") String userUid,
                                            @RequestBody UserDto userDto) throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_USERS_UPDATE", (span) -> userPortService.updateUser(tenantUid, orgUid, userUid, userDto, span));
+        withSpan(INSTRUMENTATION_NAME, "API_USERS_UPDATE", (span) -> userPortService.updateUser(tenantUid, orgUid, userUid, userDto));
         return ResponseEntity.noContent().build();
     }
 
@@ -54,7 +54,7 @@ public class UsersController extends AbstractController {
         SearchFilterDto searchFilterDto = new SearchFilterDto(searchFilter, pageSize, pageIndex, orderBy);
         UsersDisplayListDto users = withSpan(INSTRUMENTATION_NAME, "API_USERS_LIST", (span) -> {
             loggingFacade.infoS(INSTRUMENTATION_NAME, "Find users for tenant [%s], organization [%s], filter [%s]", new Object[]{tenantUid, orgUid, StringUtils.nvl(searchFilter)}, OtelContext.fromSpan(span));
-            return userPortService.filterUsers(tenantUid, orgUid, searchFilterDto, span);
+            return userPortService.filterUsers(tenantUid, orgUid, searchFilterDto);
         });
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -62,14 +62,14 @@ public class UsersController extends AbstractController {
     @GetMapping(WebApiVersions.UsersResourceVersion.WITH_UID)
     public ResponseEntity<UserDisplayDto> findUser(@PathVariable("tenantUid") String tenantUid,
                                                    @PathVariable("orgUid") String orgUid, @PathVariable("userUid") String userUid) throws FunctionalException {
-        UserDisplayDto userDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_USERS_FIND", (span) -> userPortService.findUser(tenantUid, orgUid, userUid, span));
+        UserDisplayDto userDisplayDto = withSpan(INSTRUMENTATION_NAME, "API_USERS_FIND", (span) -> userPortService.findUser(tenantUid, orgUid, userUid));
         return new ResponseEntity<>(userDisplayDto, HttpStatus.OK);
     }
 
     @DeleteMapping(WebApiVersions.UsersResourceVersion.WITH_UID)
     public ResponseEntity<Void> deleteUser(@PathVariable("tenantUid") String tenantUid,
                                            @PathVariable("orgUid") String orgUid, @PathVariable("userUid") String userUid) throws FunctionalException {
-        withSpan(INSTRUMENTATION_NAME, "API_USERS_DELETE", (span) -> userPortService.deleteUser(tenantUid, orgUid, userUid, span));
+        withSpan(INSTRUMENTATION_NAME, "API_USERS_DELETE", (span) -> userPortService.deleteUser(tenantUid, orgUid, userUid));
         return ResponseEntity.noContent().build();
     }
 

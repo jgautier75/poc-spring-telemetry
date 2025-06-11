@@ -14,7 +14,6 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.utils.otel.OtelContext;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,12 +39,12 @@ public class OrganizationDeleteImpl extends AbstractOrganizationFunction impleme
     @Override
     @Transactional
     @Audited
-    public Integer execute(String tenantUid, String orgUid, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_DELETE", parentSpan, (span) -> {
+    public Integer execute(String tenantUid, String orgUid) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_DELETE", (span) -> {
             String callerName = this.getClass().getName() + "-deleteOrganization";
             int totalDeleted = 0;
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid, span);
+            Tenant tenant = tenantFind.byUid(tenantUid);
+            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid);
             if (org.isEmpty()) {
                 throwWrappedException(FunctionalErrorsTypes.ORG_NOT_FOUND.name(), "org_not_found_by_uid", new Object[]{orgUid});
             }
@@ -67,7 +66,7 @@ public class OrganizationDeleteImpl extends AbstractOrganizationFunction impleme
             loggingFacade.debugS(callerName, "Total nb of records deleted: [%s]", new Object[]{totalDeleted}, OtelContext.fromSpan(span));
 
             // Create audit event
-            generateOrgAuditEventAndPush(org.get(), tenant, span, AuditAction.DELETE, Collections.emptyList());
+            generateOrgAuditEventAndPush(org.get(), tenant, AuditAction.DELETE, Collections.emptyList());
             return totalDeleted;
         });
     }

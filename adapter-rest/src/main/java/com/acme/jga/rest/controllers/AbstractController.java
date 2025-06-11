@@ -13,7 +13,7 @@ public abstract class AbstractController {
     }
 
     protected <T> T withSpan(String instrumentationName, String operationName, SpanOperation<T> operation) throws FunctionalException {
-        Span span = openTelemetryWrapper.withSpan(instrumentationName, operationName, null);
+        Span span = openTelemetryWrapper.withSpan(instrumentationName, operationName);
         try {
             return operation.execute(span);
         } catch (Exception e) {
