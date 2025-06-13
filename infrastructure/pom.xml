@@ -121,11 +121,6 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-api-incubator</artifactId>
-            <version>1.51.0-alpha</version>
-        </dependency>
     </dependencies>
 
 </project>
