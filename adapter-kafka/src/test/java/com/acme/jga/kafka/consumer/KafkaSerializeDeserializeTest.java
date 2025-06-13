@@ -35,7 +35,7 @@ import static org.awaitility.Awaitility.await;
 
 @Slf4j
 class KafkaSerializeDeserializeTest {
-    public static final String CONFLUENT_PLATFORM_VERSION = "7.7.1";
+    public static final String CONFLUENT_PLATFORM_VERSION = "7.9.1";
     private static final String KAFKA_NETWORK = "kafka-network";
     private static final int SCHEMA_REGISTRY_PORT = 8085;
     private static final int KAFKA_LISTENER_PORT = 19092;
