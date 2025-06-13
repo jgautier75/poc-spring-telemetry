@@ -896,6 +896,8 @@ Finally, spans are also visible in tempo:
 
 # Keycloak
 
+Latest Keycloak OpenApi: https://www.keycloak.org/docs-api/latest/rest-api/index.html
+
 Postman collection: https://documenter.getpostman.com/view/7294517/SzmfZHnd#0138123a-385c-4f66-8fb5-d26df30247d2
 
 Keycloak endpoints: http://localhost:7080/realms/myrealm/.well-known/openid-configuration
