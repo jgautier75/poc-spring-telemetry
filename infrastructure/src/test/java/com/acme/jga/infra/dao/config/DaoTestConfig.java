@@ -25,12 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-/*import io.opentelemetry.api.incubator.logs.ExtendedDefaultLoggerProvider;
-import io.opentelemetry.api.incubator.metrics.ExtendedDefaultMeterProvider;
-import io.opentelemetry.api.incubator.trace.ExtendedDefaultTracerProvider;*/
-import io.opentelemetry.api.incubator.logs.ExtendedDefaultLoggerProvider;
-import io.opentelemetry.api.incubator.metrics.ExtendedDefaultMeterProvider;
-import io.opentelemetry.api.incubator.trace.ExtendedDefaultTracerProvider;
+import io.opentelemetry.api.logs.LoggerProvider;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.TracerProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +112,7 @@ public class DaoTestConfig {
 
     @Bean
     public IOtelLogService otelLogService() {
-        return new OtelLogService(ExtendedDefaultLoggerProvider.getNoop());
+        return new OtelLogService(LoggerProvider.noop());
     }
 
     @Bean
@@ -126,13 +121,13 @@ public class DaoTestConfig {
     }
 
     @Bean
-    public TracerProvider tracerProvider(){
-        return ExtendedDefaultTracerProvider.getNoop();
+    public TracerProvider tracerProvider() {
+        return TracerProvider.noop();
     }
 
     @Bean
-    public MeterProvider meterProvider(){
-        return ExtendedDefaultMeterProvider.getNoop();
+    public MeterProvider meterProvider() {
+        return MeterProvider.noop();
     }
 
 }
