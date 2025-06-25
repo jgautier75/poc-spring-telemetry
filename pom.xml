@@ -12,14 +12,14 @@
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
 		<keycloak-version>26.2.5</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
-		<protobuf-version>3.25.5</protobuf-version>
-		<kafka-main-version>7.9.1</kafka-main-version>
+		<protobuf-version>4.29.3</protobuf-version>
+		<kafka-main-version>8.0.0</kafka-main-version>
 		<otel-version>1.51.0</otel-version>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.0</version>
+		<version>3.5.3</version>
 		<relativePath />
 	</parent>
 
