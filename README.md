@@ -61,7 +61,7 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | postgreSQL          | 17.5    | 5432    | Spring app storage                        |
 | keycloak            | 26.2.5  | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.5    | 5433    | Keycloak app storage                      |
-| openbao             | 2.2.2   | 8200    | OpenBao port                              |
+| openbao             | 2.3.1   | 8200    | OpenBao port                              |
 | akhq                | 0.25.1  | 8086    | GUI for kafka (topics, consumers, ...)    | 
 | zookeeper           | 7.9.2   | 2181    | Centralized service for kafka management  |
 | kafka               | 7.9.2   | 9092    | Kafka broker                              |
