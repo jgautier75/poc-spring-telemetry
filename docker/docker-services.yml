@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.2.5
+    image: quay.io/keycloak/keycloak:26.3.0
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
@@ -78,7 +78,7 @@ services:
       timeout: 2s
       retries: 15
   poc-st-akhq:
-    image: tchiotludo/akhq:0.25.1
+    image: tchiotludo/akhq:0.26.0
     restart: unless-stopped
     environment:
       AKHQ_CONFIGURATION: |
