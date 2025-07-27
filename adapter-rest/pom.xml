@@ -13,7 +13,7 @@
 
     <name>Adapter - REST</name>
     <properties>
-        <spring-boot-plugin-version>3.5.3</spring-boot-plugin-version>
+        <spring-boot-plugin-version>3.5.4</spring-boot-plugin-version>
     </properties>
 
     <build>

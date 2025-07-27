@@ -10,7 +10,7 @@
 		<java.version>23</java.version>
 		<lombok-version>1.18.38</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
-		<keycloak-version>26.3.1</keycloak-version>
+		<keycloak-version>26.3.2</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>4.29.3</protobuf-version>
 		<kafka-main-version>8.0.0</kafka-main-version>
@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.3</version>
+		<version>3.5.4</version>
 		<relativePath />
 	</parent>
 
