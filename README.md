@@ -80,7 +80,7 @@ docker-compose -f docker-services-jaeger.yml up -d
 | jaeger-all-in-one               | 1.71.0  | 16686             |
 | prometheus                      | v3.5.0  | 9090              |
 | grafana                         | 12.0.2  | 3000              |
-| opentelemetry-collector-contrib | 0.130.0 | 4317, 4318, 55679 |
+| opentelemetry-collector-contrib | 0.130.1 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
