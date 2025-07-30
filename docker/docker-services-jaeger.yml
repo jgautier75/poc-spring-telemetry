@@ -23,7 +23,7 @@ services:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
   poc-st-otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.130.1
+    image: otel/opentelemetry-collector-contrib:0.131.0
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml
