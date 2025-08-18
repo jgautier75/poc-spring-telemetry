@@ -114,7 +114,7 @@
 			<dependency>
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
-				<version>7.0.0</version>
+				<version>7.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -201,7 +201,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.confluent</groupId>
-			<artifactId>kafka-protobuf-serializer</artifactId>
+                <artifactId>kafka-protobuf-serializer</artifactId>
 			<version>${kafka-main-version}</version>
 		</dependency>
 		<dependency>
