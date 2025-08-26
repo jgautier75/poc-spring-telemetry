@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.3.2
+    image: quay.io/keycloak/keycloak:26.3.3
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
