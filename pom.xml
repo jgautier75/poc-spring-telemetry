@@ -10,7 +10,7 @@
 		<java.version>23</java.version>
 		<lombok-version>1.18.38</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
-		<keycloak-version>26.3.2</keycloak-version>
+		<keycloak-version>26.3.3</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>4.29.3</protobuf-version>
 		<kafka-main-version>8.0.0</kafka-main-version>
@@ -99,12 +99,12 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>5.18.0</version>
+				<version>5.19.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
-				<version>5.18.0</version>
+				<version>5.19.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
