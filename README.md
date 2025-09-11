@@ -541,6 +541,7 @@ GCC installed:
 
 ```sh
 apt-get install build-essential
+apt-get install libz-dev
 ```
 
 To build a native image run the following command with "native" profile:

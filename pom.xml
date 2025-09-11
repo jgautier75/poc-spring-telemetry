@@ -8,12 +8,14 @@
 	<packaging>pom</packaging>
 	<properties>
 		<java.version>23</java.version>
-		<lombok-version>1.18.38</lombok-version>
+		<lombok-version>1.18.40</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
 		<keycloak-version>26.3.3</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>4.29.3</protobuf-version>
 		<kafka-main-version>8.0.0</kafka-main-version>
+        <kafka-clients-version>4.1.0</kafka-clients-version>
+        <jackson-blackbird-version>2.20.0</jackson-blackbird-version>
 		<otel-version>1.51.0</otel-version>
 	</properties>
 	<parent>
