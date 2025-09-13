@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   poc-st-openbao:
-    image: quay.io/openbao/openbao:2.3.2
+    image: quay.io/openbao/openbao:2.4.1
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       OPENBAO_SKIP_VERIFY: "true"
@@ -10,7 +10,7 @@ services:
     ports:
       - 8200:8200
   poc-st-app-storage:
-    image: postgres:17.5
+    image: postgres:17.6
     volumes:
       - "poc-st-app-pg-data:/var/lib/postgresql/data/pgdata"
     restart: always
@@ -20,7 +20,7 @@ services:
     ports:
       - 5432:5432
   poc-st-keycloak-storage:
-    image: postgres:17.5
+    image: postgres:17.6
     volumes:
       - "poc-st-keycloak-pg-data:/var/lib/postgresql/data"
     environment:
@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.3.3
+    image: quay.io/keycloak/keycloak:26.3.4
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage

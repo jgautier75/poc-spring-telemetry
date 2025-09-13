@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   poc-st-jaeger:
-    image: jaegertracing/all-in-one:1.72.0
+    image: jaegertracing/all-in-one:1.73.0
     ports:
       - "16686:16686"
       - "14250:14250"
@@ -23,7 +23,7 @@ services:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
   poc-st-otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.132.2
+    image: otel/opentelemetry-collector-contrib:0.135.0
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml
