@@ -95,7 +95,7 @@ services:
       - poc-st-kafka
       - poc-st-schema-registry
   poc-st-zookeeper:
-    image: confluentinc/cp-zookeeper:7.9.3
+    image: confluentinc/cp-zookeeper:7.9.4
     restart: unless-stopped
     ports:
       - "2181:2181"
@@ -111,7 +111,7 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: poc-st-zookeeper:2888:3888
   poc-st-kafka:
-    image: confluentinc/cp-kafka:7.9.3
+    image: confluentinc/cp-kafka:7.9.4
     restart: unless-stopped
     ports:
       - "9092:9092"
@@ -140,7 +140,7 @@ services:
     links:
       - poc-st-zookeeper
   poc-st-schema-registry:
-    image: confluentinc/cp-schema-registry:7.9.3
+    image: confluentinc/cp-schema-registry:7.9.4
     restart: unless-stopped
     ports:
       - "8085:8085"
