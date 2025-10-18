@@ -351,39 +351,41 @@ components:
       description: "User display"
       required:
         - "uid"
-        - "login"
-        - "email"
         - "firstName"
         - "lastName"
-        - "organization"
+        - "login"
+        - "email"
+        - "status"
       properties:
         uid:
           type: string
           description: "Unique identifier"
           nullable: false
+          example: "d521d4c9-ed3d-4671-b65c-59eb39f7d3aa"
         login:
           type: string
           description: "Login"
           nullable: false
+          example: "mhamilton"
         email:
           type: string
           description: "Email"
           nullable: false
+          example: "m.hamilton@nasa.gov"
         firstName:
           type: string
           description: "First name"
           nullable: false
+          example: "Margaret"
         lastName:
           type: string
           description: "Last name"
           nullable: false
-        middleName:
+          example: "HAMILTON"
+        status:
           type: string
-          description: "Last name"
+          description: "Status"
           nullable: false
-        organization:
-          type: object
-          $ref: "#/components/schemas/OrganizationLight"
     UsersList:
       type: object
       description: "Users list"
@@ -399,7 +401,7 @@ components:
           description: "Current page index"
         pageSize:
           type: integer
-          description: "Numner of results per page"
+          description: "Number of results per page"
         users:
           type: array
           items:
@@ -1204,8 +1206,8 @@ paths:
     get:
       tags:
         - "Users"
-      description: "List users"
-      summary: "List users"
+      description: "List users with or without filtering"
+      summary: "List users with or without filtering"
       security: []
       parameters:
         - name: uid
@@ -1266,8 +1268,12 @@ paths:
           in: query
           description: |
             Order by expression.
+            
             Use + sign for ascending sorting and - sign for descending sorting
+            
             User comma as multiple values separator
+            
+            example: +firstName,-lastName sorts by first name ascending and the by last name descending
       responses:
         '200':
           description: "Users list"
