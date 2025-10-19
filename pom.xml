@@ -10,13 +10,13 @@
 		<java.version>23</java.version>
 		<lombok-version>1.18.42</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
-		<keycloak-version>26.4.0</keycloak-version>
+		<keycloak-version>26.4.1</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>4.29.3</protobuf-version>
 		<kafka-main-version>8.0.0</kafka-main-version>
         <kafka-clients-version>4.1.0</kafka-clients-version>
         <jackson-blackbird-version>2.20.0</jackson-blackbird-version>
-		<otel-version>1.51.0</otel-version>
+		<otel-version>1.55.0</otel-version>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -89,6 +89,11 @@
 	</build>
 	<dependencyManagement>
 		<dependencies>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio-jvm</artifactId>
+                <version>3.16.2</version>
+            </dependency>
 			<dependency>
 				<groupId>io.opentelemetry</groupId>
 				<artifactId>opentelemetry-bom</artifactId>
@@ -99,7 +104,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.13.4</version>
+				<version>6.0.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -116,7 +121,7 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.33.0</version>
+				<version>5.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.zaxxer</groupId>
