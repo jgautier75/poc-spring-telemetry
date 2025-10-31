@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   poc-st-openbao:
-    image: quay.io/openbao/openbao:2.4.1
+    image: quay.io/openbao/openbao:2.4.3
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       OPENBAO_SKIP_VERIFY: "true"
@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.4.1
+    image: quay.io/keycloak/keycloak:26.4.2
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
