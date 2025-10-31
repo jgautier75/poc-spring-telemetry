@@ -10,10 +10,10 @@
 		<java.version>23</java.version>
 		<lombok-version>1.18.42</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
-		<keycloak-version>26.4.1</keycloak-version>
+		<keycloak-version>26.4.2</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
-		<protobuf-version>4.29.3</protobuf-version>
-		<kafka-main-version>8.0.0</kafka-main-version>
+		<protobuf-version>4.31.1</protobuf-version>
+		<kafka-main-version>8.1.0</kafka-main-version>
         <kafka-clients-version>4.1.0</kafka-clients-version>
         <jackson-blackbird-version>2.20.0</jackson-blackbird-version>
 		<otel-version>1.55.0</otel-version>
@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
+		<version>3.5.7</version>
 		<relativePath />
 	</parent>
 
@@ -41,7 +41,7 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
+                        <artifactId>maven-compiler-plugin</artifactId>
 					<version>3.14.1</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
@@ -63,7 +63,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.13</version>
+					<version>0.8.14</version>
 					<executions>
 						<execution>
 							<goals>
