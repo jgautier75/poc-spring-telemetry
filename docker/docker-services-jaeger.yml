@@ -9,7 +9,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
   poc-st-prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.6.0
+    image: prom/prometheus:v3.7.3
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
@@ -23,7 +23,7 @@ services:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
   poc-st-otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.137.0
+    image: otel/opentelemetry-collector-contrib:0.139.0
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml
