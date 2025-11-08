@@ -7,5 +7,5 @@ import io.opentelemetry.api.trace.Span;
 import java.util.Map;
 
 public interface UserFilter {
-    PaginatedResults<UserDisplay> execute(Long tenantId, Long orgId, Span parentSpan, Map<String, Object> searchParams);
+    PaginatedResults<UserDisplay> execute(String tenantUid, String orgUid, Span parentSpan, Map<String, Object> searchParams);
 }

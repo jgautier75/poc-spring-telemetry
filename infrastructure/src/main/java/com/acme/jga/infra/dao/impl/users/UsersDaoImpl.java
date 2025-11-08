@@ -254,7 +254,7 @@ public class UsersDaoImpl extends AbstractJdbcDaoSupport implements UsersDao {
 
     @Override
     public PaginatedResults<UserDisplayDb> filterUsers(Long tenantId, Long orgId, Map<String, Object> searchParams, Span parentSpan) {
-        return processWithSpan(INSTRUMENTATION_NAME, "USERS-DAO-FIND", parentSpan, (span) -> {
+        return processWithSpan(INSTRUMENTATION_NAME, "DAO-USERS-FIND", parentSpan, (span) -> {
             String baseQuery = super.getQuery("user_display");
             Map<String, Object> params = new HashMap<>();
             params.put(DaoConstants.P_TENANT_ID, tenantId);

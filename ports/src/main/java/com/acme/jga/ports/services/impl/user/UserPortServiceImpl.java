@@ -5,8 +5,6 @@ import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.functions.users.api.*;
 import com.acme.jga.domain.model.filtering.FilteringConstants;
 import com.acme.jga.domain.model.ids.CompositeId;
-import com.acme.jga.domain.model.v1.Organization;
-import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.domain.model.v1.User;
 import com.acme.jga.domain.model.v1.UserDisplay;
 import com.acme.jga.jdbc.dql.PaginatedResults;
@@ -37,8 +35,7 @@ import java.util.Map;
 @Service
 public class UserPortServiceImpl extends AbstractPortService implements UserPortService {
     private static final String INSTRUMENTATION_NAME = UserPortServiceImpl.class.getCanonicalName();
-    private final TenantFind tenantFind;
-    private final OrganizationFind organizationFind;
+
     private final UserCreate userCreate;
     private final UserUpdate userUpdate;
     private final UserDelete userDelete;
@@ -54,8 +51,6 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
                                OpenTelemetryWrapper openTelemetryWrapper, UserUpdate userUpdate, UserDelete userDelete,
                                UserFind userFind, UserFilter userFilter) {
         super(openTelemetryWrapper);
-        this.tenantFind = tenantFind;
-        this.organizationFind = organizationFind;
         this.userCreate = userCreate;
         this.userUpdate = userUpdate;
         this.userDelete = userDelete;
@@ -108,14 +103,10 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
     @Override
     public UsersDisplayListDto filterUsers(String tenantUid, String orgUid, SearchFilterDto searchFilter, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_FILTER", parentSpan, (span) -> {
-            // Ensure tenant exists
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            // Ensure organization exists
-            Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, false, span);
 
             // Search/filter users
             Map<String, Object> searchParams = buildSearchParams(searchFilter);
-            PaginatedResults<UserDisplay> paginatedResults = userFilter.execute(tenant.getId(), org.getId(), span, searchParams);
+            PaginatedResults<UserDisplay> paginatedResults = userFilter.execute(tenantUid, orgUid, span, searchParams);
 
             // Convert and return
             List<UserDisplayDto> lightUsers = new ArrayList<>();
