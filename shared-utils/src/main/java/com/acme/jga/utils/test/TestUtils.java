@@ -5,5 +5,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestUtils {
-    public static final String POSTGRESQL_VERSION = "postgres:17.5";
+    public static final String POSTGRESQL_VERSION = "postgres:17.6";
 }

@@ -35,7 +35,7 @@ import static org.awaitility.Awaitility.await;
 
 @Slf4j
 class KafkaSerializeDeserializeTest {
-    public static final String CONFLUENT_PLATFORM_VERSION = "7.9.1";
+    public static final String CONFLUENT_PLATFORM_VERSION = "7.9.4";
     private static final String KAFKA_NETWORK = "kafka-network";
     private static final int SCHEMA_REGISTRY_PORT = 8085;
     private static final int KAFKA_LISTENER_PORT = 19092;
@@ -93,8 +93,7 @@ class KafkaSerializeDeserializeTest {
     }
 
     private void listSchemaRegistry(String schemaRegistryBaseUrl) {
-        CachedSchemaRegistryClient cachedSchemaRegistryClient = new CachedSchemaRegistryClient(schemaRegistryBaseUrl, 10);
-        try {
+        try (CachedSchemaRegistryClient cachedSchemaRegistryClient = new CachedSchemaRegistryClient(schemaRegistryBaseUrl, 10)) {
             Collection<String> subjects = cachedSchemaRegistryClient.getAllSubjects();
             for (String subject : subjects) {
                 log.info("Subject [{}]", subject);

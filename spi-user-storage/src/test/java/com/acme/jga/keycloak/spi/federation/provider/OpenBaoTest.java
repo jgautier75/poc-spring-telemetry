@@ -29,7 +29,7 @@ public class OpenBaoTest {
         Network network = OpenBaoFactory.createNetwork("net-openbao");
 
         log.info("Create container");
-        GenericContainer openBaoContainer = OpenBaoFactory.createOpenBaoContainer(network, "2.2", exposedPort, token);
+        GenericContainer openBaoContainer = OpenBaoFactory.createOpenBaoContainer(network, "2.4.3", exposedPort, token);
 
         log.info("Start container");
         openBaoContainer.start();
