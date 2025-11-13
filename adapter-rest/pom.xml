@@ -63,10 +63,25 @@
             <id>native</id>
             <build>
                 <plugins>
+                    <!--<plugin>
+                        <groupId>org.cyclonedx</groupId>
+                        <artifactId>cyclonedx-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>makeAggregateBom</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>-->
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <version>0.11.3</version>
+                        <configuration>
+                            <debug>true</debug>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>build-native</id>
@@ -75,11 +90,12 @@
                                 </goals>
                                 <configuration>
                                     <buildArgs>
+                                        <arg>--enable-sbom=false</arg>
                                         <arg>-H:+UnlockExperimentalVMOptions</arg>
                                         <arg>-H:IncludeResources=.*properties$</arg>
                                         <arg>-H:ReflectionConfigurationFiles=./spring-native/reflect-config.json</arg>
                                         <arg>
-                                            --trace-class-initialization=org.apache.commons.logging.LogFactoryService,org.apache.commons.logging.LogFactory
+                                            &#45;&#45;trace-class-initialization=org.apache.commons.logging.LogFactoryService,org.apache.commons.logging.LogFactory
                                         </arg>
                                     </buildArgs>
                                 </configuration>

@@ -1,4 +1,4 @@
-FROM eclipse-temurin:23.0.2_7-jdk-alpine-3.21 AS customjre
+FROM eclipse-temurin:25.0.1_8-jdk-alpine-3.22 AS customjre
 ARG JAR_FILE
 
 WORKDIR /app

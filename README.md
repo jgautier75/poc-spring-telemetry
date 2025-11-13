@@ -32,7 +32,7 @@ Other modules:
 
 Standard REST application relying on:
 
-- Java 23 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
+- Java 25 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
 - Sprint boot (3.5.x)
 - PostgreSQL (17.x) for persistence
 - Liquibase for rdbms schema versions management
@@ -59,13 +59,13 @@ Use docker/setup_base.sh script to start the following "base" containers/service
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
 | postgreSQL          | 17.6    | 5432    | Spring app storage                        |
-| keycloak            | 26.3.4  | 7080    | Keycloak dev instance                     |
+| keycloak            | 26.4.5  | 7080    | Keycloak dev instance                     |
 | keycloak-postgreSQL | 17.6    | 5433    | Keycloak app storage                      |
-| openbao             | 2.4.1   | 8200    | OpenBao port                              |
+| openbao             | 2.4.3   | 8200    | OpenBao port                              |
 | akhq                | 0.26.0  | 8086    | GUI for kafka (topics, consumers, ...)    | 
-| zookeeper           | 7.9.2   | 2181    | Centralized service for kafka management  |
-| kafka               | 7.9.2   | 9092    | Kafka broker                              |
-| schema-registry     | 7.9.2   | 8085    | Schema registry (protobuf schemas storage |
+| zookeeper           | 7.9.4   | 2181    | Centralized service for kafka management  |
+| kafka               | 7.9.4   | 9092    | Kafka broker                              |
+| schema-registry     | 7.9.4   | 8085    | Schema registry (protobuf schemas storage |
 
 ## Docker - Jaeger
 
@@ -77,10 +77,10 @@ docker-compose -f docker-services-jaeger.yml up -d
 
 | Service                         | Version | Port              |
 |---------------------------------|---------|-------------------|
-| jaeger-all-in-one               | 1.73.0  | 16686             |
-| prometheus                      | v3.5.0  | 9090              |
-| grafana                         | 12.0.2  | 3000              |
-| opentelemetry-collector-contrib | 0.135.0 | 4317, 4318, 55679 |
+| jaeger-all-in-one               | 1.74.0  | 16686             |
+| prometheus                      | v3.7.3  | 9090              |
+| grafana                         | 12.2    | 3000              |
+| opentelemetry-collector-contrib | 0.139.0 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
@@ -515,7 +515,7 @@ Once project bas been compiled, run scripts/get-spring-boot-modules.sh:
 Parameters:
 
 - 1: Full path to spring-boot fat jar
-- 2: Jdk version (23)
+- 2: Jdk version (25)
 - 3: Temp directory for spring-boot app extraction
 - 4: Automatic modules: list of automatic modules, typically legacy libraries (multiple values separator is the comma)
 
@@ -556,6 +556,8 @@ Command above relies on https://graalvm.github.io/native-build-tools/latest/mave
 
 Plugin configuration example in webapi/pom.xml file
 
+**2025-11-13** : Upgrading to graalvm built on top of jdk 25, sbom generation must be disabled otherwise and error occurs during install phase (base_sbom.json file not found !)
+
 ```xml
 <profile>
     <id>native</id>
@@ -564,7 +566,7 @@ Plugin configuration example in webapi/pom.xml file
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.10.4</version>
+                <version>0.11.3</version>
                 <executions>
                     <execution>
                         <id>build-native</id>
@@ -573,6 +575,7 @@ Plugin configuration example in webapi/pom.xml file
                         </goals>
                         <configuration>
                             <buildArgs>
+                                <arg>--enable-sbom=false</arg>
                                 <arg>-H:+UnlockExperimentalVMOptions</arg>
                                 <arg>-H:IncludeResources=.*properties$</arg>
                                 <arg>-H:ReflectionConfigurationFiles=./spring-native/reflect-config.json</arg>
