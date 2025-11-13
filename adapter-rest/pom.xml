@@ -66,7 +66,7 @@
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <version>0.11.2</version>
+                        <version>0.11.3</version>
                         <executions>
                             <execution>
                                 <id>build-native</id>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.181</version>
+            <version>4.8.184</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
