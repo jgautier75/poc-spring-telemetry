@@ -15,7 +15,7 @@
 		<protobuf-version>4.31.1</protobuf-version>
 		<kafka-main-version>8.1.0</kafka-main-version>
         <kafka-clients-version>4.1.0</kafka-clients-version>
-        <jackson-blackbird-version>2.20.0</jackson-blackbird-version>
+        <jackson-blackbird-version>2.20.1</jackson-blackbird-version>
 		<otel-version>1.56.0</otel-version>
 	</properties>
 	<parent>
