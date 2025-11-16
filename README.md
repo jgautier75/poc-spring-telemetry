@@ -97,6 +97,12 @@ Open ports:
 - 3000: Grafana. User: admin, password: admin
 ````
 
+### Bulk Data Load
+
+To bulk create organizations and users, an [Jmeter](https://jmeter.apache.org/) script named DataFeeder is available in docs/jmeter folder.
+
+
+
 ## OpenBao & Kafka setup
 
 To initialize OpenBao and Kafka topics creation run the following ansible command.
