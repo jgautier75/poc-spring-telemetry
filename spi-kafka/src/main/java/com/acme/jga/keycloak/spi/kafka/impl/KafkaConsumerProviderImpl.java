@@ -22,9 +22,13 @@ import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.storage.StorageId;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.StreamSupport;
 
 /**
  * Kafka consumer provider implementation.
@@ -43,19 +47,19 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * Start kafka consumer.
      */
     public void startKafkaConsumer() {
-        // Start kafka consumer in a separate thread
-        // Consumer and polling must be defined in the same thread
-        // Check if a virtual thread can be useful or not (Thread.startVirtualThread())
-        new Thread(() -> {
-            LOGGER.debug("Start kafka consumer, lookup JpaConnectionProvider");
-            this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
-            kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
-            while (true) {
-                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer
-                        .poll(Duration.ofMillis(POLL_DURATION));
-                processRecords(consumerRecords);
-            }
-        }).start();
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            executor.submit(() -> {
+                this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
+                kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
+                while (true) {
+                    ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer
+                            .poll(Duration.ofMillis(POLL_DURATION));
+                    processRecords(consumerRecords);
+                }
+            });
+        } catch (Exception e) {
+            LOGGER.debug("Error starting Kafka Consumer", e);
+        }
     }
 
     /**
@@ -64,43 +68,46 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * @param consumerRecords Records
      */
     private void processRecords(ConsumerRecords<String, DynamicMessage> consumerRecords) {
-        for (ConsumerRecord<String, DynamicMessage> consumerRecord : consumerRecords) {
-            KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
-                try {
-                    JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
-                    Event.AuditEventMessage auditEventMessage = Event.AuditEventMessage.newBuilder().build()
-                            .getParserForType().parseFrom(consumerRecord.value().toByteArray());
-                    LOGGER.infof(
-                            "Processing audit event for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]",
-                            auditEventMessage.getScope().getTenantCode(),
-                            auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
-                            auditEventMessage.getTarget(),
-                            auditEventMessage.getAction(),
-                            auditEventMessage.getObjectUid());
-                    // Process only user audit events with update action (FirstName, LastName &
-                    // Email update)
-                    if (isUserUpdateEvent(auditEventMessage)) {
-                        // Ensure tenant (equals realm) exists otherwise skip message
-                        String tenantName = auditEventMessage.getScope().getTenantCode();
-                        LOGGER.infof("Search tenant [%s]", tenantName);
-                        List<String> entities = findRealm(jpaConnectionProvider, tenantName);
-                        if (!entities.isEmpty()) {
-                            updateUser(auditEventMessage, jpaConnectionProvider);
-                        } else {
-                            LOGGER.infof("Tenant [%s] not found", tenantName);
-                        }
-                    } else {
-                        LOGGER.infof("Event ignored for tenant [%s] , organization [%s], target [%s], action [%s], object [%s]", auditEventMessage.getScope().getTenantCode(),
-                                auditEventMessage.getScopeOrBuilder().getOrganizationCode(),
-                                auditEventMessage.getTarget(),
-                                auditEventMessage.getAction(),
-                                auditEventMessage.getObjectUid());
-                    }
-                } catch (InvalidProtocolBufferException e) {
-                    LOGGER.error(e);
+        List<Event.AuditEventMessage> userEvents = new ArrayList<>();
+        List<String> eventTenants = new ArrayList<>();
+        List<String> knownTenants = new ArrayList<>();
+
+        StreamSupport.stream(consumerRecords.records(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)).spliterator(), false).forEach(record -> {
+            try {
+                Event.AuditEventMessage auditEventMessage = Event.AuditEventMessage.newBuilder().build()
+                        .getParserForType().parseFrom(record.value().toByteArray());
+                if (isUserUpdateEvent(auditEventMessage)) {
+                    userEvents.add(auditEventMessage);
+                    eventTenants.add(auditEventMessage.getScope().getTenantCode());
                 }
-            });
-        }
+            } catch (InvalidProtocolBufferException e) {
+                LOGGER.error("Error parsing event", e);
+            }
+        });
+
+        eventTenants.forEach(tenantName -> {
+            if (!knownTenants.contains(tenantName)) {
+                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
+                    JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
+                    List<String> entities = findRealm(jpaConnectionProvider, tenantName);
+                    if (!entities.isEmpty()) {
+                        knownTenants.add(tenantName);
+                    } else {
+                        LOGGER.error("Unable to find any entity for tenant " + tenantName);
+                    }
+                });
+            }
+        });
+
+        userEvents.forEach(userEvent -> {
+            if (knownTenants.contains(userEvent.getScope().getTenantCode())) {
+                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
+                    JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
+                    updateUser(userEvent, jpaConnectionProvider);
+                });
+            }
+        });
+
     }
 
     /**
