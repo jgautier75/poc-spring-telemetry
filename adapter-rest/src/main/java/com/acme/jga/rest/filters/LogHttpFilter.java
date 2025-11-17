@@ -3,7 +3,7 @@ package com.acme.jga.rest.filters;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.logging.utils.CachedHttpServletRequest;
 import com.acme.jga.logging.utils.LogHttpUtils;
-import com.acme.jga.rest.config.AppDebuggingConfig;
+import com.acme.jga.rest.config.AppDebuggingProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class LogHttpFilter extends OncePerRequestFilter {
     private final ILoggingFacade loggingFacade;
-    private final AppDebuggingConfig appConfig;
+    private final AppDebuggingProperties appConfig;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)

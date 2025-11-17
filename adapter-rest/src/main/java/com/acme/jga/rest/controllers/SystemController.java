@@ -8,7 +8,7 @@ import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.dtos.dependencies.v1.DependencyListDto;
 import com.acme.jga.ports.dtos.system.v1.*;
 import com.acme.jga.ports.services.api.system.SystemPortService;
-import com.acme.jga.rest.config.AppGenericConfig;
+import com.acme.jga.rest.config.AppGenericProperties;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.versioning.WebApiVersions;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +24,14 @@ public class SystemController extends AbstractController {
     private final PublishSubscribeChannel eventAuditChannel;
     private final MicrometerPrometheus micrometerPrometheus;
     private final SystemPortService systemPortService;
-    private final AppGenericConfig appGenericConfig;
+    private final AppGenericProperties appGenericProperties;
 
-    public SystemController(OpenTelemetryWrapper openTelemetryWrapper, PublishSubscribeChannel eventAuditChannel, MicrometerPrometheus micrometerPrometheus, SystemPortService systemPortService, AppGenericConfig appGenericConfig) {
+    public SystemController(OpenTelemetryWrapper openTelemetryWrapper, PublishSubscribeChannel eventAuditChannel, MicrometerPrometheus micrometerPrometheus, SystemPortService systemPortService, AppGenericProperties appGenericProperties) {
         super(openTelemetryWrapper);
         this.eventAuditChannel = eventAuditChannel;
         this.micrometerPrometheus = micrometerPrometheus;
         this.systemPortService = systemPortService;
-        this.appGenericConfig = appGenericConfig;
+        this.appGenericProperties = appGenericProperties;
     }
 
     @PostMapping(value = WebApiVersions.SystemResourceVersion.KAFKA_WAKEUP)
@@ -59,31 +59,31 @@ public class SystemController extends AbstractController {
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.ERRORS_LIST)
     public ResponseEntity<SystemErrorList> listSystemErrors() throws FunctionalException {
-        SystemErrorList systemErrorList = withSpan(INSTRUMENTATION_NAME, "API_ERRORS_LIST", (span) -> systemPortService.listErrorFiles(appGenericConfig.getErrorPath(), span));
+        SystemErrorList systemErrorList = withSpan(INSTRUMENTATION_NAME, "API_ERRORS_LIST", (span) -> systemPortService.listErrorFiles(appGenericProperties.getErrorPath(), span));
         return ResponseEntity.ok(systemErrorList);
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.ERRORS_READ)
     public ResponseEntity<SystemErrorFileDto> getSystemError(@PathVariable("fileName") String fileName) {
-        SystemErrorFileDto systemErrorFileDto = systemPortService.readErrorFile(appGenericConfig.getErrorPath(), fileName);
+        SystemErrorFileDto systemErrorFileDto = systemPortService.readErrorFile(appGenericProperties.getErrorPath(), fileName);
         return ResponseEntity.ok(systemErrorFileDto);
     }
 
     @PostMapping(value = WebApiVersions.SystemResourceVersion.VAULT_STORE)
     public ResponseEntity<Void> storeSecret(@RequestBody SystemSecretDto systemSecretDto) {
-        systemPortService.storeSecret(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret(), systemSecretDto);
+        systemPortService.storeSecret(appGenericProperties.getVaultPath(), appGenericProperties.getVaultSecret(), systemSecretDto);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.VAULT_READ)
     public ResponseEntity<SystemSecretValueDto> readSecret(@RequestParam(value = "secretName") String secretName) {
-        String secretValue = systemPortService.readSecret(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret(), secretName);
+        String secretValue = systemPortService.readSecret(appGenericProperties.getVaultPath(), appGenericProperties.getVaultSecret(), secretName);
         return ResponseEntity.ok(SystemSecretValueDto.builder().value(secretValue).build());
     }
 
     @GetMapping(value = WebApiVersions.SystemResourceVersion.VAULT_LIST)
     public ResponseEntity<SystemSecretListDto> listSecrets() {
-        SystemSecretListDto systemSecretListDto = systemPortService.readAllSecrets(appGenericConfig.getVaultPath(), appGenericConfig.getVaultSecret());
+        SystemSecretListDto systemSecretListDto = systemPortService.readAllSecrets(appGenericProperties.getVaultPath(), appGenericProperties.getVaultSecret());
         return ResponseEntity.ok().body(systemSecretListDto);
     }
 

@@ -8,7 +8,7 @@ import com.acme.jga.domain.model.exceptions.FunctionalException;
 import com.acme.jga.domain.model.exceptions.WrappedFunctionalException;
 import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.logging.utils.LogHttpUtils;
-import com.acme.jga.rest.config.AppGenericConfig;
+import com.acme.jga.rest.config.AppGenericProperties;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.search.filtering.exceptions.ParsingException;
 import com.acme.jga.validation.ValidationException;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import static com.acme.jga.utils.lambdas.StreamUtil.ofNullableList;
 public class AppControllerAdvice implements InitializingBean {
     private static final String INSTRUMENTATION_NAME = AppControllerAdvice.class.getCanonicalName();
     private final ILoggingFacade loggingFacade;
-    private final AppGenericConfig appGenericConfig;
+    private final AppGenericProperties appGenericProperties;
     private final MicrometerPrometheus micrometerPrometheus;
     private final MeterProvider meterProvider;
     private LongCounter otelErrorsCounter;
@@ -120,9 +119,9 @@ public class AppControllerAdvice implements InitializingBean {
                     .build();
 
             loggingFacade.errorS(this.getClass().getName() + "-handleInternal", "Process error to %s - %s - %s",
-                    new Object[]{appGenericConfig.getErrorPath(), appGenericConfig.getModuleName(),
+                    new Object[]{appGenericProperties.getErrorPath(), appGenericProperties.getModuleName(),
                             idError.toString()});
-            LogHttpUtils.dumpToFile(loggingFacade, appGenericConfig.getErrorPath(), appGenericConfig.getModuleName(),
+            LogHttpUtils.dumpToFile(loggingFacade, appGenericProperties.getErrorPath(), appGenericProperties.getModuleName(),
                     idError.toString(), stack, request);
         } catch (Exception e) {
             loggingFacade.error(this.getClass().getName() + "-handleInternal", e);

@@ -4,8 +4,8 @@ import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.tenants.v1.TenantDto;
 import com.acme.jga.ports.services.api.tenant.TenantPortService;
-import com.acme.jga.rest.config.AppDebuggingConfig;
-import com.acme.jga.rest.config.AppGenericConfig;
+import com.acme.jga.rest.config.AppDebuggingProperties;
+import com.acme.jga.rest.config.AppGenericProperties;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,9 +38,9 @@ class TenantsControllerTest {
     @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
     @MockitoBean
-    private AppGenericConfig appGenericConfig;
+    private AppGenericProperties appGenericProperties;
     @MockitoBean
-    private AppDebuggingConfig appDebuggingConfig;
+    private AppDebuggingProperties appDebuggingProperties;
     @Autowired
     private MockMvc mockMvc;
     @Autowired

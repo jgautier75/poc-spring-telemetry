@@ -7,8 +7,8 @@ import com.acme.jga.ports.dtos.organizations.v1.OrganizationCommonsDto;
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.services.api.organization.OrganizationPortService;
-import com.acme.jga.rest.config.AppDebuggingConfig;
-import com.acme.jga.rest.config.AppGenericConfig;
+import com.acme.jga.rest.config.AppDebuggingProperties;
+import com.acme.jga.rest.config.AppGenericProperties;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,9 +40,9 @@ class OrganizationsControllerTest {
     @MockitoBean
     private ILoggingFacade loggingFacade;
     @MockitoBean
-    private AppGenericConfig appGenericConfig;
+    private AppGenericProperties appGenericProperties;
     @MockitoBean
-    private AppDebuggingConfig appDebuggingConfig;
+    private AppDebuggingProperties appDebuggingProperties;
     @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
     @Autowired

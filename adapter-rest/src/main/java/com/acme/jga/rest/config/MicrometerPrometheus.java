@@ -12,13 +12,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class MicrometerPrometheus implements InitializingBean {
     private final MeterRegistry meterRegistry;
-    private final AppGenericConfig appGenericConfig;
+    private final AppGenericProperties appGenericProperties;
     private final AtomicLong techErrorsCounter = new AtomicLong();
 
     @Override
     public void afterPropertiesSet() throws Exception {
         Gauge.builder("technical-errors", techErrorsCounter::get).description("Technical errors gauge")
-                .tag("module", appGenericConfig.getModuleName()).register(meterRegistry);
+                .tag("module", appGenericProperties.getModuleName()).register(meterRegistry);
     }
 
     public AtomicLong getTechErrorsCounter() {

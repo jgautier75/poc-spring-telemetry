@@ -27,12 +27,12 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class OpenTelemetryConfig {
 
-    private final AppGenericConfig appGenericConfig;
+    private final AppGenericProperties appGenericProperties;
 
     @Bean
     public Resource otelResource() {
         return Resource.getDefault().toBuilder()
-                .put("service.name", appGenericConfig.getModuleName())
+                .put("service.name", appGenericProperties.getModuleName())
                 .put("service.version", "1.0.0").build();
     }
 
@@ -40,9 +40,9 @@ public class OpenTelemetryConfig {
     @Primary
     public SdkTracerProvider tracerProvider(Resource otelResource) {
         OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
-                .setEndpoint(appGenericConfig.getOtlpEndpoint()).build();
+                .setEndpoint(appGenericProperties.getOtlpEndpoint()).build();
         return SdkTracerProvider.builder()
-                .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).setScheduleDelay(Duration.ofSeconds(appGenericConfig.getOtlpPushFrequency())).build())
+                .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).setScheduleDelay(Duration.ofSeconds(appGenericProperties.getOtlpPushFrequency())).build())
                 .setResource(otelResource)
                 .build();
     }
@@ -51,9 +51,9 @@ public class OpenTelemetryConfig {
     @Primary
     public SdkMeterProvider meterProvider(Resource otelResource) {
         OtlpGrpcMetricExporter metricExporter = OtlpGrpcMetricExporter.builder()
-                .setEndpoint(appGenericConfig.getOtlpEndpoint()).build();
+                .setEndpoint(appGenericProperties.getOtlpEndpoint()).build();
         return SdkMeterProvider.builder()
-                .registerMetricReader(PeriodicMetricReader.builder(metricExporter).setInterval(Duration.ofSeconds(appGenericConfig.getOtlpPushFrequency())).build())
+                .registerMetricReader(PeriodicMetricReader.builder(metricExporter).setInterval(Duration.ofSeconds(appGenericProperties.getOtlpPushFrequency())).build())
                 .setResource(otelResource)
                 .build();
     }
@@ -62,9 +62,9 @@ public class OpenTelemetryConfig {
     @Primary
     public SdkLoggerProvider loggerProvider(Resource otelResource) {
         OtlpGrpcLogRecordExporter logRecordExporter = OtlpGrpcLogRecordExporter.builder()
-                .setEndpoint(appGenericConfig.getOtlpEndpoint()).build();
+                .setEndpoint(appGenericProperties.getOtlpEndpoint()).build();
         return SdkLoggerProvider.builder()
-                .addLogRecordProcessor(BatchLogRecordProcessor.builder(logRecordExporter).setScheduleDelay(Duration.ofSeconds(appGenericConfig.getOtlpPushFrequency())).build())
+                .addLogRecordProcessor(BatchLogRecordProcessor.builder(logRecordExporter).setScheduleDelay(Duration.ofSeconds(appGenericProperties.getOtlpPushFrequency())).build())
                 .addResource(otelResource)
                 .build();
     }

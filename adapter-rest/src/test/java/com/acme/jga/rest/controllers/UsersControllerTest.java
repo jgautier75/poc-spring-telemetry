@@ -4,8 +4,8 @@ import com.acme.jga.logging.services.api.ILoggingFacade;
 import com.acme.jga.ports.dtos.shared.UidDto;
 import com.acme.jga.ports.dtos.users.v1.*;
 import com.acme.jga.ports.services.api.users.UserPortService;
-import com.acme.jga.rest.config.AppDebuggingConfig;
-import com.acme.jga.rest.config.AppGenericConfig;
+import com.acme.jga.rest.config.AppDebuggingProperties;
+import com.acme.jga.rest.config.AppGenericProperties;
 import com.acme.jga.rest.config.MicrometerPrometheus;
 import com.acme.jga.rest.config.OpenTelemetryTestConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +39,9 @@ class UsersControllerTest {
     @MockitoBean
     private ILoggingFacade loggingFacade;
     @MockitoBean
-    private AppGenericConfig appGenericConfig;
+    private AppGenericProperties appGenericProperties;
     @MockitoBean
-    private AppDebuggingConfig appDebuggingConfig;
+    private AppDebuggingProperties appDebuggingProperties;
     @MockitoBean
     private MicrometerPrometheus micrometerPrometheus;
     @Autowired

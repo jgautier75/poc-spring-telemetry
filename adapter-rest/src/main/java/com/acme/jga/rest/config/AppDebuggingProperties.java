@@ -8,15 +8,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "app.config")
+@ConfigurationProperties(prefix = "app.debugging")
 @AllArgsConstructor(access = AccessLevel.NONE)
 @NoArgsConstructor(access = AccessLevel.NONE)
 @Data
-public class AppGenericConfig {
-    private String moduleName;
-    private String errorPath;
-    private String otlpEndpoint;
-    private Long otlpPushFrequency;
-    private String vaultPath;
-    private String vaultSecret;
+public class AppDebuggingProperties {
+    private boolean forceDebugMode;
+    private String headerName;
+    private String debugValue;
 }
