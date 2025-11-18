@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 @Configuration
-@VaultPropertySource("dev-secrets/creds")
+@VaultPropertySource("${vault_path:dev-secrets/creds}")
 @Slf4j
 public class VaultSecrets {
     @Autowired
