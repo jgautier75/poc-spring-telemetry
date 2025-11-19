@@ -10,12 +10,12 @@ import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.jboss.logging.Logger;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
+import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.jpa.entities.UserEntity;
 import org.keycloak.models.utils.KeycloakModelUtils;
@@ -87,7 +87,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
 
         eventTenants.forEach(tenantName -> {
             if (!knownTenants.contains(tenantName)) {
-                KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
+                try (KeycloakSession session = keycloakSessionFactory.create()) {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
                     List<String> entities = findRealm(jpaConnectionProvider, tenantName);
                     if (!entities.isEmpty()) {
@@ -95,19 +95,27 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                     } else {
                         LOGGER.error("Unable to find any entity for tenant " + tenantName);
                     }
-                });
+                }
             }
         });
 
+        final List<UserEntity> userEntities = new ArrayList<>();
         userEvents.forEach(userEvent -> {
             if (knownTenants.contains(userEvent.getScope().getTenantCode())) {
                 KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
-                    updateUser(userEvent, jpaConnectionProvider);
+                    userEntities.add(updateUser(userEvent, jpaConnectionProvider));
                 });
             }
         });
 
+        KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
+            JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
+            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
+            tx.begin();
+            jpaConnectionProvider.getEntityManager().merge(userEntities);
+            tx.commit();
+        });
     }
 
     /**
@@ -130,11 +138,12 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * @param auditEventMessage     Audit event
      * @param jpaConnectionProvider Jpa provider
      */
-    private void updateUser(Event.AuditEventMessage auditEventMessage, JpaConnectionProvider jpaConnectionProvider) {
+    private UserEntity updateUser(Event.AuditEventMessage auditEventMessage, JpaConnectionProvider jpaConnectionProvider) {
         LOGGER.infof("Storage util, search user width id [%s]",
                 StorageId.externalId(auditEventMessage.getObjectUid()));
         UserEntity userEntity = jpaConnectionProvider.getEntityManager().find(UserEntity.class,
                 StorageId.externalId(auditEventMessage.getObjectUid()));
+
         LOGGER.infof("UserLocal [%s]", userEntity != null ? userEntity.getUsername() : "null");
         if (userEntity != null) {
             LOGGER.infof("Audit nb of changes [%s]", auditEventMessage.getChangesCount());
@@ -151,11 +160,8 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
-            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
-            tx.begin();
-            jpaConnectionProvider.getEntityManager().persist(userEntity);
-            tx.commit();
         }
+        return userEntity;
     }
 
     /**
