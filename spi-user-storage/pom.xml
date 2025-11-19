@@ -22,17 +22,6 @@
                         <includes>
                             <include>com.acme.jga.keycloak.spi.federation:*</include>
                             <include>com.acme.jga:crypto</include>
-                            <include>com.fasterxml.jackson.core:jackson-databind</include>
-                            <include>org.apache.kafka:kafka-clients</include>
-                            <include>com.google.protobuf:protobuf-java</include>
-                            <include>io.confluent:kafka-schema-serializer</include>
-                            <include>io.confluent:kafka-protobuf-serializer</include>
-                            <include>io.confluent:kafka-schema-registry-client</include>
-                            <include>io.confluent:kafka-protobuf-provider</include>
-                            <include>io.confluent:kafka-protobuf-types</include>
-                            <include>com.squareup.wire:wire-schema-jvm</include>
-                            <include>com.squareup.wire:wire-runtime-jvm</include>
-                            <include>org.jetbrains.kotlin:kotlin-stdlib</include>
                             <include>io.github.jopenlibs:vault-java-driver</include>
                         </includes>
                     </artifactSet>
@@ -118,21 +107,6 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-protobuf-types</artifactId>
             <version>${kafka-main-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.wire</groupId>
-            <artifactId>wire-schema-jvm</artifactId>
-            <version>5.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.wire</groupId>
-            <artifactId>wire-runtime-jvm</artifactId>
-            <version>5.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>2.1.21</version>
         </dependency>
         <dependency>
             <groupId>io.github.jopenlibs</groupId>
