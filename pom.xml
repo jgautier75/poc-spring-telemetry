@@ -7,21 +7,21 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<java.version>25</java.version>
+		<java.version>21</java.version>
 		<lombok-version>1.18.42</lombok-version>
 		<spring-cloud-vault-version>4.3.0</spring-cloud-vault-version>
-		<keycloak-version>26.4.4</keycloak-version>
+		<keycloak-version>26.4.5</keycloak-version>
 		<jboss-logging-version>3.6.1.Final</jboss-logging-version>
 		<protobuf-version>4.31.1</protobuf-version>
 		<kafka-main-version>8.1.0</kafka-main-version>
-        <kafka-clients-version>4.1.0</kafka-clients-version>
+        <kafka-clients-version>4.1.1</kafka-clients-version>
         <jackson-blackbird-version>2.20.1</jackson-blackbird-version>
 		<otel-version>1.56.0</otel-version>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.7</version>
+		<version>3.5.8</version>
 		<relativePath />
 	</parent>
 
@@ -110,7 +110,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
+                <artifactId>mockito-core</artifactId>
 				<version>5.20.0</version>
 			</dependency>
 			<dependency>
