@@ -63,10 +63,7 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
     @Override
     public UidDto createUser(String tenantUid, String orgUid, UserDto userDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", parentSpan, (span) -> {
-            ValidationResult validationResult = usersValidationEngine.validate(userDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            usersValidationEngine.validate(userDto);
             User user = usersConverter.convertUserDtoToDomain(userDto);
             CompositeId compositeId = userCreate.execute(tenantUid, orgUid, user, span);
             return new UidDto(compositeId.getUid());
@@ -77,10 +74,7 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
     public Integer updateUser(String tenantUid, String orgUid, String userUid, UserDto userDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_USERS_CREATE", parentSpan, (span) -> {
             userDto.setUid(userUid);
-            ValidationResult validationResult = usersValidationEngine.validate(userDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            usersValidationEngine.validate(userDto);
             User user = usersConverter.convertUserDtoToDomain(userDto);
             return userUpdate.execute(tenantUid, orgUid, user, span);
         });
@@ -109,8 +103,7 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
             PaginatedResults<UserDisplay> paginatedResults = userFilter.execute(tenantUid, orgUid, span, searchParams);
 
             // Convert and return
-            List<UserDisplayDto> lightUsers = new ArrayList<>();
-            paginatedResults.getResults().forEach(usr -> lightUsers.add(usersConverter.convertUserDisplayToDto(usr)));
+            List<UserDisplayDto> lightUsers = paginatedResults.getResults().stream().map(usersConverter::convertUserDisplayToDto).toList();
             return new UsersDisplayListDto(paginatedResults.getNbResults(), paginatedResults.getNbPages(), paginatedResults.getPageIndex(), paginatedResults.getPageSize(), lightUsers);
         });
     }

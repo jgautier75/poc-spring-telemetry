@@ -47,10 +47,7 @@ public class SectorsPortServiceImpl extends AbstractPortService implements Secto
     @Override
     public UidDto createSector(String tenantUid, String organizationUid, SectorDto sectorDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "SECTOR_PORT_CREATE", parentSpan, (span) -> {
-            ValidationResult validationResult = sectorsValidationEngine.validate(sectorDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            sectorsValidationEngine.validate(sectorDto);
             Sector sector = sectorsConverter.convertSectorDtoToDomain(sectorDto);
             CompositeId compositeId = sectorCreate.execute(tenantUid, organizationUid, sector, span);
             return UidDto.builder().uid(compositeId.getUid()).build();
@@ -68,10 +65,7 @@ public class SectorsPortServiceImpl extends AbstractPortService implements Secto
     @Override
     public Integer updateSector(String tenantUid, String organizationUid, String sectorUid, SectorDto sectorDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "SECTORS_PORT_UPDATE", parentSpan, (span) -> {
-            ValidationResult validationResult = sectorsValidationEngine.validate(sectorDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            sectorsValidationEngine.validate(sectorDto);
             Sector sector = sectorsConverter.convertSectorDtoToDomain(sectorDto);
             return sectorUpdate.execute(tenantUid, organizationUid, sectorUid, sector, span);
         });

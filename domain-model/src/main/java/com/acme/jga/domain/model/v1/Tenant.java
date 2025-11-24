@@ -29,8 +29,12 @@ public class Tenant implements IVersioned, Diffable<Tenant> {
 
     @Override
     public DiffResult<Tenant> diff(Tenant obj) {
-        return new DiffBuilder<>(this, obj, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("label", this.label, obj.label)
+        DiffBuilder<Tenant> builder = new DiffBuilder.Builder<Tenant>()
+                .setLeft(this)
+                .setRight(obj)
+                .setStyle(ToStringStyle.SHORT_PREFIX_STYLE)
+                .build();
+        return builder.append("label", this.label, obj.label)
                 .build();
     }
 }

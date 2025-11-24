@@ -66,8 +66,12 @@ public class Sector implements Diffable<Sector> {
 
     @Override
     public DiffResult<Sector> diff(Sector obj) {
-        return new DiffBuilder<>(this, obj, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("code", this.code, obj.code)
+        DiffBuilder<Sector> builder = new DiffBuilder.Builder<Sector>()
+                .setLeft(this)
+                .setRight(obj)
+                .setStyle(ToStringStyle.SHORT_PREFIX_STYLE)
+                .build();
+        return builder.append("code", this.code, obj.code)
                 .append("label", this.label, obj.label)
                 .append("parentUid", this.parentUid, obj.parentUid)
                 .build();

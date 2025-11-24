@@ -2,6 +2,7 @@ package com.acme.jga.ports.validation.organizations;
 
 import com.acme.jga.ports.dtos.organizations.v1.OrganizationDto;
 import com.acme.jga.validation.ValidationEngine;
+import com.acme.jga.validation.ValidationException;
 import com.acme.jga.validation.ValidationResult;
 import com.acme.jga.validation.ValidationUtils;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class OrganizationsValidationEngine implements ValidationEngine<Organizat
     private final ValidationUtils validationUtils;
 
     @Override
-    public ValidationResult validate(OrganizationDto organizationDto) {
+    public void validate(OrganizationDto organizationDto) {
         ValidationResult validationResult = ValidationResult.builder().success(true).build();
         // Validate payload
         if (validationUtils.validateNotNull(validationResult, "payload", organizationDto)
@@ -26,7 +27,9 @@ public class OrganizationsValidationEngine implements ValidationEngine<Organizat
             validationUtils.validateNotNull(validationResult, "commons.kind", organizationDto.getCommons().getKind());
             validationUtils.validateNotNull(validationResult, "commons.status", organizationDto.getCommons().getStatus());
         }
-        return validationResult;
+        if (!validationResult.isSuccess()) {
+            throw new ValidationException(validationResult.getErrors());
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package com.acme.jga.domain.model.v1;
 
-import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.api.IVersioned;
+import com.acme.jga.domain.model.api.MainApiVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,9 +34,13 @@ public class UserCredentials implements Serializable, IVersioned, Diffable<UserC
 
     @Override
     public DiffResult<UserCredentials> diff(UserCredentials obj) {
-        return new DiffBuilder<>(this, obj, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append(PREFIX + "login", this.login, obj.login)
-                .append(PREFIX + "email", this.email, obj.email)
+        DiffBuilder<UserCredentials> builder = new DiffBuilder.Builder<UserCredentials>()
+                .setLeft(this)
+                .setRight(obj)
+                .setStyle(ToStringStyle.SHORT_PREFIX_STYLE)
                 .build();
+        builder.append(PREFIX + "login", this.login, obj.login);
+        builder.append(PREFIX + "login", this.login, obj.login);
+        return builder.build();
     }
 }

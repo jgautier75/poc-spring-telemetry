@@ -65,10 +65,7 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
     @Override
     public UidDto createOrganization(String tenantUid, OrganizationDto organizationDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_CREATE", parentSpan, (orgSpan) -> {
-            ValidationResult validationResult = organizationsValidationEngine.validate(organizationDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            organizationsValidationEngine.validate(organizationDto);
             Organization org = organizationsConverter.convertOrganizationDtoToDomain(organizationDto);
             CompositeId compositeId = organizationCreate.execute(tenantUid, org, orgSpan);
             return new UidDto(compositeId.getUid());

@@ -12,7 +12,7 @@ public class UsersValidationEngine implements ValidationEngine<UserDto> {
     private final ValidationUtils validationUtils;
 
     @Override
-    public ValidationResult validate(UserDto userDto) {
+    public void validate(UserDto userDto) {
         ValidationResult validationResult = ValidationResult.builder().success(true).build();
 
         // Validate payload not null
@@ -29,8 +29,9 @@ public class UsersValidationEngine implements ValidationEngine<UserDto> {
             // Validate status
             validationUtils.validateNotNull(validationResult, "status", userDto.getStatus());
         }
-
-        return validationResult;
+        if (!validationResult.isSuccess()) {
+            throw new ValidationException(validationResult.getErrors());
+        }
     }
 
     private void validateCredentials(UserDto userDto, ValidationResult validationResult) {

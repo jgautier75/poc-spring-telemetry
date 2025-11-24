@@ -1,7 +1,7 @@
 package com.acme.jga.domain.model.v1;
 
-import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.api.IVersioned;
+import com.acme.jga.domain.model.api.MainApiVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +33,12 @@ public class UserCommons implements Serializable, IVersioned, Diffable<UserCommo
 
     @Override
     public DiffResult<UserCommons> diff(UserCommons obj) {
-        return new DiffBuilder<>(this, obj, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append(PREFIX + "firstName", this.firstName, obj.firstName)
+        DiffBuilder<UserCommons> builder = new DiffBuilder.Builder<UserCommons>()
+                .setLeft(this)
+                .setRight(obj)
+                .setStyle(ToStringStyle.SHORT_PREFIX_STYLE)
+                .build();
+        return builder.append(PREFIX + "firstName", this.firstName, obj.firstName)
                 .append(PREFIX + "lastName", this.lastName, obj.lastName)
                 .append(PREFIX + "middleName", this.middleName, obj.middleName)
                 .build();

@@ -1,7 +1,7 @@
 package com.acme.jga.domain.model.v1;
 
-import com.acme.jga.domain.model.api.MainApiVersion;
 import com.acme.jga.domain.model.api.IVersioned;
+import com.acme.jga.domain.model.api.MainApiVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,8 +37,12 @@ public class User implements Serializable, IVersioned, Diffable<User> {
 
     @Override
     public DiffResult<User> diff(User obj) {
-        return new DiffBuilder<>(this, obj, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("status", this.status, obj.status)
+        DiffBuilder<User> builder = new DiffBuilder.Builder<User>()
+                .setLeft(this)
+                .setRight(obj)
+                .setStyle(ToStringStyle.SHORT_PREFIX_STYLE)
+                .build();
+        return builder.append("status", this.status, obj.status)
                 .build();
     }
 }
