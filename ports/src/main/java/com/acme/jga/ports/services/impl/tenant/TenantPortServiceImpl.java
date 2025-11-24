@@ -56,10 +56,7 @@ public class TenantPortServiceImpl extends AbstractPortService implements Tenant
     @Override
     public UidDto createTenant(TenantDto tenantDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_TENANTS_CREATE", parentSpan, (span) -> {
-            ValidationResult validationResult = tenantsValidationEngine.validate(tenantDto);
-            if (!validationResult.isSuccess()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
+            tenantsValidationEngine.validate(tenantDto);
             Tenant tenant = tenantsConverter.tenantDtoToDomainTenant(tenantDto);
             CompositeId compositeId = tenantCreate.execute(tenant, null);
             return new UidDto(compositeId.getUid());
