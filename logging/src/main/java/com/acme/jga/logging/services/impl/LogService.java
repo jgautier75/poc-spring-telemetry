@@ -65,7 +65,7 @@ public class LogService implements ILogService {
 
     @Override
     public void debug(String message) {
-        if (LogHttpUtils.LOG_FLAG.get() != null && LogHttpUtils.LOG_FLAG.get()) {
+        if (LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
             LOGGER.debug(message);
         }
     }
@@ -156,7 +156,7 @@ public class LogService implements ILogService {
      */
     public void logBundleMessage(Level level, String message, Object[] params, String callerName) {
         String bundleMessage = buildMessage(true, message, params, callerName);
-        if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.LOG_FLAG.get() != null && LogHttpUtils.LOG_FLAG.get()) {
+        if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
             LOGGER.debug(bundleMessage);
         } else if (level == Level.ERROR && LOGGER.isErrorEnabled()) {
             LOGGER.error(bundleMessage);
@@ -180,7 +180,7 @@ public class LogService implements ILogService {
      */
     public void logSimpleMessage(Level level, String message, Object[] params, String callerName) {
         String bundleMessage = buildMessage(false, message, params, callerName);
-        if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.LOG_FLAG.get() != null && LogHttpUtils.LOG_FLAG.get()) {
+        if (level == Level.DEBUG && LOGGER.isDebugEnabled() && LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
             LOGGER.debug(bundleMessage);
         } else if (level == Level.ERROR && LOGGER.isErrorEnabled()) {
             LOGGER.error(bundleMessage);

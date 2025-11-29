@@ -25,13 +25,13 @@ import java.util.List;
 public class LogHttpUtils {
     public static final String CR_SEP = "\n     ";
     public static final String CR_SIMPLE = "\n";
+    public static final ThreadLocal<Boolean> APP_LOG_CTX = new ThreadLocal<>();
     public static final String ERROR_FILE_SEPARATOR = "_";
     public static final String ERROR_FILE_EXTENSION = ".log";
     public static final String ERROR_FILE_TEMPORAL_PATTERN = "yyyy-MM-dd-HH-mm-ss-SSS";
     public static final String OTEL_CORRELATION_KEY = "correlation-key";
     public static final String OTEL_TRACE_ID = "trace_id";
     public static final String OTEL_SPAN_ID = "span_id";
-    public static final ScopedValue<Boolean> LOG_FLAG = ScopedValue.newInstance();
 
     /**
      * Get error for application and id.
