@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -13,7 +15,11 @@ public class OtelContext {
     private String spanId;
 
     public static OtelContext fromSpan(Span span) {
-        return span != null ? new OtelContext(span.getSpanContext().getTraceId(), span.getSpanContext().getSpanId()) : null;
+        if (span == null || span.getSpanContext() == null) {
+            return new OtelContext(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        } else {
+            return new OtelContext(span.getSpanContext().getTraceId(), span.getSpanContext().getSpanId());
+        }
     }
 
 }

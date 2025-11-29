@@ -6,6 +6,18 @@ import io.opentelemetry.api.trace.Span;
 import java.util.List;
 
 public interface OrganizationFind {
+
+    /**
+     * Find organization by tenant uuid and organization uuid?
+     *
+     * @param tenantUuid   Tenant uuid
+     * @param orgUid       Organization uuid
+     * @param fetchSectors Fetch sectors
+     * @param parentSpan   Parent span
+     * @return Organization
+     */
+    Organization byTenantUuidAndUid(String tenantUuid, String orgUid, boolean fetchSectors, Span parentSpan);
+
     /**
      * Find organizations.
      *

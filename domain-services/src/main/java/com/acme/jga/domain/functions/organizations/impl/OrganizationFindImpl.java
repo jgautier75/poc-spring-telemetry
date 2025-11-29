@@ -2,9 +2,11 @@ package com.acme.jga.domain.functions.organizations.impl;
 
 import com.acme.jga.domain.functions.DomainFunction;
 import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
+import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.exceptions.FunctionalErrorsTypes;
 import com.acme.jga.domain.model.v1.Organization;
 import com.acme.jga.domain.model.v1.Sector;
+import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.infra.services.api.organizations.OrganizationsInfraService;
 import com.acme.jga.infra.services.api.sectors.SectorsInfraService;
 import com.acme.jga.logging.bundle.BundleFactory;
@@ -20,12 +22,32 @@ public class OrganizationFindImpl extends DomainFunction implements Organization
     private static final String INSTRUMENTATION_NAME = OrganizationFindImpl.class.getCanonicalName();
     private final OrganizationsInfraService organizationsInfraService;
     private final SectorsInfraService sectorsInfraService;
+    private final TenantFind tenantFind;
 
     public OrganizationFindImpl(OpenTelemetryWrapper openTelemetryWrapper, BundleFactory bundleFactory,
-                                OrganizationsInfraService organizationsInfraService, SectorsInfraService sectorsInfraService) {
+                                OrganizationsInfraService organizationsInfraService, SectorsInfraService sectorsInfraService,
+                                TenantFind tenantFind) {
         super(openTelemetryWrapper, bundleFactory);
         this.organizationsInfraService = organizationsInfraService;
         this.sectorsInfraService = sectorsInfraService;
+        this.tenantFind = tenantFind;
+    }
+
+
+    @Override
+    public Organization byTenantUuidAndUid(String tenantUuid, String orgUid, boolean fetchSectors, Span parentSpan) {
+        return processWithSpan(INSTRUMENTATION_NAME, "DOMAIN_ORGS_FIND_UID", parentSpan, (span) -> {
+            Tenant tenant = tenantFind.byUid(tenantUuid, span);
+            Optional<Organization> org = organizationsInfraService.findOrganizationByUid(tenant.getId(), orgUid, span);
+            if (org.isEmpty()) {
+                throwWrappedException(FunctionalErrorsTypes.ORG_NOT_FOUND.name(), "org_not_found_by_uid", new Object[]{orgUid});
+            }
+            if (fetchSectors) {
+                Sector sector = sectorsInfraService.fetchSectorsWithHierarchy(tenant.getId(), org.get().getId(), span);
+                org.get().setSector(sector);
+            }
+            return org.get();
+        });
     }
 
     @Override

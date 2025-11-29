@@ -97,7 +97,7 @@ public class UsersInfraServiceImpl extends AbstractInfraService implements Users
             List<UserDisplay> users = paginatedResults.getResults().stream()
                     .map(usersInfraConverter::convertUserDisplayDbToUserDisplay)
                     .toList();
-            return new PaginatedResults<UserDisplay>(
+            return new PaginatedResults<>(
                     paginatedResults.getNbResults(),
                     paginatedResults.getNbPages(),
                     users,

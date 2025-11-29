@@ -10,11 +10,11 @@ public interface OrganizationFilter {
     /**
      * Filter organizations.
      *
-     * @param tenantId Tenant internal id
+     * @param tenantUuid Tenant external id
      * @param parentSpan OpenTelemetry Parent Span
      * @param searchParams Search parameters
      * @return Orgnizations list
      */
-    PaginatedResults<Organization> execute(Long tenantId, Span parentSpan, Map<String,Object> searchParams);
+    PaginatedResults<Organization> execute(String tenantUuid, Span parentSpan, Map<String,Object> searchParams);
 
 }

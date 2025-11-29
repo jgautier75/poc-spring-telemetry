@@ -1,7 +1,5 @@
 package com.acme.jga.ports.services.impl.user;
 
-import com.acme.jga.domain.functions.organizations.api.OrganizationFind;
-import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.functions.users.api.*;
 import com.acme.jga.domain.model.filtering.FilteringConstants;
 import com.acme.jga.domain.model.ids.CompositeId;
@@ -20,14 +18,11 @@ import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.validation.users.UsersValidationEngine;
 import com.acme.jga.search.filtering.parser.QueryParser;
 import com.acme.jga.search.filtering.utils.ParsingResult;
-import com.acme.jga.validation.ValidationException;
-import com.acme.jga.validation.ValidationResult;
 import io.opentelemetry.api.trace.Span;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +41,7 @@ public class UserPortServiceImpl extends AbstractPortService implements UserPort
     private final QueryParser queryParser = new QueryParser();
 
     @Autowired
-    public UserPortServiceImpl(TenantFind tenantFind, OrganizationFind organizationFind, UserCreate userCreate,
+    public UserPortServiceImpl(UserCreate userCreate,
                                UsersPortConverter usersConverter, UsersValidationEngine usersValidationEngine,
                                OpenTelemetryWrapper openTelemetryWrapper, UserUpdate userUpdate, UserDelete userDelete,
                                UserFind userFind, UserFilter userFilter) {

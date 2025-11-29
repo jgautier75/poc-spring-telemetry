@@ -1,11 +1,9 @@
 package com.acme.jga.ports.services.impl.organization;
 
 import com.acme.jga.domain.functions.organizations.api.*;
-import com.acme.jga.domain.functions.tenants.api.TenantFind;
 import com.acme.jga.domain.model.filtering.FilteringConstants;
 import com.acme.jga.domain.model.ids.CompositeId;
 import com.acme.jga.domain.model.v1.Organization;
-import com.acme.jga.domain.model.v1.Tenant;
 import com.acme.jga.jdbc.dql.PaginatedResults;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import com.acme.jga.ports.converters.organization.OrganizationsPortConverter;
@@ -19,8 +17,6 @@ import com.acme.jga.ports.services.impl.AbstractPortService;
 import com.acme.jga.ports.validation.organizations.OrganizationsValidationEngine;
 import com.acme.jga.search.filtering.parser.QueryParser;
 import com.acme.jga.search.filtering.utils.ParsingResult;
-import com.acme.jga.validation.ValidationException;
-import com.acme.jga.validation.ValidationResult;
 import io.opentelemetry.api.trace.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +29,6 @@ import java.util.Map;
 @Service
 public class OrganizationPortServiceImpl extends AbstractPortService implements OrganizationPortService {
     private static final String INSTRUMENTATION_NAME = OrganizationPortServiceImpl.class.getCanonicalName();
-    private final TenantFind tenantFind;
     private final OrganizationCreate organizationCreate;
     private final OrganizationsPortConverter organizationsConverter;
     private final OrganizationsValidationEngine organizationsValidationEngine;
@@ -44,13 +39,12 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
     private final OrganizationDelete organizationDelete;
 
     @Autowired
-    public OrganizationPortServiceImpl(TenantFind tenantFind, OrganizationCreate organizationCreate, OrganizationsPortConverter organizationsConverter,
+    public OrganizationPortServiceImpl(OrganizationCreate organizationCreate, OrganizationsPortConverter organizationsConverter,
                                        OrganizationsValidationEngine organizationsValidationEngine, OpenTelemetryWrapper openTelemetryWrapper,
                                        OrganizationFilter organizationFilter, OrganizationFind organizationFind,
                                        OrganizationUpdate organizationUpdate, OrganizationDelete organizationDelete) {
         super(openTelemetryWrapper);
         this.organizationCreate = organizationCreate;
-        this.tenantFind = tenantFind;
         this.organizationsConverter = organizationsConverter;
         this.organizationsValidationEngine = organizationsValidationEngine;
         this.organizationFilter = organizationFilter;
@@ -78,9 +72,8 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
     @Override
     public OrganizationListLightDto filterOrganizations(String tenantUid, SearchFilterDto searchFilterDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_LIGHT", parentSpan, (span -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
             Map<String, Object> searchParams = extractSearchParams(searchFilterDto);
-            PaginatedResults<Organization> paginatedResults = organizationFilter.execute(tenant.getId(), span, searchParams);
+            PaginatedResults<Organization> paginatedResults = organizationFilter.execute(tenantUid, span, searchParams);
             List<OrganizationLightDto> lightOrgs = new ArrayList<>();
             paginatedResults.getResults().forEach(org -> lightOrgs.add(organizationsConverter.convertOrganizationToLightOrgDto(org)));
             return new OrganizationListLightDto(paginatedResults.getNbResults(), paginatedResults.getNbPages(), paginatedResults.getPageIndex(), paginatedResults.getPageSize(), lightOrgs);
@@ -93,8 +86,7 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
     @Override
     public OrganizationDto findOrganizationByUid(String tenantUid, String orgUid, boolean fetchSectors, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_FIND_UID", parentSpan, (span) -> {
-            Tenant tenant = tenantFind.byUid(tenantUid, span);
-            Organization org = organizationFind.byTenantIdAndUid(tenant.getId(), orgUid, fetchSectors, span);
+            Organization org = organizationFind.byTenantUuidAndUid(tenantUid, orgUid, fetchSectors, span);
             OrganizationDto organizationDto = organizationsConverter.convertOrganizationToDto(org);
             organizationDto.setTenantUid(tenantUid);
             return organizationDto;
@@ -107,7 +99,6 @@ public class OrganizationPortServiceImpl extends AbstractPortService implements 
     @Override
     public Integer updateOrganization(String tenantUid, String orgUid, OrganizationDto organizationDto, Span parentSpan) {
         return processWithSpan(INSTRUMENTATION_NAME, "PORT_ORGS_UPDATE", parentSpan, (span) -> {
-            tenantFind.byUid(tenantUid, span);
             Organization org = organizationsConverter.convertOrganizationDtoToDomain(organizationDto);
             return organizationUpdate.execute(tenantUid, orgUid, org, span);
         });
