@@ -26,21 +26,33 @@ public class LogHttpFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
             throws ServletException, IOException {
         boolean debugModeActivated = activateDebugging(httpServletRequest);
-        if (debugModeActivated) {
-            LogHttpUtils.APP_LOG_CTX.set(true);
-            CachedHttpServletRequest cacheHttpServletRequest = new CachedHttpServletRequest(httpServletRequest);
-            ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpServletResponse);
-            try {
-                doDebugRequest(cacheHttpServletRequest);
-                filterChain.doFilter(cacheHttpServletRequest, responseWrapper);
-            } finally {
-                doDebugResponse(responseWrapper);
-                responseWrapper.copyBodyToResponse();
-                LogHttpUtils.APP_LOG_CTX.remove();
-            }
-        } else {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-        }
+        ScopedValue.where(LogHttpUtils.LOG_FLAG, debugModeActivated).run(
+                () -> {
+                    if (debugModeActivated) {
+                        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpServletResponse);
+                        try {
+                            CachedHttpServletRequest cacheHttpServletRequest = new CachedHttpServletRequest(httpServletRequest);
+                            doDebugRequest(cacheHttpServletRequest);
+                            filterChain.doFilter(cacheHttpServletRequest, responseWrapper);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            doDebugResponse(responseWrapper);
+                            try {
+                                responseWrapper.copyBodyToResponse();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    } else {
+                        try {
+                            filterChain.doFilter(httpServletRequest, httpServletResponse);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -52,7 +64,6 @@ public class LogHttpFilter extends OncePerRequestFilter {
     private boolean activateDebugging(HttpServletRequest request) {
         String reqUri = request.getRequestURI();
         boolean activateDebugMode = appConfig.isForceDebugMode();
-
         if (!activateDebugMode && !reqUri.contains("actuator")) {
             activateDebugMode = debugHeaderMatch(request);
         }

@@ -38,7 +38,7 @@ public class OtelLogService implements IOtelLogService, InitializingBean {
 
     @Override
     public void debug(String msg) {
-        if (LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
+        if (LogHttpUtils.LOG_FLAG.get() != null && LogHttpUtils.LOG_FLAG.get()) {
             log(Severity.DEBUG, msg, null);
         }
     }
@@ -65,7 +65,7 @@ public class OtelLogService implements IOtelLogService, InitializingBean {
 
     @Override
     public void debug(String msg, OtelContext context) {
-        if (LogHttpUtils.APP_LOG_CTX.get() != null && LogHttpUtils.APP_LOG_CTX.get()) {
+        if (LogHttpUtils.LOG_FLAG.get() != null && LogHttpUtils.LOG_FLAG.get()) {
             log(Severity.DEBUG, msg, context);
         }
     }

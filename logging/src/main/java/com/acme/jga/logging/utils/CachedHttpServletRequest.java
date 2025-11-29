@@ -14,10 +14,12 @@ import java.io.InputStream;
 public class CachedHttpServletRequest extends HttpServletRequestWrapper {
     private final byte[] cachedBody;
 
-    public CachedHttpServletRequest(HttpServletRequest request) throws IOException {
+    public CachedHttpServletRequest(HttpServletRequest request) {
         super(request);
         try (InputStream requestInputStream = request.getInputStream()) {
             this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
