@@ -56,7 +56,7 @@ public class LogHttpUtils {
      */
     public static List<SystemErrorFile> listErrorFiles(String rootPath) {
         File f = new File(rootPath);
-         return StreamUtil.ofNullableArray(f.list()).sorted().map(LogHttpUtils::convertFileToSystemError).toList();
+        return StreamUtil.ofNullableArray(f.list()).sorted().map(LogHttpUtils::convertFileToSystemError).toList();
     }
 
     /**
@@ -167,15 +167,15 @@ public class LogHttpUtils {
      * Dump text to file.
      *
      * @param loggingFacade Log service
-     * @param path       Store path
-     * @param moduleName Module name
-     * @param errorUUID  Error uid
-     * @param exContent  Exception content
+     * @param path          Store path
+     * @param moduleName    Module name
+     * @param errorUUID     Error uid
+     * @param exContent     Exception content
      */
     public static void dumpToFile(ILoggingFacade loggingFacade, String path, String moduleName, String errorUUID,
                                   String exContent) {
         try (FileWriter fw = new FileWriter(path + "/" + LogHttpUtils.generateErrorFileName(moduleName, errorUUID))) {
-            fw.write("Error:" + errorUUID + " ****************************************************\n");
+            fw.write("Error: " + errorUUID + "*".repeat(20) + "\n");
             fw.write(exContent);
         } catch (IOException ioe) {
             loggingFacade.error("dumpToFile", ioe);
@@ -183,9 +183,9 @@ public class LogHttpUtils {
     }
 
     /**
-     * Dump exception with http request to file.
+     * Dump exception with http request payload to file.
      *
-     * @param loggingFacade         Log service
+     * @param loggingFacade      Log service
      * @param errorFilePath      Error file path
      * @param moduleName         Module name
      * @param errorUUID          Error uid
@@ -196,13 +196,13 @@ public class LogHttpUtils {
                                   String exContent, HttpServletRequest httpServletRequest) {
         String payload = dumpHttpRequest(httpServletRequest);
         try (FileWriter fw = new FileWriter(errorFilePath + "/" + LogHttpUtils.generateErrorFileName(moduleName, errorUUID))) {
-            fw.write("Error:" + errorUUID + " ****************************************************");
+            fw.write("Error: " + errorUUID + "*".repeat(20));
             fw.write(CR_SEP);
-            fw.write("Payload:  ****************************************************");
+            fw.write("Payload: " + "*".repeat(20));
             fw.write(CR_SEP);
             fw.write(payload);
             fw.write(CR_SEP);
-            fw.write("Stack:  ****************************************************");
+            fw.write("Stack:  " + "*".repeat(20));
             fw.write(CR_SEP);
             fw.write(exContent);
         } catch (IOException ioe) {
