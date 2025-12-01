@@ -17,8 +17,12 @@ public class TenantsValidationEngine implements ValidationEngine<TenantDto> {
     public void validate(TenantDto tenantDto) {
         ValidationResult validationResult = ValidationResult.builder().success(true).build();
         if (validationUtils.validateNotNull(validationResult, "payload", tenantDto)) {
-            validationUtils.validateNotNullNonEmpty(validationResult, "code", tenantDto.getCode());
-            validationUtils.validateNotNullNonEmpty(validationResult, "label", tenantDto.getLabel());
+            if (validationUtils.validateNotNullNonEmpty(validationResult, "code", tenantDto.getCode())) {
+                validationUtils.validateTextLength(validationResult, "code", tenantDto.getCode(), 1, 50);
+            }
+            if (validationUtils.validateNotNullNonEmpty(validationResult, "label", tenantDto.getLabel())) {
+                validationUtils.validateTextLength(validationResult, "label", tenantDto.getLabel(), 1, 80);
+            }
         }
         if (!validationResult.isSuccess()) {
             throw new ValidationException(validationResult.getErrors());

@@ -19,11 +19,15 @@ public class OrganizationsValidationEngine implements ValidationEngine<Organizat
         // Validate payload
         if (validationUtils.validateNotNull(validationResult, "payload", organizationDto)
                 && validationUtils.validateNotNull(validationResult, "commons", organizationDto.getCommons())) {
-            validationUtils.validateNotNullNonEmpty(validationResult, "commons.code", organizationDto.getCommons().getCode());
+            if (validationUtils.validateNotNullNonEmpty(validationResult, "commons.code", organizationDto.getCommons().getCode())) {
+                validationUtils.validateTextLength(validationResult, "commons.code", organizationDto.getCommons().getCode(), 1, 50);
+            }
             if (validationUtils.validateNotNullNonEmpty(validationResult, "commons.country", organizationDto.getCommons().getCountry())) {
                 validationUtils.validateCountry(validationResult, "commons.country", organizationDto.getCommons().getCountry());
             }
-            validationUtils.validateNotNullNonEmpty(validationResult, "commons.label", organizationDto.getCommons().getLabel());
+            if (validationUtils.validateNotNullNonEmpty(validationResult, "commons.label", organizationDto.getCommons().getLabel())) {
+                validationUtils.validateTextLength(validationResult, "commons.label", organizationDto.getCommons().getLabel(), 1, 80);
+            }
             validationUtils.validateNotNull(validationResult, "commons.kind", organizationDto.getCommons().getKind());
             validationUtils.validateNotNull(validationResult, "commons.status", organizationDto.getCommons().getStatus());
         }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,4 +24,10 @@ public class ApiError implements Serializable {
 	private Integer status;
 	private String errorUid;
 	private List<ApiErrorDetail> details;
+    public void addDetail(ApiErrorDetail detail) {
+        if (details == null) {
+            details = new ArrayList<>();
+        }
+        details.add(detail);
+    }
 }

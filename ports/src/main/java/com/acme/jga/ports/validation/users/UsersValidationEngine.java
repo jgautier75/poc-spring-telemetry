@@ -49,7 +49,7 @@ public class UsersValidationEngine implements ValidationEngine<UserDto> {
 
     private void validateEmail(UserDto userDto, ValidationResult validationResult) {
         if (validationUtils.validateNotNullNonEmpty(validationResult, "credentials.email", userDto.getCredentials().getEmail())) {
-            validationUtils.validateTextLength(validationResult, "credentials.email", userDto.getCredentials().getLogin(), 1, 50);
+            validationUtils.validateTextLength(validationResult, "credentials.email", userDto.getCredentials().getEmail(), 1, 50);
             if (!validationUtils.isValidEmail(userDto.getCredentials().getEmail())) {
                 validationResult.setSuccess(false);
                 validationResult.addError(ValidationError.builder()
