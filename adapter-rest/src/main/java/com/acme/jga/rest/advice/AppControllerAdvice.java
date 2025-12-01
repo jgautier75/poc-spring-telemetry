@@ -114,10 +114,8 @@ public class AppControllerAdvice implements InitializingBean {
                     .code("INTERNAL_SERVER_ERROR")
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .message(exception.getMessage())
-                    .debugMessage(stack)
                     .errorUid(idError.toString())
                     .build();
-
             loggingFacade.errorS(this.getClass().getName() + "-handleInternal", "Process error to %s - %s - %s",
                     new Object[]{appGenericProperties.getErrorPath(), appGenericProperties.getModuleName(),
                             idError.toString()});
