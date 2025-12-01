@@ -526,7 +526,8 @@ Parameters:
 - 4: Automatic modules: list of automatic modules, typically legacy libraries (multiple values separator is the comma)
 
 ```sh
-./get-springboot-modules.sh adapter-rest/target/adapter-rest-1.0.0-SNAPSHOT.jar 23 adapter-rest/target/tmp ""
+./get-spring-boot-modules.sh ../adapter-rest/target/adapter-rest-1.0.0-SNAPSHOT.jar 25 ../adapter-rest/target/tmp "okio-jvm-3.16.2.jar"
+java.base,java.desktop,java.instrument,java.net.http,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql.rowset,jdk.compiler,jdk.jfr,jdk.management,jdk.unsupported,org.graalvm.nativeimage
 ```
 
 Update adapter-rest/Dockerfile accordingly in jlinks section
