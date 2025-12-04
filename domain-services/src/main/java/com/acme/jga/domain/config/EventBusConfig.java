@@ -16,8 +16,7 @@ public class EventBusConfig {
 
     @Bean
     public PublishSubscribeChannel eventAuditChannel() {
-        ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
-        PublishSubscribeChannel exportChannel = new PublishSubscribeChannel(executorService);
+        PublishSubscribeChannel exportChannel = new PublishSubscribeChannel();
         exportChannel.setErrorHandler(errorHandler);
         return exportChannel;
     }

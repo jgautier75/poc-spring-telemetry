@@ -18,7 +18,7 @@ spring:
         default-context: poc-spring-telemetry
   threads:
     virtual:
-      enabled: false
+      enabled: true
   main:
     banner-mode: console
   liquibase:
@@ -38,6 +38,7 @@ spring:
       resourceserver:
         jwt:
           issuerUri: http://localhost:7080/realms/myrealm
+
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://localhost:5432/poc-st

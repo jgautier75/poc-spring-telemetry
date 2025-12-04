@@ -19,23 +19,23 @@ import com.acme.jga.logging.services.impl.LoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.sdk.testing.junit5.OpenTelemetryExtension;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OrganizationsDomainServiceTest {
     @RegisterExtension
     static final OpenTelemetryExtension otelTesting = OpenTelemetryExtension.create();
@@ -66,12 +66,12 @@ public class OrganizationsDomainServiceTest {
     @InjectMocks
     OrganizationDeleteImpl organizationDelete;
 
-    @Before
+    @BeforeEach
     public void init() {
         openTelemetryWrapper.setSdkTracerProvider(otelTesting.getOpenTelemetry().getTracerProvider());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void createOrganizationNominal() throws FunctionalException {
         // GIVEN
         Tenant tenant = mockTenant();
@@ -96,7 +96,7 @@ public class OrganizationsDomainServiceTest {
         // THEN
         CompositeId orgCompositeId = organizationCreate.execute(tenant.getUid(),
                 organization, rootSpan);
-        assertNotNull("Organization not null", orgCompositeId);
+        Assertions.assertNotNull(orgCompositeId, "Organization not null");
     }
 
     @Test
@@ -112,7 +112,7 @@ public class OrganizationsDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class,
+        Assertions.assertThrows(WrappedFunctionalException.class,
                 () -> organizationCreate.execute(UUID.randomUUID().toString(),
                         organization, rootSpan));
 
@@ -130,7 +130,7 @@ public class OrganizationsDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
         // THEN
         Integer nbUpdated = organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, new VoidSpan());
-        assertEquals(Integer.valueOf(0), nbUpdated);
+        Assertions.assertEquals(Integer.valueOf(0), nbUpdated);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class OrganizationsDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, null));
+        Assertions.assertThrows(WrappedFunctionalException.class, () -> organizationUpdate.execute(tenant.getUid(), organization.getUid(), organization, null));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class OrganizationsDomainServiceTest {
 
         // THEN
         Integer nbDeleted = organizationDelete.execute(tenant.getUid(), organization.getUid(), null);
-        assertNotNull("NbDelete", nbDeleted);
+        Assertions.assertNotNull(nbDeleted, "NbDelete");
     }
 
     private Tenant mockTenant() {

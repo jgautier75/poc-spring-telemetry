@@ -13,7 +13,7 @@
 
     <name>Adapter - REST</name>
     <properties>
-        <spring-boot-plugin-version>3.5.8</spring-boot-plugin-version>
+        <spring-boot-plugin-version>4.0.0</spring-boot-plugin-version>
     </properties>
 
     <build>
@@ -63,18 +63,6 @@
             <id>native</id>
             <build>
                 <plugins>
-                    <!--<plugin>
-                        <groupId>org.cyclonedx</groupId>
-                        <artifactId>cyclonedx-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>makeAggregateBom</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>-->
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
@@ -128,6 +116,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+            <version>3.5.8</version>
         </dependency>
         <dependency>
             <groupId>com.acme.jga</groupId>
@@ -223,6 +212,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.20.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-blackbird</artifactId>
             <version>${jackson-blackbird-version}</version>
@@ -241,6 +235,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

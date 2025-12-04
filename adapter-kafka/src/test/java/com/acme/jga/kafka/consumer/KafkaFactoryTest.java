@@ -16,7 +16,6 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.runner.Description;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
@@ -38,10 +37,6 @@ public class KafkaFactoryTest {
 
     public static Network createNetwork(String networkId) {
         Network defaultDaprNetwork = new Network() {
-            @Override
-            public org.junit.runners.model.Statement apply(org.junit.runners.model.Statement base, Description description) {
-                return null;
-            }
 
             @Override
             public String getId() {

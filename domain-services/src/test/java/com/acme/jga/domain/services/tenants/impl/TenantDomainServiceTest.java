@@ -16,22 +16,22 @@ import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.logging.services.impl.LogService;
 import com.acme.jga.logging.services.impl.LoggingFacade;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TenantDomainServiceTest {
     @Mock
     OpenTelemetryWrapper openTelemetryWrapper;
@@ -74,7 +74,7 @@ public class TenantDomainServiceTest {
 
         // THEN
         CompositeId compositeId = tenantCreate.execute(tenant, null);
-        assertNotNull("Composite id not null", compositeId);
+        Assertions.assertNotNull(compositeId, "Composite id not null");
     }
 
     @Test

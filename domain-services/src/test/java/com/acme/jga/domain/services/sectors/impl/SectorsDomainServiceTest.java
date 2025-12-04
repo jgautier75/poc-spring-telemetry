@@ -14,22 +14,20 @@ import com.acme.jga.infra.services.impl.events.EventsInfraServiceImpl;
 import com.acme.jga.infra.services.impl.sectors.SectorsInfraServiceImpl;
 import com.acme.jga.logging.bundle.BundleFactory;
 import com.acme.jga.opentelemetry.OpenTelemetryWrapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SectorsDomainServiceTest {
     @Mock
     TenantFind tenantFind;
@@ -78,7 +76,7 @@ public class SectorsDomainServiceTest {
 
         // THEN
         CompositeId sectorCompId = sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null);
-        assertNotNull(sectorCompId);
+        Assertions.assertNotNull(sectorCompId);
     }
 
     @Test
@@ -96,7 +94,7 @@ public class SectorsDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
+        Assertions.assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
     }
 
     @Test
@@ -115,7 +113,7 @@ public class SectorsDomainServiceTest {
         Mockito.when(openTelemetryWrapper.withSpan(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new VoidSpan());
 
         // THEN
-        assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
+        Assertions.assertThrows(WrappedFunctionalException.class, () -> sectorCreate.execute(tenant.getUid(), organization.getUid(), sector, null));
     }
 
     private Tenant mockTenant() {

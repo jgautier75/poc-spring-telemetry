@@ -1,7 +1,6 @@
 package com.acme.jga.keycloak.spi.federation.provider;
 
 import lombok.NoArgsConstructor;
-import org.junit.runner.Description;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -16,11 +15,6 @@ public class OpenBaoFactory {
 
     public static Network createNetwork(String networkId) {
         Network defaultDaprNetwork = new Network() {
-            @Override
-            public org.junit.runners.model.Statement apply(org.junit.runners.model.Statement base, Description description) {
-                return null;
-            }
-
             @Override
             public String getId() {
                 return networkId;

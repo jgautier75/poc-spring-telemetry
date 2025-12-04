@@ -1,17 +1,16 @@
 package com.acme.jga.rest.controllers;
 
+import com.acme.jga.rest.annotations.MetricPoint;
 import com.acme.jga.rest.pojo.MetricDefinition;
 import com.acme.jga.rest.pojo.MetricsConfig;
-import com.acme.jga.rest.annotations.MetricPoint;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.classgraph.*;
-import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -22,11 +21,11 @@ import java.util.List;
 /**
  * Analyze source code, search methods annotated with @MetricPoint and generate a json file as output.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClassGraphMetricsTest {
     public static final Logger LOGGER = LoggerFactory.getLogger("app-logger");
 
-    @Test
+    @org.junit.jupiter.api.Test
     @Disabled
     public void metricsPointTest() throws JsonProcessingException {
         String metricString = MetricPoint.class.getName();

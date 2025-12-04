@@ -20,7 +20,6 @@ public class ApiError implements Serializable {
 	private ErrorKind kind;
 	private String code;
 	private String message;
-	private String debugMessage;
 	private Integer status;
 	private String errorUid;
 	private List<ApiErrorDetail> details;
