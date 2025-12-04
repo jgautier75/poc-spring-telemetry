@@ -32,6 +32,9 @@
                             <include>com.squareup.wire:wire-runtime-jvm</include>
                             <include>org.jetbrains.kotlin:kotlin-stdlib</include>
                             <include>com.acme.jga:protobuf-model</include>
+                            <include>org.apache.httpcomponents.client5:httpclient5</include>
+                            <include>org.apache.httpcomponents.core5:httpcore5</include>
+                            <include>com.google.guava:failureaccess</include>
                         </includes>
                     </artifactSet>
                 </configuration>
@@ -40,6 +43,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>failureaccess</artifactId>
+            <version>1.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi</artifactId>
@@ -62,7 +70,16 @@
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>${kafka-clients-version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+            <version>5.3.6</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>

@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.StreamSupport;
 
 /**
@@ -47,19 +45,15 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * Start kafka consumer.
      */
     public void startKafkaConsumer() {
-        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-            executor.submit(() -> {
-                this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
-                kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
-                while (true) {
-                    ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer
-                            .poll(Duration.ofMillis(POLL_DURATION));
-                    processRecords(consumerRecords);
-                }
-            });
-        } catch (Exception e) {
-            LOGGER.debug("Error starting Kafka Consumer", e);
-        }
+        Thread.ofVirtual().start(() -> {
+            this.kafkaConsumer = new KafkaConsumer<>(consumerProperties());
+            kafkaConsumer.subscribe(List.of(getEnvVariable(KafkaConsumerConstants.TOPIC_NAME)));
+            while (true) {
+                ConsumerRecords<String, DynamicMessage> consumerRecords = kafkaConsumer
+                        .poll(Duration.ofMillis(POLL_DURATION));
+                processRecords(consumerRecords);
+            }
+        });
     }
 
     /**
@@ -86,7 +80,9 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
         });
 
         eventTenants.forEach(tenantName -> {
+            LOGGER.info("Processing event for tenant: " + tenantName);
             if (!knownTenants.contains(tenantName)) {
+                LOGGER.info("Looking up tenant: " + tenantName);
                 try (KeycloakSession session = keycloakSessionFactory.create()) {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
                     List<String> entities = findRealm(jpaConnectionProvider, tenantName);
@@ -99,23 +95,16 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             }
         });
 
-        final List<UserEntity> userEntities = new ArrayList<>();
+        //final List<UserEntity> userEntities = new ArrayList<>();
         userEvents.forEach(userEvent -> {
             if (knownTenants.contains(userEvent.getScope().getTenantCode())) {
                 KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
-                    userEntities.add(updateUser(userEvent, jpaConnectionProvider));
+                    updateUser(userEvent, jpaConnectionProvider);
                 });
             }
         });
 
-        KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
-            JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
-            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
-            tx.begin();
-            jpaConnectionProvider.getEntityManager().merge(userEntities);
-            tx.commit();
-        });
     }
 
     /**
@@ -138,7 +127,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
      * @param auditEventMessage     Audit event
      * @param jpaConnectionProvider Jpa provider
      */
-    private UserEntity updateUser(Event.AuditEventMessage auditEventMessage, JpaConnectionProvider jpaConnectionProvider) {
+    private void updateUser(Event.AuditEventMessage auditEventMessage, JpaConnectionProvider jpaConnectionProvider) {
         LOGGER.infof("Storage util, search user width id [%s]",
                 StorageId.externalId(auditEventMessage.getObjectUid()));
         UserEntity userEntity = jpaConnectionProvider.getEntityManager().find(UserEntity.class,
@@ -160,8 +149,12 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
+            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
+            tx.begin();
+            LOGGER.info("Updating entity " + userEntity);
+            jpaConnectionProvider.getEntityManager().merge(userEntity);
+            tx.commit();
         }
-        return userEntity;
     }
 
     /**
