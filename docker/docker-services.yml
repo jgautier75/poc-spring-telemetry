@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   poc-st-openbao:
-    image: quay.io/openbao/openbao:2.4.3
+    image: quay.io/openbao/openbao:2.4.4
     environment:
       BAO_DEV_ROOT_TOKEN_ID: dev-root-token
       OPENBAO_SKIP_VERIFY: "true"
@@ -31,7 +31,7 @@ services:
     ports:
       - 5433:5433
   poc-st-keycloak:
-    image: quay.io/keycloak/keycloak:26.4.5
+    image: quay.io/keycloak/keycloak:26.4.7
     # image: keycloak-with-spi:1.0.0
     depends_on:
       - poc-st-keycloak-storage
@@ -96,7 +96,7 @@ services:
       - poc-st-kafka
       - poc-st-schema-registry
   poc-st-zookeeper:
-    image: confluentinc/cp-zookeeper:7.9.4
+    image: confluentinc/cp-zookeeper:7.9.5
     restart: unless-stopped
     ports:
       - "2181:2181"
@@ -112,7 +112,7 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: poc-st-zookeeper:2888:3888
   poc-st-kafka:
-    image: confluentinc/cp-kafka:7.9.4
+    image: confluentinc/cp-kafka:7.9.5
     restart: unless-stopped
     ports:
       - "9092:9092"
@@ -141,7 +141,7 @@ services:
     links:
       - poc-st-zookeeper
   poc-st-schema-registry:
-    image: confluentinc/cp-schema-registry:7.9.4
+    image: confluentinc/cp-schema-registry:7.9.5
     restart: unless-stopped
     ports:
       - "8085:8085"

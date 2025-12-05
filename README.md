@@ -33,7 +33,7 @@ Other modules:
 Standard REST application relying on:
 
 - Java 25 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
-- Sprint boot (3.5.x)
+- Sprint boot (4.0.x)
 - PostgreSQL (17.x) for persistence
 - Liquibase for rdbms schema versions management
 - Spring JDBC for persistence (No f****** ORM)
