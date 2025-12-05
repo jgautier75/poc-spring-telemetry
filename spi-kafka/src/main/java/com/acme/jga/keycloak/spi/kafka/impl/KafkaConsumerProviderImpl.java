@@ -80,9 +80,7 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
         });
 
         eventTenants.forEach(tenantName -> {
-            LOGGER.info("Processing event for tenant: " + tenantName);
             if (!knownTenants.contains(tenantName)) {
-                LOGGER.info("Looking up tenant: " + tenantName);
                 try (KeycloakSession session = keycloakSessionFactory.create()) {
                     JpaConnectionProvider jpaConnectionProvider = session.getProvider(JpaConnectionProvider.class);
                     List<String> entities = findRealm(jpaConnectionProvider, tenantName);
@@ -95,7 +93,6 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             }
         });
 
-        //final List<UserEntity> userEntities = new ArrayList<>();
         userEvents.forEach(userEvent -> {
             if (knownTenants.contains(userEvent.getScope().getTenantCode())) {
                 KeycloakModelUtils.runJobInTransaction(keycloakSessionFactory, session -> {
@@ -139,19 +136,15 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             auditEventMessage.getChangesList().forEach(auditChange -> {
                 LOGGER.infof("Processing audit change with object [%s]", auditChange.getObject());
                 if (KafkaConsumerConstants.EVENT_CHANGE_FIRST_NAME.equals(auditChange.getObject())) {
-                    LOGGER.infof("Updating firstName to [%s]", auditChange.getTo());
                     userEntity.setFirstName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_LAST_NAME.equals(auditChange.getObject())) {
-                    LOGGER.infof("Updating lastName to [%s]", auditChange.getTo());
                     userEntity.setLastName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_EMAIL.equals(auditChange.getObject())) {
-                    LOGGER.infof("Updating email to [%s]", auditChange.getTo());
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
             EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
             tx.begin();
-            LOGGER.info("Updating entity " + userEntity);
             jpaConnectionProvider.getEntityManager().merge(userEntity);
             tx.commit();
         }
