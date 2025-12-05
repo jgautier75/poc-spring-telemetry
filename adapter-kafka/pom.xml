@@ -52,7 +52,12 @@
         <dependency>
             <groupId>com.acme.jga</groupId>
             <artifactId>protobuf-model</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${kafka-clients-version}</version>
         </dependency>
         <!-- TEST -->
         <dependency>

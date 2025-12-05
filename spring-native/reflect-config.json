@@ -618,5 +618,25 @@
     "queryAllPublicMethods": true,
     "queryAllPublicConstructors": true,
     "unsafeAllocated": true
+  },
+  {
+    "name": "org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator",
+    "allDeclaredClasses": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true,
+    "allDeclaredConstructors": true,
+    "allPublicClasses": true,
+    "allPublicMethods": true,
+    "allPublicFields": true,
+    "allPublicConstructors": true,
+    "allRecordComponents": true,
+    "allNestMembers": true,
+    "allSigners": true,
+    "allPermittedSubclasses": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "queryAllPublicMethods": true,
+    "queryAllPublicConstructors": true,
+    "unsafeAllocated": true
   }
 ]
