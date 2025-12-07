@@ -1,0 +1,214 @@
+version: "3.1"
+services:
+  pst-openbao:
+    image: quay.io/openbao/openbao:${DOCKER_OPENBAO_VERSION}
+    environment:
+      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_TOKEN}
+      OPENBAO_SKIP_VERIFY: "true"
+    volumes:
+      - ./pst-openbao/config.hcl:/openbao/config/config.hcl
+    ports:
+      - 8200:8200
+    networks:
+      - pst-net
+  pst-init-openbao:
+    image: alpine:${DOCKER_ALPINE_VERSION}
+    depends_on:
+      - pst-openbao
+    environment:
+      TOKEN: ${OPENBAO_TOKEN}
+      ROOT_SECRETS: ${OPENBAO_ROOT_SECRETS}
+      CREDENTIALS: ${OPENBAO_CREDENTIALS}
+      CIPHER_KEY: ${APP_CIPHER_KEY}
+    volumes:
+      - ./pst-openbao/vault_se_init.sh:/opt/vault_se_init.sh:rwx,chmod=777
+    entrypoint: ["./opt/vault_se_init.sh"]
+    networks:
+      - pst-net
+    #entrypoint: ["tail", "-f", "/dev/null"]
+  pst-app-storage:
+    image: postgres:${DOCKER_POSTGRESQL}
+    volumes:
+      - "pst-app-pg-data:/var/lib/postgresql/data/pgdata"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: posgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    networks:
+      - pst-net
+  pst-keycloak-storage:
+    image: postgres:${DOCKER_POSTGRESQL}
+    volumes:
+      - "pst-keycloak-pg-data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB}
+      POSTGRES_USER: ${KEYCLOAK_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_PASS}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5433:5433
+    networks:
+      - pst-net
+  pst-akhq:
+    image: tchiotludo/akhq:${DOCKER_AKHQ_VERSION}
+    restart: unless-stopped
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "pst-kafka:19092"
+              schema-registry:
+                url: "http://pst-schema-registry:8085"
+    ports:
+      - 8086:8080
+    links:
+      - pst-kafka
+      - pst-schema-registry
+    networks:
+      - pst-net
+  pst-zookeeper:
+    image: confluentinc/cp-zookeeper:${DOCKER_CONFLUENT_VERSION}
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+      - "8087:8080"
+    volumes:
+      - pc-zookeeper-data:/var/lib/zookeeper/data:Z
+      - pc-zookeeper-log:/var/lib/zookeeper/log:Z
+    environment:
+      ZOOKEEPER_CLIENT_PORT: "2181"
+      ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: pst-zookeeper:2888:3888
+    networks:
+      - pst-net
+  pst-kafka:
+    image: confluentinc/cp-kafka:${DOCKER_CONFLUENT_VERSION}
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9999:9999"
+    volumes:
+      - pst-kafka-data:/var/lib/kafka/data:Z
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://pst-kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "pst-zookeeper:2181"
+      KAFKA_BROKER_ID: 0
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_JMX_PORT: 9001
+      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server=localhost:9092", "--list" ]
+      interval: 10s
+      retries: 20
+    links:
+      - pst-zookeeper
+    networks:
+      - pst-net
+  pst-schema-registry:
+    image: confluentinc/cp-schema-registry:${DOCKER_CONFLUENT_VERSION}
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    depends_on:
+      - pst-kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://pst-kafka:19092"
+      SCHEMA_REGISTRY_HOST_NAME: "pst-schema-registry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
+    networks:
+      - pst-net
+  pst-init-kafka:
+    image: alpine:${DOCKER_ALPINE_VERSION}
+    depends_on:
+      - pst-kafka
+    environment:
+      TOPIC: ${KAFKA_TOPIC_NAME}
+      KAFKA_CLIENT: ${KAFKA_CLIENT_VERSION}
+    volumes:
+      - ./pst-kafka-init/init_topic.sh:/opt/init_topic.sh:rwx,chmod=777
+    entrypoint: [ "./opt/init_topic.sh" ]
+    networks:
+      - pst-net
+    #entrypoint: ["tail", "-f", "/dev/null"]
+  pst-keycloak:
+    image: quay.io/keycloak/keycloak:${DOCKER_KEYCLOAK_VERSION}
+    # image: keycloak-with-spi:1.0.0
+    depends_on:
+      - pst-keycloak-storage
+      - pst-init-openbao
+      - pst-init-kafka
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 7080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASS}
+      KC_HEALTH_ENABLED: "false"
+      KC_LOG_LEVEL: info
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://pst-keycloak-storage/keycloak_db
+      KC_DB_USERNAME: ${KEYCLOAK_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_PASS}
+      KC_METRICS_ENABLED: "true"
+      #KC_LOG: "file"
+      # DEBUG: 'true'
+      # DEBUG_PORT: '*:8787'
+      federation_endpoint: http://MYIPADDRESS:8080/poc-st/api/v1/spi/user
+      federation_user: admin
+      federation_pass: admin
+      kafka_consumer_topic: audit_events
+      kafka_consumer_bootstrap_servers: "pst-kafka:19092"
+      kafka_consumer_group_id: keycloak-kafka-consumer
+      kafka_consumer_schema_registry_url: "http://pst-schema-registry:8085"
+      vault-address: "http://pst-openbao:8200"
+      vault-token: ${OPENBAO_TOKEN}
+      vault-path: ${OPENBAO_ROOT_SECRETS}
+      vault-secrets: ${OPENBAO_CREDENTIALS}
+    volumes:
+      - ./poc-realms:/opt/keycloak/data/import
+      - ./poc-providers:/opt/keycloak/providers
+      #- ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
+    #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG","-Djdk.httpclient.HttpClient.log=all"]
+    command: [ "start-dev", "--import-realm", "--http-port", "7080", "--https-port", "7443" ]
+    ports:
+      - "7080:7080"
+      - "7443:7443"
+      - "9000:9000"
+      - "8787:8787"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:7080/health/ready" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    networks:
+      - pst-net
+volumes:
+  pst-app-pg-data:
+    driver: local
+  pst-keycloak-pg-data:
+    driver: local
+  pst-kafka-data:
+    driver: local
+  pc-zookeeper-data:
+    driver: local
+  pc-zookeeper-log:
+    driver: local
+networks:
+  pst-net:
+    driver: bridge

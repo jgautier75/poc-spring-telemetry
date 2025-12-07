@@ -54,18 +54,20 @@ Start using the following order:
 
 ## Docker - Base
 
-Use docker/setup_base.sh script to start the following "base" containers/services:
+Use docker/setup_all.sh script to start the following "base" containers/services:
 
 | Service             | Version | Port    | Description                               |
 |---------------------|---------|---------|-------------------------------------------|
-| postgreSQL          | 17.6    | 5432    | Spring app storage                        |
-| keycloak            | 26.4.5  | 7080    | Keycloak dev instance                     |
-| keycloak-postgreSQL | 17.6    | 5433    | Keycloak app storage                      |
-| openbao             | 2.4.3   | 8200    | OpenBao port                              |
+| postgreSQL          | 18.1    | 5432    | Spring app storage                        |
+| keycloak            | 26.4.7  | 7080    | Keycloak dev instance                     |
+| keycloak-postgreSQL | 18.1    | 5433    | Keycloak app storage                      |
+| openbao             | 2.4.4   | 8200    | OpenBao port                              |
 | akhq                | 0.26.0  | 8086    | GUI for kafka (topics, consumers, ...)    | 
-| zookeeper           | 7.9.4   | 2181    | Centralized service for kafka management  |
-| kafka               | 7.9.4   | 9092    | Kafka broker                              |
-| schema-registry     | 7.9.4   | 8085    | Schema registry (protobuf schemas storage |
+| zookeeper           | 7.9.5   | 2181    | Centralized service for kafka management  |
+| kafka               | 7.9.5   | 9092    | Kafka broker                              |
+| schema-registry     | 7.9.5   | 8085    | Schema registry (protobuf schemas storage |
+
+Use shutdown_all.sh script to stop all containers.
 
 ## Docker - Jaeger
 
@@ -77,10 +79,10 @@ docker-compose -f docker-services-jaeger.yml up -d
 
 | Service                         | Version | Port              |
 |---------------------------------|---------|-------------------|
-| jaeger-all-in-one               | 1.74.0  | 16686             |
-| prometheus                      | v3.7.3  | 9090              |
-| grafana                         | 12.2    | 3000              |
-| opentelemetry-collector-contrib | 0.139.0 | 4317, 4318, 55679 |
+| jaeger-all-in-one               | 1.76.0  | 16686             |
+| prometheus                      | v3.8.0  | 9090              |
+| grafana                         | 12.3    | 3000              |
+| opentelemetry-collector-contrib | 0.141.0 | 4317, 4318, 55679 |
 
 ## Docker - Grafana Loki - Grafana Tempo
 
@@ -101,11 +103,9 @@ Open ports:
 
 To bulk create organizations and users, an [Jmeter](https://jmeter.apache.org/) script named DataFeeder is available in docs/jmeter folder.
 
-
-
 ## OpenBao & Kafka setup
 
-To initialize OpenBao and Kafka topics creation run the following ansible command.
+Event if Openbao secrets and Kafka are initialized with init containers, you can also use the following ansible command:
 
 For testing purposes, vault password is set to "test"
 
@@ -114,7 +114,6 @@ ansible-playbook -i inventory/hosts.ini docker-setup.yml --connection=local --as
 ```
 
 ## Database setup
-
 
 #### Manually
 
