@@ -34,13 +34,13 @@ Standard REST application relying on:
 
 - Java 25 ([Graalvm](https://www.graalvm.org/downloads/) for native images )
 - Sprint boot (4.0.x)
-- PostgreSQL (17.x) for persistence
+- PostgreSQL (18.x) for persistence
 - Liquibase for rdbms schema versions management
 - Spring JDBC for persistence (No f****** ORM)
 - Spring integration for PublishSubscribe channel
-- Keycloak
-- OpenBao
-- OpenTelemetry
+- Keycloak (OIDC provider)
+- OpenBao (Vault)
+- OpenTelemetry (Monitoring)
 - Kafka stack (Kafka + Zookeeper + Schema registry + AKHQ)
 - Junit/Mockito/Testcontainers for testing
 
@@ -51,6 +51,41 @@ Start using the following order:
 * [Docker - Base] to start base containers
 * Either [Docker - Jaeger] or [Docker - Grafana Loki - Grafana Tempo]
 * [OpenBao & Kafka setup] to initialize OpenBao secrets and to create kafka topics
+
+All docker images versions and applications properties are centralized in ap.env file:
+
+```
+DOCKER_ALPINE_VERSION=3.23.0
+DOCKER_OPENBAO_VERSION=2.4.4
+DOCKER_POSTGRESQL=18.1
+DOCKER_KEYCLOAK_VERSION=26.4.7
+DOCKER_AKHQ_VERSION=0.26.0
+DOCKER_CONFLUENT_VERSION=7.9.5
+OPENBAO_TOKEN=dev-root-token
+OPENBAO_ROOT_SECRETS=dev-secrets
+OPENBAO_CREDENTIALS=creds
+APP_CIPHER_KEY=1c9e1cfbe63844b1a0772aea4cba5gg6
+KEYCLOAK_DB=keycloak_db
+KEYCLOAK_USER=keycloak
+KEYCLOAK_PASS=keycloak
+KEYCLOAK_ADMIN_USER=admin
+KEYCLOAK_ADMIN_PASS=admin
+KAFKA_TOPIC_NAME=audit_events
+KAFKA_CLIENT_VERSION=https://downloads.apache.org/kafka/4.1.1/kafka_2.13-4.1.1.tgz
+```
+
+DOCKER_XXX properties are obviously image versions
+
+OPENBAO_TOKEN: default token for local environment
+OPENBAO_ROOT_SECRETS & OPENBAO_CREDENTIALS: consitute secrets path (e.g: dev-secrets/creds)
+APP_CIPHER_KEY: AES key used by keycloak spi-user-storage and spring-boot application
+
+KEYCLOAK_DB, KEYCLOAK_USER, KEYCLOAK_PASS: postgreSQL account settings
+
+KEYCLOAK_ADMIN_*: keycloak admin account
+
+KAFKA_TOPIC_NAME: Audit events topic
+KAFKA_CLIENT_VERSION: Kafka client used to create topic
 
 ## Docker - Base
 
