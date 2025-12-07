@@ -29,12 +29,11 @@ echo "Keycloak health status: [$STATUS]"
 COUNTER=0;
 while [ "$STATUS" != "UP" ]
  do
-
   COUNTER=$(($COUNTER+1));
   sleep 2s;
   STATUS=$(curl -L http://localhost:9000/health/ready | jq '.status' | sed -e "s/\"//g")
   echo "Keycloak health status: [$STATUS] / Check [$COUNTER]"
-  if [ "$STATUS" == "UP" ] || [ "$COUNTER" -gt  10 ]; then
+  if [ "$STATUS" == "UP" ] || [ "$COUNTER" -gt  30 ]; then
     break;
   fi
 done
