@@ -138,6 +138,12 @@ Open ports:
 
 To bulk create organizations and users, an [Jmeter](https://jmeter.apache.org/) script named DataFeeder is available in docs/jmeter folder.
 
+TIP: When working on high resolution, change the default scale:
+
+```sh
+export JMETER_OPTS="-Dsun.java2d.uiScale=200%"
+```
+
 ## OpenBao & Kafka setup
 
 Event if Openbao secrets and Kafka are initialized with init containers, you can also use the following ansible command:
