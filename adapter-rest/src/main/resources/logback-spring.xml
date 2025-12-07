@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{ISO8601} %-5level [%thread] - %msg%n%throwable</Pattern>
-        </layout>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{ISO8601} %-5level [%thread] - %msg%n%throwable</pattern>
+        </encoder>
     </appender>
     <appender name="APP-MAIN-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>./poc-st.log</file>
