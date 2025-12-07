@@ -136,17 +136,18 @@ public class KafkaConsumerProviderImpl implements KafkaConsumerProvider {
             auditEventMessage.getChangesList().forEach(auditChange -> {
                 LOGGER.infof("Processing audit change with object [%s]", auditChange.getObject());
                 if (KafkaConsumerConstants.EVENT_CHANGE_FIRST_NAME.equals(auditChange.getObject())) {
+                    LOGGER.infof("Updating firstName to [%s]", auditChange.getTo());
                     userEntity.setFirstName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_LAST_NAME.equals(auditChange.getObject())) {
+                    LOGGER.infof("Updating lastName to [%s]", auditChange.getTo());
                     userEntity.setLastName(auditChange.getTo());
                 } else if (KafkaConsumerConstants.EVENT_CHANGE_EMAIL.equals(auditChange.getObject())) {
+                    LOGGER.infof("Updating email to [%s]", auditChange.getTo());
                     userEntity.setEmail(auditChange.getTo(), false);
                 }
             });
-            EntityTransaction tx = jpaConnectionProvider.getEntityManager().getTransaction();
-            tx.begin();
+            LOGGER.infof("Merging changes [%s]", userEntity.getUsername());
             jpaConnectionProvider.getEntityManager().merge(userEntity);
-            tx.commit();
         }
     }
 
