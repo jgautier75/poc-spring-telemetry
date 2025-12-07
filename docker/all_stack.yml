@@ -9,6 +9,8 @@ services:
       - ./pst-openbao/config.hcl:/openbao/config/config.hcl
     ports:
       - 8200:8200
+    labels:
+      - com.acme.jga.pst=pst-openbao
     networks:
       - pst-net
   pst-init-openbao:
@@ -23,6 +25,8 @@ services:
     volumes:
       - ./pst-openbao/vault_se_init.sh:/opt/vault_se_init.sh:rwx,chmod=777
     entrypoint: ["./opt/vault_se_init.sh"]
+    labels:
+      - com.acme.jga.pst=pst-init-openbao
     networks:
       - pst-net
     #entrypoint: ["tail", "-f", "/dev/null"]
@@ -36,6 +40,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
+    labels:
+      - com.acme.jga.pst=pst-app-storage
     networks:
       - pst-net
   pst-keycloak-storage:
@@ -49,6 +55,8 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5433:5433
+    labels:
+      - com.acme.jga.pst=pst-keycloak-storage
     networks:
       - pst-net
   pst-akhq:
@@ -68,6 +76,8 @@ services:
     links:
       - pst-kafka
       - pst-schema-registry
+    labels:
+      - com.acme.jga.pst=pst-akhq
     networks:
       - pst-net
   pst-zookeeper:
@@ -86,6 +96,8 @@ services:
       ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: pst-zookeeper:2888:3888
+    labels:
+      - com.acme.jga.pst=pst-zookeeper
     networks:
       - pst-net
   pst-kafka:
@@ -117,6 +129,8 @@ services:
       retries: 20
     links:
       - pst-zookeeper
+    labels:
+      - com.acme.jga.pst=pst-kafka
     networks:
       - pst-net
   pst-schema-registry:
@@ -131,6 +145,8 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: "pst-schema-registry"
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
+    labels:
+      - com.acme.jga.pst=pst-schema-registry
     networks:
       - pst-net
   pst-init-kafka:
@@ -143,6 +159,8 @@ services:
     volumes:
       - ./pst-kafka-init/init_topic.sh:/opt/init_topic.sh:rwx,chmod=777
     entrypoint: [ "./opt/init_topic.sh" ]
+    labels:
+      - com.acme.jga.pst=pst-init-kafka
     networks:
       - pst-net
     #entrypoint: ["tail", "-f", "/dev/null"]
@@ -159,13 +177,14 @@ services:
       KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASS}
-      KC_HEALTH_ENABLED: "false"
+      KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://pst-keycloak-storage/keycloak_db
       KC_DB_USERNAME: ${KEYCLOAK_USER}
       KC_DB_PASSWORD: ${KEYCLOAK_PASS}
       KC_METRICS_ENABLED: "true"
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       #KC_LOG: "file"
       # DEBUG: 'true'
       # DEBUG_PORT: '*:8787'
@@ -183,6 +202,7 @@ services:
     volumes:
       - ./poc-realms:/opt/keycloak/data/import
       - ./poc-providers:/opt/keycloak/providers
+      - ./keycloak-image/setupFederation.sh:/opt/keycloak/bin/setupFederation.sh
       #- ./poc-libs/kafka-clients-3.9.0.jar:/opt/keycloak/lib/lib/main/kafka-clients-3.9.0.jar
     #command: ["--debug","start-dev","--import-realm", "--http-port", "7080", "--https-port", "7443","--log-level=DEBUG","-Djdk.httpclient.HttpClient.log=all"]
     command: [ "start-dev", "--import-realm", "--http-port", "7080", "--https-port", "7443" ]
@@ -196,6 +216,8 @@ services:
       interval: 15s
       timeout: 2s
       retries: 15
+    labels:
+      - com.acme.jga.pst=pst-keycloak
     networks:
       - pst-net
 volumes:

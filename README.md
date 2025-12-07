@@ -982,3 +982,12 @@ Response:
 ```
 
 You can use website https://jwt.io/ to decode accessToken
+
+
+TIPS
+
+Filtering docker containers by label
+
+```shell
+docker ps --filter "label=com.acme.jga.pst=pst-keycloak"
+```
